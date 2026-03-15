@@ -1,0 +1,54 @@
+<div class="random-page">
+  <div class="page-header">
+    <h2>随机选片</h2>
+    <p class="subtitle">不知道看什么？让命运决定今晚的电影</p>
+  </div>
+
+  <div class="picker-area">
+    <div class="movie-slot" [class.spinning]="isSpinning">
+      <div class="slot-card" *ngIf="pickedMovie">
+        <img [src]="pickedMovie.posterUrl" [alt]="pickedMovie.title" (error)="onImageError($event)" />
+        <div class="slot-overlay">
+          <div class="slot-rating"><mat-icon>star</mat-icon> {{ pickedMovie.rating }}</div>
+        </div>
+      </div>
+      <div class="slot-card empty" *ngIf="!pickedMovie">
+        <mat-icon>casino</mat-icon>
+        <p>点击下方按钮抽选</p>
+      </div>
+    </div>
+
+    <button mat-flat-button color="primary" class="spin-btn" (click)="spin()" [disabled]="isSpinning">
+      <mat-icon>{{ isSpinning ? 'hourglass_top' : 'casino' }}</mat-icon>
+      {{ isSpinning ? '抽选中...' : '开始抽选' }}
+    </button>
+
+    <div class="movie-info" *ngIf="pickedMovie && !isSpinning">
+      <h3>{{ pickedMovie.title }}</h3>
+      <div class="info-row">
+        <span><mat-icon>person</mat-icon> {{ pickedMovie.director }}</span>
+        <span><mat-icon>schedule</mat-icon> {{ pickedMovie.duration }} 分钟</span>
+        <span><mat-icon>calendar_today</mat-icon> {{ pickedMovie.releaseDate | date:'yyyy' }}</span>
+      </div>
+      <div class="info-genres">
+        <span *ngFor="let g of pickedMovie.genres" class="genre-tag">{{ g }}</span>
+      </div>
+      <p class="info-desc">{{ pickedMovie.description }}</p>
+      <button mat-stroked-button class="fav-btn" (click)="toggleFavorite()">
+        <mat-icon>{{ pickedMovie.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+        {{ pickedMovie.isFavorite ? '已收藏' : '收藏' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="history-section" *ngIf="history.length > 0">
+    <h4>历史抽选</h4>
+    <div class="history-list">
+      <div class="history-item" *ngFor="let m of history">
+        <img [src]="m.posterUrl" [alt]="m.title" (error)="onImageError($event)" />
+        <span class="history-title">{{ m.title }}</span>
+        <span class="history-rating"><mat-icon>star</mat-icon> {{ m.rating }}</span>
+      </div>
+    </div>
+  </div>
+</div>

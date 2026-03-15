@@ -1,0 +1,53 @@
+<div class="favorites-page">
+  <div class="page-header">
+    <h1><mat-icon>favorite</mat-icon> 我的收藏</h1>
+    <div class="header-stats" *ngIf="favorites.length > 0">
+      <span class="stat">{{ favorites.length }} 部收藏</span>
+      <span class="stat">均分 {{ avgRating }}</span>
+      <span class="stat">总时长 {{ (totalDuration / 60) | number:'1.0-0' }}h</span>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="favorites.length === 0">
+    <mat-icon>favorite_border</mat-icon>
+    <h3>暂无收藏</h3>
+    <p>在探索页面点击 ❤ 收藏你喜爱的电影</p>
+    <a mat-flat-button color="primary" routerLink="/explore" class="explore-btn">
+      <mat-icon>explore</mat-icon> 去探索
+    </a>
+  </div>
+
+  <div class="favorites-grid" *ngIf="favorites.length > 0">
+    <div class="fav-card" *ngFor="let movie of favorites">
+      <div class="fav-poster">
+        <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" (error)="onImageError($event)" />
+        <div class="fav-overlay">
+          <button class="remove-btn" matTooltip="取消收藏" (click)="removeFavorite(movie)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <div class="fav-rating">
+          <mat-icon>star</mat-icon> {{ movie.rating }}
+        </div>
+      </div>
+      <div class="fav-info">
+        <h4>{{ movie.title }}</h4>
+        <p class="fav-director">{{ movie.director }}</p>
+        <div class="fav-meta">
+          <span>{{ movie.releaseDate | date:'yyyy' }}</span>
+          <span>{{ movie.duration }}分钟</span>
+          <span class="fav-level">{{ movie.rating | ratingLevel }}</span>
+        </div>
+        <div class="fav-genres">
+          <span *ngFor="let g of movie.genres.slice(0, 3)" class="genre-chip">{{ g }}</span>
+        </div>
+        <div class="fav-actions">
+          <button mat-stroked-button (click)="toggleWatched(movie)" class="watch-btn">
+            <mat-icon>{{ movie.isWatched ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            {{ movie.isWatched ? '已看' : '标记已看' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

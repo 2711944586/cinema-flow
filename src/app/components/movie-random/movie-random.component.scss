@@ -1,0 +1,177 @@
+.random-page {
+  padding: 40px 48px;
+  max-width: 900px;
+  margin: 0 auto;
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 48px;
+    h2 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .subtitle { color: #94a3b8; font-size: 15px; }
+  }
+
+  .picker-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .movie-slot {
+    width: 260px;
+    height: 390px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 2px solid rgba(139, 92, 246, 0.3);
+    position: relative;
+    background: rgba(20, 20, 36, 0.6);
+
+    &.spinning .slot-card img {
+      animation: slotSpin 0.12s linear infinite;
+      filter: blur(2px);
+    }
+  }
+
+  .slot-card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+
+    &.empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: #64748b;
+      mat-icon { font-size: 48px; width: 48px; height: 48px; }
+      p { font-size: 14px; }
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .slot-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    }
+
+    .slot-rating {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(139, 92, 246, 0.8);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      mat-icon { font-size: 14px; width: 14px; height: 14px; color: #facc15; }
+    }
+  }
+
+  .spin-btn {
+    padding: 0 32px;
+    height: 48px;
+    border-radius: 24px;
+    font-size: 15px;
+    font-weight: 600;
+    mat-icon { margin-right: 6px; }
+  }
+
+  .movie-info {
+    text-align: center;
+    max-width: 500px;
+
+    h3 { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+
+    .info-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 12px;
+      color: #94a3b8;
+      font-size: 13px;
+
+      span { display: inline-flex; align-items: center; gap: 4px; }
+      mat-icon { font-size: 16px; width: 16px; height: 16px; }
+    }
+
+    .info-genres {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .genre-tag {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 10px;
+      background: rgba(139, 92, 246, 0.12);
+      color: #a78bfa;
+    }
+
+    .info-desc {
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .fav-btn {
+      border-radius: 20px;
+      border-color: rgba(255, 255, 255, 0.15);
+      color: #c084fc;
+      mat-icon { margin-right: 4px; font-size: 18px; }
+    }
+  }
+
+  .history-section {
+    margin-top: 56px;
+    h4 { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+  }
+
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .history-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: rgba(25, 25, 40, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+
+    img { width: 36px; height: 54px; border-radius: 4px; object-fit: cover; }
+    .history-title { flex: 1; font-size: 14px; }
+    .history-rating {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 13px;
+      color: #facc15;
+      mat-icon { font-size: 14px; width: 14px; height: 14px; }
+    }
+  }
+}
+
+@keyframes slotSpin {
+  0% { transform: translateY(-5px); }
+  50% { transform: translateY(5px); }
+  100% { transform: translateY(-5px); }
+}
+
+@media (max-width: 768px) {
+  .random-page { padding: 24px 16px; }
+}

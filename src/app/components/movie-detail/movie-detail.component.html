@@ -1,0 +1,112 @@
+<div class="detail-container" *ngIf="movie">
+  <div class="detail-hero" [style.backgroundImage]="'linear-gradient(to top, #1e1e2e, rgba(30, 30, 46, 0.4)), url(' + movie.backdropUrl + ')'">
+    <div class="video-mockup">
+      <mat-icon class="play-icon huge">play_circle</mat-icon>
+      <div class="video-overlay-text">官方预告片 · {{ movie.title }}</div>
+    </div>
+  </div>
+
+  <div class="detail-body">
+    <aside class="poster-sidebar">
+      <img [src]="movie.posterUrl" [alt]="movie.title" class="main-poster" (error)="onImageError($event)" />
+      <div class="action-buttons">
+        <button mat-flat-button color="primary" class="full-btn" (click)="toggleFavorite()">
+          <mat-icon>{{ movie.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+          {{ movie.isFavorite ? '已收藏' : '添加收藏' }}
+        </button>
+        <button mat-stroked-button color="accent" class="full-btn" (click)="toggleWatched()">
+          <mat-icon>{{ movie.isWatched ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+          {{ movie.isWatched ? '已标记观影' : '标记为已看' }}
+        </button>
+      </div>
+    </aside>
+
+    <div class="info-content">
+      <div class="header-row">
+        <h2 class="title">{{ movie.title }}</h2>
+        <span class="rating-badge"><mat-icon>star</mat-icon> {{ movie.rating }} / 10</span>
+      </div>
+
+      <div class="badges-row">
+        <span class="meta-badge">{{ movie.releaseDate | date:'yyyy-MM-dd' }}</span>
+        <span class="meta-badge">{{ movie.duration }} 分钟</span>
+        <span class="meta-badge" *ngIf="movie.language">{{ movie.language }}</span>
+        <span class="meta-badge" *ngIf="movie.boxOffice">票房 {{ movie.boxOffice }} 亿</span>
+        <span class="meta-badge level"
+              [class.masterpiece]="movie.rating >= 9"
+              [class.recommended]="movie.rating >= 7 && movie.rating < 9"
+              [class.mediocre]="movie.rating < 7">
+          {{ movie.rating | ratingLevel }}
+        </span>
+      </div>
+
+      <div class="genres-row">
+        <span class="genre-tag" *ngFor="let g of movie.genres">{{ g }}</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-block">
+        <h3>剧情简介</h3>
+        <p class="desc-text">{{ movie.description }}</p>
+      </div>
+
+      <div class="section-block">
+        <h3>核心主创</h3>
+        <div class="director-info">
+          <mat-icon>movie_filter</mat-icon> 导演：<strong>{{ movie.director }}</strong>
+        </div>
+        <div class="cast-info" *ngIf="movie.cast?.length">
+          <mat-icon>groups</mat-icon> 主演：
+          <span *ngFor="let actor of movie.cast; let last = last">{{ actor }}{{ last ? '' : '、' }}</span>
+        </div>
+      </div>
+
+      <!-- 用户评分 -->
+      <div class="divider"></div>
+      <div class="section-block">
+        <h3><mat-icon>rate_review</mat-icon> 我的评分</h3>
+        <div class="user-rating">
+          <div class="star-row">
+            <button *ngFor="let s of userRatingStars"
+                    class="star-btn"
+                    [class.filled]="s <= (hoverRating || movie.userRating || 0)"
+                    (mouseenter)="hoverRating = s"
+                    (mouseleave)="hoverRating = 0"
+                    (click)="setUserRating(s)">
+              <mat-icon>{{ s <= (hoverRating || movie.userRating || 0) ? 'star' : 'star_border' }}</mat-icon>
+            </button>
+          </div>
+          <span class="rating-display" *ngIf="movie.userRating">{{ movie.userRating }} / 10</span>
+          <span class="rating-display unrated" *ngIf="!movie.userRating">未评分</span>
+        </div>
+      </div>
+
+      <!-- 观影笔记 -->
+      <div class="divider"></div>
+      <div class="section-block notes-block">
+        <h3><mat-icon>edit_note</mat-icon> 观影笔记</h3>
+        <textarea class="notes-input"
+                  [value]="movie.userNotes || ''"
+                  (blur)="saveNotes($event)"
+                  placeholder="记录你对这部电影的感想..."
+                  rows="3"></textarea>
+      </div>
+
+      <!-- 相似推荐 -->
+      <div class="divider" *ngIf="recommendations.length"></div>
+      <div class="section-block" *ngIf="recommendations.length">
+        <h3><mat-icon>recommend</mat-icon> 相似推荐</h3>
+        <div class="rec-grid">
+          <div class="rec-card" *ngFor="let rec of recommendations">
+            <img [src]="rec.posterUrl" [alt]="rec.title" loading="lazy" (error)="onImageError($event)" />
+            <div class="rec-info">
+              <span class="rec-title">{{ rec.title }}</span>
+              <span class="rec-rating"><mat-icon>star</mat-icon> {{ rec.rating }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

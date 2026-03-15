@@ -1,0 +1,153 @@
+<div class="cinema-dashboard">
+
+  <!-- Hero 区域 -->
+  <section class="hero-section" *ngIf="selectedMovie"
+           [style.backgroundImage]="'linear-gradient(to top, #0f0f17 10%, rgba(15, 15, 23, 0.4) 60%), url(' + selectedMovie.backdropUrl + ')'">
+    <div class="hero-content">
+      <div class="hero-badges">
+        <span class="hero-rating"><mat-icon>star</mat-icon> {{ selectedMovie.rating }} 高分神作</span>
+        <span class="hero-duration"><mat-icon>schedule</mat-icon> {{ selectedMovie.duration }} 分钟</span>
+        <span class="hero-year">{{ selectedMovie.releaseDate | date:'yyyy' }}</span>
+        <span class="hero-lang" *ngIf="selectedMovie.language">{{ selectedMovie.language }}</span>
+      </div>
+      <h1 class="hero-title">{{ selectedMovie.title }}</h1>
+      <p class="hero-director">导演：{{ selectedMovie.director }}</p>
+
+      <div class="hero-cast" *ngIf="selectedMovie.cast?.length">
+        <span class="cast-label">主演：</span>
+        <span class="cast-names">{{ selectedMovie.cast!.slice(0, 3).join(' / ') }}</span>
+      </div>
+
+      <div class="hero-genres">
+        <mat-chip-listbox aria-label="类型">
+          <mat-chip *ngFor="let g of selectedMovie.genres" color="primary" selected>{{ g }}</mat-chip>
+        </mat-chip-listbox>
+      </div>
+
+      <p class="hero-description">{{ selectedMovie.description }}</p>
+
+      <div class="hero-actions">
+        <button mat-flat-button color="primary" class="play-btn" (click)="openDetail()">
+          <mat-icon>play_arrow</mat-icon> 观看预告片与详情
+        </button>
+        <button mat-stroked-button class="action-btn" (click)="toggleFavorite($event, selectedMovie)">
+          <mat-icon>{{ selectedMovie.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+          {{ selectedMovie.isFavorite ? '已收藏' : '收藏' }}
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 内容区 -->
+  <div class="content-container">
+
+    <!-- 工具栏 -->
+    <div class="toolbar">
+      <div class="search-box">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()" placeholder="搜索电影、导演或演员...">
+      </div>
+
+      <div class="genre-dropdown" [class.open]="genreDropdownOpen">
+        <div class="dropdown-trigger" (click)="toggleGenreDropdown()">
+          <mat-icon class="select-icon">movie_filter</mat-icon>
+          <span class="selected-text">{{ selectedGenre }}</span>
+          <mat-icon class="arrow-icon">expand_more</mat-icon>
+        </div>
+        <div class="dropdown-panel" *ngIf="genreDropdownOpen">
+          <div *ngFor="let genre of genres"
+               class="dropdown-option"
+               [class.active]="genre === selectedGenre"
+               (click)="selectGenreFromDropdown(genre)">
+            {{ genre }}
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button mat-stroked-button class="filter-btn" [class.active]="showOnlyFavorites" (click)="toggleFavoritesFilter()">
+          <mat-icon>favorite</mat-icon> 收藏 ({{ favoriteCount }})
+        </button>
+        <button mat-stroked-button class="filter-btn" [class.active]="showOnlyWatched" (click)="toggleWatchedFilter()">
+          <mat-icon>visibility</mat-icon> 已看 ({{ watchedCount }})
+        </button>
+      </div>
+
+      <div class="sort-dropdown" [class.open]="sortDropdownOpen">
+        <div class="dropdown-trigger" (click)="toggleSortDropdown()">
+          <mat-icon class="select-icon">sort</mat-icon>
+          <span class="selected-text">{{ sortLabels[sortOption] }}</span>
+          <mat-icon class="arrow-icon">expand_more</mat-icon>
+        </div>
+        <div class="dropdown-panel" *ngIf="sortDropdownOpen">
+          <div *ngFor="let opt of sortOptions"
+               class="dropdown-option"
+               [class.active]="opt.value === sortOption"
+               (click)="selectSort(opt.value)">
+            {{ opt.label }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 电影网格 -->
+    <h3 class="section-title">
+      全部影片 <span class="badge">{{ filteredMovies.length }} 部</span>
+    </h3>
+
+    <div class="movie-grid">
+      <div class="empty-state" *ngIf="filteredMovies.length === 0">
+        <mat-icon>search_off</mat-icon>
+        <p>抱歉，没有找到匹配的电影。</p>
+      </div>
+
+      <mat-card *ngFor="let movie of filteredMovies"
+                class="movie-card glass-card"
+                [class.active]="movie.id === selectedMovie?.id"
+                (click)="onSelect(movie)">
+
+        <div class="card-poster">
+          <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" (error)="onImageError($event)" />
+          <div class="poster-gradient"></div>
+          <div class="overlay">
+            <mat-icon class="play-icon">play_circle_outline</mat-icon>
+          </div>
+          <div class="rating-badge">
+            <mat-icon>star</mat-icon> {{ movie.rating }}
+          </div>
+          <button class="favorite-btn" (click)="toggleFavorite($event, movie)"
+                  [class.is-favorite]="movie.isFavorite"
+                  [matTooltip]="movie.isFavorite ? '取消收藏' : '添加收藏'">
+            <mat-icon>{{ movie.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+          </button>
+          <div class="watched-indicator" *ngIf="movie.isWatched" matTooltip="已观影">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+        </div>
+
+        <div class="card-info">
+          <h4 class="card-title">{{ movie.title }}</h4>
+          <p class="card-director">{{ movie.director }}</p>
+          <div class="card-meta">
+            <span class="card-date">{{ movie.releaseDate | date:'yyyy' }}</span>
+            <span class="card-level">{{ movie.rating | ratingLevel }}</span>
+          </div>
+          <div class="card-genres">
+            <span *ngFor="let g of movie.genres.slice(0, 2)" class="mini-tag">{{ g }}</span>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+
+  </div>
+</div>
+
+<!-- 详情模态框 -->
+<div class="modal-overlay" *ngIf="showDetailModal" (click)="closeDetail()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button mat-icon-button class="close-btn" (click)="closeDetail()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <app-movie-detail [movie]="selectedMovie"></app-movie-detail>
+  </div>
+</div>

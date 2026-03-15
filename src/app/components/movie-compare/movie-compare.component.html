@@ -1,0 +1,144 @@
+<div class="compare-page">
+  <div class="page-header">
+    <h2>电影对比</h2>
+    <p class="subtitle">选择两部电影，查看详细对比</p>
+  </div>
+
+  <div class="selectors">
+    <!-- 电影 A 选择 -->
+    <div class="selector-a selector-box" [class.open]="dropdownAOpen">
+      <label>电影 A</label>
+      <div class="dropdown-trigger" (click)="toggleDropdownA()">
+        <span class="trigger-text">{{ movieA?.title || '选择电影...' }}</span>
+        <mat-icon class="arrow-icon">expand_more</mat-icon>
+      </div>
+      <div class="dropdown-panel" *ngIf="dropdownAOpen">
+        <input class="dropdown-search" placeholder="搜索..." (input)="searchA = $any($event.target).value" (click)="$event.stopPropagation()" />
+        <div class="dropdown-list">
+          <div *ngFor="let m of filteredA"
+               class="dropdown-option"
+               [class.active]="m.id === movieA?.id"
+               (click)="selectA(m)">
+            <img [src]="m.posterUrl" [alt]="m.title" (error)="onImageError($event)" />
+            <span>{{ m.title }}</span>
+            <span class="opt-rating"><mat-icon>star</mat-icon>{{ m.rating }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button mat-icon-button class="swap-btn" (click)="swapMovies()" *ngIf="movieA && movieB">
+      <mat-icon>swap_horiz</mat-icon>
+    </button>
+    <div class="vs-badge" *ngIf="!movieA || !movieB">VS</div>
+
+    <!-- 电影 B 选择 -->
+    <div class="selector-b selector-box" [class.open]="dropdownBOpen">
+      <label>电影 B</label>
+      <div class="dropdown-trigger" (click)="toggleDropdownB()">
+        <span class="trigger-text">{{ movieB?.title || '选择电影...' }}</span>
+        <mat-icon class="arrow-icon">expand_more</mat-icon>
+      </div>
+      <div class="dropdown-panel" *ngIf="dropdownBOpen">
+        <input class="dropdown-search" placeholder="搜索..." (input)="searchB = $any($event.target).value" (click)="$event.stopPropagation()" />
+        <div class="dropdown-list">
+          <div *ngFor="let m of filteredB"
+               class="dropdown-option"
+               [class.active]="m.id === movieB?.id"
+               (click)="selectB(m)">
+            <img [src]="m.posterUrl" [alt]="m.title" (error)="onImageError($event)" />
+            <span>{{ m.title }}</span>
+            <span class="opt-rating"><mat-icon>star</mat-icon>{{ m.rating }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 对比结果 -->
+  <div class="compare-grid" *ngIf="movieA && movieB">
+    <!-- 海报对比 -->
+    <div class="row poster-row">
+      <div class="cell poster-cell">
+        <img [src]="movieA.posterUrl" [alt]="movieA.title" (error)="onImageError($event)" />
+      </div>
+      <div class="cell label-cell"></div>
+      <div class="cell poster-cell">
+        <img [src]="movieB.posterUrl" [alt]="movieB.title" (error)="onImageError($event)" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="cell title-cell">{{ movieA.title }}</div>
+      <div class="cell label-cell">标题</div>
+      <div class="cell title-cell">{{ movieB.title }}</div>
+    </div>
+
+    <div class="row">
+      <div class="cell" [class.winner]="getWinner('rating') === 'A'">
+        <span class="stat-value">{{ movieA.rating }}</span>
+      </div>
+      <div class="cell label-cell"><mat-icon>star</mat-icon> 评分</div>
+      <div class="cell" [class.winner]="getWinner('rating') === 'B'">
+        <span class="stat-value">{{ movieB.rating }}</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="cell">{{ movieA.director }}</div>
+      <div class="cell label-cell"><mat-icon>person</mat-icon> 导演</div>
+      <div class="cell">{{ movieB.director }}</div>
+    </div>
+
+    <div class="row">
+      <div class="cell" [class.winner]="getWinner('duration') === 'A'">{{ movieA.duration }} 分钟</div>
+      <div class="cell label-cell"><mat-icon>schedule</mat-icon> 时长</div>
+      <div class="cell" [class.winner]="getWinner('duration') === 'B'">{{ movieB.duration }} 分钟</div>
+    </div>
+
+    <div class="row">
+      <div class="cell">{{ movieA.releaseDate | date:'yyyy' }}</div>
+      <div class="cell label-cell"><mat-icon>calendar_today</mat-icon> 年份</div>
+      <div class="cell">{{ movieB.releaseDate | date:'yyyy' }}</div>
+    </div>
+
+    <div class="row">
+      <div class="cell" [class.winner]="getWinner('boxOffice') === 'A'">{{ movieA.boxOffice || '-' }} 亿</div>
+      <div class="cell label-cell"><mat-icon>payments</mat-icon> 票房</div>
+      <div class="cell" [class.winner]="getWinner('boxOffice') === 'B'">{{ movieB.boxOffice || '-' }} 亿</div>
+    </div>
+
+    <div class="row">
+      <div class="cell">{{ movieA.language }}</div>
+      <div class="cell label-cell"><mat-icon>translate</mat-icon> 语言</div>
+      <div class="cell">{{ movieB.language }}</div>
+    </div>
+
+    <div class="row">
+      <div class="cell genre-cell">
+        <span *ngFor="let g of movieA.genres" class="genre-tag">{{ g }}</span>
+      </div>
+      <div class="cell label-cell"><mat-icon>category</mat-icon> 类型</div>
+      <div class="cell genre-cell">
+        <span *ngFor="let g of movieB.genres" class="genre-tag">{{ g }}</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="cell cast-cell">{{ movieA.cast?.join('、') || '-' }}</div>
+      <div class="cell label-cell"><mat-icon>groups</mat-icon> 主演</div>
+      <div class="cell cast-cell">{{ movieB.cast?.join('、') || '-' }}</div>
+    </div>
+
+    <!-- 共同类型 -->
+    <div class="shared-section" *ngIf="getSharedGenres().length > 0">
+      <span class="shared-label">共同类型：</span>
+      <span *ngFor="let g of getSharedGenres()" class="shared-tag">{{ g }}</span>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="!movieA || !movieB">
+    <mat-icon>compare_arrows</mat-icon>
+    <p>请从上方选择两部电影进行对比</p>
+  </div>
+</div>

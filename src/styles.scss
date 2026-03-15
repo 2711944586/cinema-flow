@@ -1,0 +1,97 @@
+/* ===== CinemaFlow 全局样式 ===== */
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* CSS Reset & Dark Theme Foundation */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;
+  background: #0f0f17;
+  color: #e2e8f0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ===== 深色主题覆盖 Angular Material ===== */
+
+/* Mat-Card 深色样式 */
+.mat-mdc-card {
+  --mdc-elevated-card-container-color: rgba(30, 30, 46, 0.7);
+  --mdc-outlined-card-container-color: rgba(30, 30, 46, 0.7);
+  --mdc-outlined-card-outline-color: rgba(139, 92, 246, 0.15);
+  color: #e2e8f0;
+}
+
+/* Mat-Form-Field 深色样式 */
+.mat-mdc-form-field {
+  --mdc-filled-text-field-container-color: rgba(139, 92, 246, 0.05);
+  --mdc-outlined-text-field-outline-color: rgba(139, 92, 246, 0.25);
+  --mdc-outlined-text-field-focus-outline-color: #a78bfa;
+  --mdc-outlined-text-field-hover-outline-color: rgba(139, 92, 246, 0.4);
+  --mdc-outlined-text-field-label-text-color: #94a3b8;
+  --mdc-outlined-text-field-focus-label-text-color: #a78bfa;
+  --mdc-outlined-text-field-input-text-color: #e2e8f0;
+}
+
+/* Mat-Progress-Bar 深色样式 */
+.mat-mdc-progress-bar {
+  --mdc-linear-progress-active-indicator-color: #34d399;
+  --mdc-linear-progress-track-color: rgba(52, 211, 153, 0.1);
+}
+
+/* Icon 颜色 */
+.mat-icon {
+  color: #94a3b8;
+}
+
+/* ===== 全局动画 ===== */
+
+/* 页面入场动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 全局滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.25);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.4);
+}
+
+/* ===== 全局选中样式 ===== */
+::selection {
+  background: rgba(139, 92, 246, 0.35);
+  color: #fff;
+}

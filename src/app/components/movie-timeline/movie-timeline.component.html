@@ -1,0 +1,42 @@
+<div class="timeline-page">
+  <div class="page-header">
+    <h1><mat-icon>timeline</mat-icon> 电影时间轴</h1>
+    <div class="header-stats">
+      <span class="stat">{{ totalMovies }} 部电影</span>
+      <span class="stat">{{ yearSpan }}</span>
+    </div>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-group" *ngFor="let group of decadeGroups">
+      <div class="decade-marker">
+        <span class="decade-label">{{ group.decade }}</span>
+        <span class="decade-count">{{ group.movies.length }}部</span>
+      </div>
+
+      <div class="timeline-items">
+        <div class="timeline-item" *ngFor="let movie of group.movies">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <div class="tc-poster">
+              <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" (error)="onImageError($event)" />
+            </div>
+            <div class="tc-info">
+              <span class="tc-year">{{ movie.releaseDate | date:'yyyy年M月' }}</span>
+              <h4 class="tc-title">{{ movie.title }}</h4>
+              <span class="tc-director">{{ movie.director }}</span>
+              <div class="tc-meta">
+                <span class="tc-rating"><mat-icon>star</mat-icon> {{ movie.rating }}</span>
+                <span class="tc-duration">{{ movie.duration }}分钟</span>
+                <span class="tc-watched" *ngIf="movie.isWatched"><mat-icon>check_circle</mat-icon></span>
+              </div>
+              <div class="tc-genres">
+                <span *ngFor="let g of movie.genres.slice(0, 2)">{{ g }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

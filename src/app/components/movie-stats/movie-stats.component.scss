@@ -1,0 +1,371 @@
+.stats-dashboard {
+  color: #e2e8f0;
+  width: 100%;
+}
+
+/* 指标行 */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+
+  @media(max-width: 1200px) { grid-template-columns: repeat(3, 1fr); }
+  @media(max-width: 600px) { grid-template-columns: repeat(2, 1fr); }
+
+  .metric-card {
+    background: rgba(25, 25, 40, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+  }
+
+  .metric-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(139, 92, 246, 0.12);
+    mat-icon { color: #a78bfa; font-size: 22px; width: 22px; height: 22px; }
+
+    &.watched { background: rgba(34, 197, 94, 0.1); mat-icon { color: #4ade80; } }
+    &.rating { background: rgba(251, 191, 36, 0.1); mat-icon { color: #fbbf24; } }
+    &.favorite { background: rgba(244, 63, 94, 0.1); mat-icon { color: #fb7185; } }
+    &.directors { background: rgba(56, 189, 248, 0.1); mat-icon { color: #38bdf8; } }
+    &.duration { background: rgba(168, 85, 247, 0.1); mat-icon { color: #a855f7; } }
+  }
+
+  .metric-data {
+    display: flex;
+    flex-direction: column;
+
+    .metric-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: #f1f5f9;
+      line-height: 1;
+      small { font-size: 14px; font-weight: 500; opacity: 0.6; margin-left: 2px; }
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 4px;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+/* 面板基础 */
+.panel {
+  background: rgba(25, 25, 40, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  mat-icon { color: #64748b; font-size: 18px; width: 18px; height: 18px; }
+  h3 { margin: 0; font-size: 14px; font-weight: 600; color: #94a3b8; }
+}
+
+.panel-body { padding: 20px; }
+
+/* 网格布局 */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+
+  @media(max-width: 1024px) { grid-template-columns: 1fr 1fr; }
+  @media(max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+/* 类型分布 - 柱形 */
+.genre-panel .bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .bar-item {
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      .bar-name { font-size: 13px; color: #cbd5e1; font-weight: 500; }
+      .bar-count { font-size: 12px; color: #64748b; }
+    }
+
+    .bar-track {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 3px;
+      overflow: hidden;
+
+      .bar-fill {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 0.8s ease-out;
+      }
+    }
+  }
+
+  .bar-color-0 { background: #818cf8; }
+  .bar-color-1 { background: #a78bfa; }
+  .bar-color-2 { background: #c084fc; }
+  .bar-color-3 { background: #38bdf8; }
+  .bar-color-4 { background: #4ade80; }
+  .bar-color-5 { background: #fbbf24; }
+}
+
+/* 评分分布 */
+.rating-panel .rating-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  .rating-bar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .rating-range {
+      width: 60px;
+      font-size: 13px;
+      color: #94a3b8;
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .rating-bar-track {
+      flex: 1;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 4px;
+      overflow: hidden;
+
+      .rating-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.8s ease-out;
+      }
+    }
+
+    .rating-count {
+      width: 24px;
+      font-size: 13px;
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+  }
+}
+
+/* 最高评分 */
+.top-panel {
+  position: relative;
+  border-color: rgba(251, 191, 36, 0.15) !important;
+
+  .top-poster-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: blur(20px) brightness(0.3);
+    transform: scale(1.1);
+  }
+
+  .top-content {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .panel-header {
+      border-bottom-color: rgba(251, 191, 36, 0.1);
+      .trophy { color: #fbbf24; }
+      h3 { color: #fbbf24; }
+    }
+
+    .top-info {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+
+      h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        line-height: 1.2;
+      }
+
+      .top-score {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 18px;
+        font-weight: 700;
+        color: #fbbf24;
+        margin-bottom: 6px;
+        mat-icon { font-size: 20px; width: 20px; height: 20px; }
+      }
+
+      .top-director {
+        color: #94a3b8;
+        font-size: 13px;
+        margin: 0 0 10px 0;
+      }
+
+      .top-tags {
+        display: flex;
+        gap: 6px;
+        span {
+          background: rgba(255,255,255,0.1);
+          padding: 3px 8px;
+          border-radius: 4px;
+          font-size: 11px;
+          color: #cbd5e1;
+        }
+      }
+    }
+  }
+}
+
+/* 年代分布 */
+.timeline-panel .year-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 140px;
+  padding-top: 10px;
+
+  .year-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+    cursor: pointer;
+
+    .year-bar-fill {
+      width: 100%;
+      max-width: 28px;
+      background: linear-gradient(180deg, #818cf8, #6366f1);
+      border-radius: 4px 4px 0 0;
+      min-height: 4px;
+      transition: height 0.8s ease-out;
+    }
+
+    .year-label {
+      font-size: 9px;
+      color: #475569;
+      margin-top: 6px;
+      writing-mode: vertical-lr;
+      transform: rotate(180deg);
+      white-space: nowrap;
+    }
+
+    &:hover .year-bar-fill {
+      background: linear-gradient(180deg, #a78bfa, #818cf8);
+    }
+  }
+}
+
+/* 导演排行 */
+.director-panel .director-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .director-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    transition: background 0.2s;
+    &:hover { background: rgba(255, 255, 255, 0.03); }
+
+    .director-rank {
+      font-size: 14px;
+      font-weight: 700;
+      color: #475569;
+      width: 24px;
+      text-align: center;
+    }
+
+    .director-info {
+      flex: 1;
+      .director-name { display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; }
+      .director-meta { font-size: 11px; color: #64748b; }
+    }
+
+    .director-rating {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fbbf24;
+      mat-icon { font-size: 14px; width: 14px; height: 14px; }
+    }
+  }
+}
+
+/* 最近上映 */
+.recent-panel .recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .recent-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 6px 8px;
+    border-radius: 8px;
+    transition: background 0.2s;
+    &:hover { background: rgba(255, 255, 255, 0.03); }
+
+    img {
+      width: 36px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .recent-info {
+      flex: 1;
+      .recent-title {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #e2e8f0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .recent-meta { font-size: 11px; color: #64748b; }
+    }
+  }
+}

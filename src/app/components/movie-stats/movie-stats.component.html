@@ -1,0 +1,169 @@
+<div class="stats-dashboard">
+  <!-- 顶部指标行 -->
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="metric-icon"><mat-icon>local_movies</mat-icon></div>
+      <div class="metric-data">
+        <span class="metric-value">{{ totalMovies }}</span>
+        <span class="metric-label">总影片数</span>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon watched"><mat-icon>visibility</mat-icon></div>
+      <div class="metric-data">
+        <span class="metric-value">{{ watchedPercentage }}<small>%</small></span>
+        <span class="metric-label">观影率</span>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon rating"><mat-icon>star_rate</mat-icon></div>
+      <div class="metric-data">
+        <span class="metric-value">{{ averageRating }}</span>
+        <span class="metric-label">平均评分</span>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon favorite"><mat-icon>favorite</mat-icon></div>
+      <div class="metric-data">
+        <span class="metric-value">{{ favoriteCount }}</span>
+        <span class="metric-label">已收藏</span>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon directors"><mat-icon>groups</mat-icon></div>
+      <div class="metric-data">
+        <span class="metric-value">{{ uniqueDirectors }}</span>
+        <span class="metric-label">收录导演</span>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon duration"><mat-icon>schedule</mat-icon></div>
+      <div class="metric-data">
+        <span class="metric-value">{{ (totalDuration / 60) | number:'1.0-0' }}<small>h</small></span>
+        <span class="metric-label">总时长</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主内容网格 -->
+  <div class="dashboard-grid">
+    <!-- 类型分布 -->
+    <div class="panel genre-panel">
+      <div class="panel-header">
+        <mat-icon>donut_small</mat-icon>
+        <h3>类型分布</h3>
+      </div>
+      <div class="panel-body">
+        <div class="bar-chart">
+          <div class="bar-item" *ngFor="let genre of topGenres; let i = index">
+            <div class="bar-label">
+              <span class="bar-name">{{ genre.name }}</span>
+              <span class="bar-count">{{ genre.count }}部</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" [ngClass]="'bar-color-' + i" [style.width.%]="genre.percent"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 评分分布 -->
+    <div class="panel rating-panel">
+      <div class="panel-header">
+        <mat-icon>assessment</mat-icon>
+        <h3>评分分布</h3>
+      </div>
+      <div class="panel-body">
+        <div class="rating-bars">
+          <div class="rating-bar-item" *ngFor="let item of ratingDistribution">
+            <span class="rating-range">{{ item.range }}</span>
+            <div class="rating-bar-track">
+              <div class="rating-bar-fill" [style.width.%]="totalMovies ? (item.count / totalMovies) * 100 : 0" [style.backgroundColor]="item.color"></div>
+            </div>
+            <span class="rating-count">{{ item.count }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 最高评分 -->
+    <div class="panel top-panel" *ngIf="topRatedMovie">
+      <div class="top-poster-bg" [style.backgroundImage]="'url(' + topRatedMovie.posterUrl + ')'"></div>
+      <div class="top-content">
+        <div class="panel-header">
+          <mat-icon class="trophy">emoji_events</mat-icon>
+          <h3>本库最高分</h3>
+        </div>
+        <div class="top-info">
+          <h2>{{ topRatedMovie.title }}</h2>
+          <div class="top-score">
+            <mat-icon>star</mat-icon> {{ topRatedMovie.rating }}
+          </div>
+          <p class="top-director">{{ topRatedMovie.director }}</p>
+          <div class="top-tags">
+            <span *ngFor="let g of topRatedMovie.genres.slice(0, 3)">{{ g }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 年代分布 -->
+    <div class="panel timeline-panel">
+      <div class="panel-header">
+        <mat-icon>timeline</mat-icon>
+        <h3>年代分布</h3>
+      </div>
+      <div class="panel-body">
+        <div class="year-chart">
+          <div class="year-bar" *ngFor="let item of yearDistribution"
+               [matTooltip]="item.year + '年: ' + item.count + '部'">
+            <div class="year-bar-fill" [style.height.%]="item.maxCount ? (item.count / item.maxCount) * 100 : 0"></div>
+            <span class="year-label">{{ item.year | number:'1.0-0' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 导演排行 -->
+    <div class="panel director-panel">
+      <div class="panel-header">
+        <mat-icon>person</mat-icon>
+        <h3>导演排行</h3>
+      </div>
+      <div class="panel-body">
+        <div class="director-list">
+          <div class="director-item" *ngFor="let d of directorStats; let i = index">
+            <span class="director-rank">#{{ i + 1 }}</span>
+            <div class="director-info">
+              <span class="director-name">{{ d.name }}</span>
+              <span class="director-meta">{{ d.count }}部 · 均分 {{ d.avgRating }}</span>
+            </div>
+            <div class="director-rating">
+              <mat-icon>star</mat-icon> {{ d.avgRating }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 最近上映 -->
+    <div class="panel recent-panel">
+      <div class="panel-header">
+        <mat-icon>new_releases</mat-icon>
+        <h3>最近上映</h3>
+      </div>
+      <div class="panel-body">
+        <div class="recent-list">
+          <div class="recent-item" *ngFor="let m of recentMovies">
+            <img [src]="m.posterUrl" [alt]="m.title" loading="lazy" />
+            <div class="recent-info">
+              <span class="recent-title">{{ m.title }}</span>
+              <span class="recent-meta">{{ m.releaseDate | date:'yyyy-MM' }} · {{ m.rating }}分</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
