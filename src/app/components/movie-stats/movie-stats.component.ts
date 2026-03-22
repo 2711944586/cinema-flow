@@ -7,7 +7,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Movie } from '../../models/movie';
 import { MovieService } from '../../services/movie.service';
-import { applyMovieImageFallback, buildBackdropImage } from '../../utils/movie-media';
+import { applyBackdropDisplayFallback, applyMovieImageFallback, getBackdropDisplayUrl } from '../../utils/movie-media';
 
 @Component({
   selector: 'app-movie-stats',
@@ -76,11 +76,15 @@ export class MovieStatsComponent implements OnChanges {
     this.directorStats = this.movieService.getDirectors().slice(0, 5);
   }
 
-  getTopBackdropStyle(movie: Movie): string {
-    return buildBackdropImage(movie);
+  getTopBackdropUrl(movie: Movie): string {
+    return getBackdropDisplayUrl(movie);
   }
 
   onImageError(event: Event, movie: Movie): void {
     applyMovieImageFallback(event, movie);
+  }
+
+  onBackdropError(event: Event, movie: Movie): void {
+    applyBackdropDisplayFallback(event, movie);
   }
 }

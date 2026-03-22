@@ -18,7 +18,7 @@ import { MovieService } from '../../services/movie.service';
 import { MovieDetailComponent } from '../movie-detail/movie-detail.component';
 import { MovieFormComponent } from '../movie-form/movie-form.component';
 import { RatingLevelPipe } from '../../pipes/rating-level.pipe';
-import { applyMovieImageFallback, buildBackdropImage } from '../../utils/movie-media';
+import { applyBackdropDisplayFallback, applyMovieImageFallback, getBackdropDisplayUrl } from '../../utils/movie-media';
 
 @Component({
   selector: 'app-movie-list',
@@ -239,12 +239,16 @@ export class MovieListComponent implements OnInit, OnDestroy {
       }
     } else {
       // Add mode - create new movie
-      this.movieService.addMovie(movieData);
-      this.snackBar.open(`已添加：${movieData.title}`, '关闭', {
-        duration: 3000,
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom'
-      });
+      const success = this.movieService.addMovie(movieData);
+      this.snackBar.open(
+        success ? `已添加：${movieData.title}` : `未添加：${movieData.title}，片库中已存在同名同年份条目`,
+        '关闭',
+        {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        }
+      );
     }
     this.closeAddForm();
   }
@@ -319,11 +323,15 @@ export class MovieListComponent implements OnInit, OnDestroy {
     return this.movies.filter(m => m.isWatched).length;
   }
 
-  getBackdropStyle(movie: Movie): string {
-    return buildBackdropImage(movie);
+  getBackdropUrl(movie: Movie): string {
+    return getBackdropDisplayUrl(movie);
   }
 
   onImageError(event: Event, movie: Movie) {
     applyMovieImageFallback(event, movie);
+  }
+
+  onBackdropError(event: Event, movie: Movie): void {
+    applyBackdropDisplayFallback(event, movie);
   }
 }

@@ -1,7 +1,15 @@
 <div class="movie-form-container">
   <div class="movie-form-shell">
     <section class="preview-panel">
-      <div class="preview-backdrop" [style.backgroundImage]="backdropPreviewStyle">
+      <div class="preview-backdrop">
+        <img class="preview-bg-media"
+             [src]="backdropPreviewUrl"
+             alt=""
+             aria-hidden="true"
+             loading="eager"
+             decoding="async"
+             referrerpolicy="no-referrer"
+             (error)="onBackdropError($event)">
         <div class="preview-backdrop-overlay">
           <span class="preview-kicker">{{ movie ? '编辑片库条目' : '新增片库条目' }}</span>
           <h2>{{ previewMovie.title }}</h2>
@@ -16,7 +24,7 @@
 
       <div class="preview-poster-card">
         <div class="preview-poster-frame" [class.is-empty]="!posterPreviewUrl">
-          <img *ngIf="posterPreviewUrl; else posterPlaceholder" [src]="posterPreviewUrl" [alt]="previewMovie.title" (error)="onPosterError($event)">
+          <img *ngIf="posterPreviewUrl; else posterPlaceholder" [src]="posterPreviewUrl" [alt]="previewMovie.title" loading="eager" decoding="async" referrerpolicy="no-referrer" (error)="onPosterError($event)">
           <ng-template #posterPlaceholder>
             <div class="poster-placeholder">
               <mat-icon>verified</mat-icon>

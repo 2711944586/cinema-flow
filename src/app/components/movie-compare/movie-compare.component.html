@@ -19,7 +19,7 @@
                class="dropdown-option"
                [class.active]="m.id === movieA?.id"
                (click)="selectA(m)">
-            <img [src]="m.posterUrl" [alt]="m.title" (error)="onImageError($event, m)" />
+            <img [src]="m.posterUrl" [alt]="m.title" loading="lazy" decoding="async" referrerpolicy="no-referrer" (error)="onImageError($event, m)" />
             <span>{{ m.title }}</span>
             <span class="opt-rating"><mat-icon>star</mat-icon>{{ m.rating }}</span>
           </div>
@@ -46,7 +46,7 @@
                class="dropdown-option"
                [class.active]="m.id === movieB?.id"
                (click)="selectB(m)">
-            <img [src]="m.posterUrl" [alt]="m.title" (error)="onImageError($event, m)" />
+            <img [src]="m.posterUrl" [alt]="m.title" loading="lazy" decoding="async" referrerpolicy="no-referrer" (error)="onImageError($event, m)" />
             <span>{{ m.title }}</span>
             <span class="opt-rating"><mat-icon>star</mat-icon>{{ m.rating }}</span>
           </div>
@@ -60,11 +60,11 @@
     <!-- 海报对比 -->
     <div class="row poster-row">
       <div class="cell poster-cell">
-        <img [src]="movieA.posterUrl" [alt]="movieA.title" (error)="onImageError($event, movieA)" />
+        <img [src]="movieA.posterUrl" [alt]="movieA.title" loading="eager" decoding="async" referrerpolicy="no-referrer" (error)="onImageError($event, movieA)" />
       </div>
       <div class="cell label-cell"></div>
       <div class="cell poster-cell">
-        <img [src]="movieB.posterUrl" [alt]="movieB.title" (error)="onImageError($event, movieB)" />
+        <img [src]="movieB.posterUrl" [alt]="movieB.title" loading="eager" decoding="async" referrerpolicy="no-referrer" (error)="onImageError($event, movieB)" />
       </div>
     </div>
 

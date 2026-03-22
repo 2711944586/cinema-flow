@@ -19,7 +19,7 @@
           <div class="timeline-dot"></div>
           <div class="timeline-card">
             <div class="tc-poster">
-              <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" (error)="onImageError($event, movie)" />
+              <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" decoding="async" referrerpolicy="no-referrer" (error)="onImageError($event, movie)" />
             </div>
             <div class="tc-info">
               <span class="tc-year">{{ movie.releaseDate | date:'yyyy年M月' }}</span>

@@ -7,7 +7,7 @@
   <div class="picker-area">
     <div class="movie-slot" [class.spinning]="isSpinning">
       <div class="slot-card" *ngIf="pickedMovie">
-        <img [src]="pickedMovie.posterUrl" [alt]="pickedMovie.title" (error)="onImageError($event, pickedMovie)" />
+        <img [src]="pickedMovie.posterUrl" [alt]="pickedMovie.title" loading="eager" decoding="async" referrerpolicy="no-referrer" (error)="onImageError($event, pickedMovie)" />
         <div class="slot-overlay">
           <div class="slot-rating"><mat-icon>star</mat-icon> {{ pickedMovie.rating }}</div>
         </div>
@@ -45,7 +45,7 @@
     <h4>历史抽选</h4>
     <div class="history-list">
       <div class="history-item" *ngFor="let m of history">
-        <img [src]="m.posterUrl" [alt]="m.title" (error)="onImageError($event, m)" />
+        <img [src]="m.posterUrl" [alt]="m.title" loading="lazy" decoding="async" referrerpolicy="no-referrer" (error)="onImageError($event, m)" />
         <span class="history-title">{{ m.title }}</span>
         <span class="history-rating"><mat-icon>star</mat-icon> {{ m.rating }}</span>
       </div>

@@ -87,6 +87,9 @@
               *ngFor="let movie of day.movies.slice(0, 3); trackBy: trackByMovieId"
               [src]="movie.posterUrl"
               [alt]="movie.title"
+              loading="lazy"
+              decoding="async"
+              referrerpolicy="no-referrer"
               (error)="onImageError($event, movie)">
           </div>
 
@@ -109,7 +112,7 @@
 
         <div class="selected-movie-list">
           <article class="selected-movie-card" *ngFor="let movie of selectedDayMovies; trackBy: trackByMovieId">
-            <img [src]="movie.posterUrl" [alt]="movie.title" (error)="onImageError($event, movie)">
+            <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" decoding="async" referrerpolicy="no-referrer" (error)="onImageError($event, movie)">
             <div class="selected-movie-copy">
               <div class="movie-title-row">
                 <h3>{{ movie.title }}</h3>

@@ -4,12 +4,12 @@ import { map } from 'rxjs/operators';
 import { Movie } from '../models/movie';
 import { MOCK_MOVIES } from '../data/mock-movies';
 import { LoggerService } from './logger.service';
-import { coerceMovieDate, ensureMovieMedia, isGeneratedMovieArt } from '../utils/movie-media';
+import { coerceMovieDate, ensureMovieMedia, isGeneratedMovieArt, optimizeMovieImageUrl } from '../utils/movie-media';
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
   private readonly moviesSubject = new BehaviorSubject<Movie[]>(
-    MOCK_MOVIES.map(m => this.normalizeMovie(m))
+    this.dedupeMovies(MOCK_MOVIES.map(m => this.normalizeMovie(m)))
   );
 
   readonly movies$ = this.moviesSubject.asObservable();
@@ -96,19 +96,26 @@ export class MovieService {
    * Add a new movie to the collection
    * Generates a new unique ID automatically
    */
-  addMovie(movie: Omit<Movie, 'id'>): void {
+  addMovie(movie: Omit<Movie, 'id'>): boolean {
     if (!this.hasVerifiedPoster(movie.posterUrl)) {
       this.logger.warn(`Rejected new movie "${movie.title}": poster must be a verified external image URL`);
-      return;
+      return false;
+    }
+
+    const normalizedMovie = this.normalizeMovie({ ...movie, id: 0 });
+    if (this.isDuplicateMovie(normalizedMovie)) {
+      this.logger.warn(`Rejected new movie "${movie.title}": duplicate title/year combination`);
+      return false;
     }
 
     const newId = this.moviesSubject.value.length > 0
       ? Math.max(...this.moviesSubject.value.map(m => m.id)) + 1
       : 1;
-    const newMovie: Movie = this.normalizeMovie({ ...movie, id: newId });
+    const newMovie: Movie = { ...normalizedMovie, id: newId };
     const updated = [...this.moviesSubject.value.map(m => this.cloneMovie(m)), newMovie];
     this.moviesSubject.next(updated);
     this.logger.log(`Added new movie: ${movie.title} (ID: ${newId})`);
+    return true;
   }
 
   /**
@@ -245,8 +252,36 @@ export class MovieService {
     });
   }
 
+  private dedupeMovies(movies: Movie[]): Movie[] {
+    const seenKeys = new Set<string>();
+
+    return movies.filter(movie => {
+      const key = this.buildMovieIdentityKey(movie);
+      if (seenKeys.has(key)) {
+        return false;
+      }
+
+      seenKeys.add(key);
+      return true;
+    });
+  }
+
+  private isDuplicateMovie(movie: Movie): boolean {
+    const targetKey = this.buildMovieIdentityKey(movie);
+    return this.moviesSubject.value.some(existing => this.buildMovieIdentityKey(existing) === targetKey);
+  }
+
+  private buildMovieIdentityKey(movie: Pick<Movie, 'title' | 'releaseDate'>): string {
+    const normalizedTitle = movie.title
+      .normalize('NFKD')
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}\u3400-\u9fff]+/gu, '');
+
+    return `${normalizedTitle}-${coerceMovieDate(movie.releaseDate).getFullYear()}`;
+  }
+
   private hasVerifiedPoster(url: string | undefined): boolean {
     const posterUrl = url?.trim() ?? '';
-    return !!posterUrl && /^https?:\/\//i.test(posterUrl) && !isGeneratedMovieArt(posterUrl);
+    return !!posterUrl && !isGeneratedMovieArt(posterUrl) && optimizeMovieImageUrl(posterUrl, 'poster') !== null;
   }
 }

@@ -69,7 +69,7 @@
 
       <mat-card class="compose-panel" [class.is-open]="showNewReviewForm">
         <div class="compose-preview" *ngIf="selectedComposeMovie as movie">
-          <img [src]="movie.posterUrl" [alt]="movie.title" (error)="onMoviePosterError($event, movie)">
+          <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" decoding="async" referrerpolicy="no-referrer" (error)="onMoviePosterError($event, movie)">
           <div class="compose-copy">
             <span class="compose-kicker">当前撰写对象</span>
             <h2>{{ movie.title }}</h2>
@@ -131,7 +131,7 @@
       <div class="review-grid" *ngIf="visibleReviews.length > 0; else emptyState">
         <article class="review-card" *ngFor="let review of visibleReviews; trackBy: trackByReviewId">
           <div class="review-card-head">
-            <img [src]="review.posterUrl" [alt]="review.movieTitle" (error)="onReviewPosterError($event, review)">
+            <img [src]="review.posterUrl" [alt]="review.movieTitle" loading="lazy" decoding="async" referrerpolicy="no-referrer" (error)="onReviewPosterError($event, review)">
             <div class="review-head-copy">
               <div class="review-title-row">
                 <div>

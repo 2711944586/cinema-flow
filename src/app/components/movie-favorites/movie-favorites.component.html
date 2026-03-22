@@ -20,7 +20,7 @@
   <div class="favorites-grid" *ngIf="favorites.length > 0">
     <div class="fav-card" *ngFor="let movie of favorites">
       <div class="fav-poster">
-        <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" (error)="onImageError($event, movie)" />
+        <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" decoding="async" referrerpolicy="no-referrer" (error)="onImageError($event, movie)" />
         <div class="fav-overlay">
           <button class="remove-btn" matTooltip="取消收藏" (click)="removeFavorite(movie)">
             <mat-icon>close</mat-icon>

@@ -11,7 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Movie } from '../../models/movie';
 import { MovieService } from '../../services/movie.service';
 import { RatingLevelPipe } from '../../pipes/rating-level.pipe';
-import { applyMovieImageFallback, buildBackdropImage } from '../../utils/movie-media';
+import { applyBackdropDisplayFallback, applyMovieImageFallback, getBackdropDisplayUrl } from '../../utils/movie-media';
 
 @Component({
   selector: 'app-movie-detail',
@@ -64,12 +64,16 @@ export class MovieDetailComponent implements OnChanges {
     }
   }
 
-  getBackdropStyle(movie: Movie): string {
-    return buildBackdropImage(movie);
+  getBackdropUrl(movie: Movie): string {
+    return getBackdropDisplayUrl(movie);
   }
 
   onImageError(event: Event, movie: Movie) {
     applyMovieImageFallback(event, movie);
+  }
+
+  onBackdropError(event: Event, movie: Movie): void {
+    applyBackdropDisplayFallback(event, movie);
   }
 
   saveNotes(event: Event) {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Movie } from '../models/movie';
-import { coerceMovieDate } from '../utils/movie-media';
+import { coerceMovieDate, optimizeMovieImageUrl } from '../utils/movie-media';
 
 interface ArtworkSeed {
   title: string;
@@ -105,8 +105,13 @@ export class MovieArtworkService {
         continue;
       }
 
+      const optimizedPosterUrl = optimizeMovieImageUrl(posterUrl, 'poster');
+      if (!optimizedPosterUrl) {
+        continue;
+      }
+
       return {
-        posterUrl,
+        posterUrl: optimizedPosterUrl,
         posterSource: `${match.site === 'zh' ? '中文维基百科' : '英文维基百科'} · ${match.title}`
       };
     }

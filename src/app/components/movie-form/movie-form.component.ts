@@ -11,11 +11,12 @@ import { MatSliderModule } from '@angular/material/slider';
 import { Movie } from '../../models/movie';
 import { MovieArtworkService } from '../../services/movie-artwork.service';
 import {
+  applyBackdropDisplayFallback,
   applyMovieImageFallback,
-  buildBackdropImage,
   coerceMovieDate,
   formatDateInputValue,
-  isGeneratedMovieArt
+  getBackdropDisplayUrl,
+  isGeneratedMovieArt,
 } from '../../utils/movie-media';
 
 interface MovieFormData {
@@ -105,8 +106,8 @@ export class MovieFormComponent implements OnInit, OnChanges, OnDestroy {
     return this.effectivePosterUrl;
   }
 
-  get backdropPreviewStyle(): string {
-    return buildBackdropImage({
+  get backdropPreviewUrl(): string {
+    return getBackdropDisplayUrl({
       ...this.previewMovie,
       backdropUrl: this.effectiveBackdropUrl
     });
@@ -220,6 +221,13 @@ export class MovieFormComponent implements OnInit, OnChanges, OnDestroy {
 
   onPosterError(event: Event): void {
     applyMovieImageFallback(event, this.previewMovie);
+  }
+
+  onBackdropError(event: Event): void {
+    applyBackdropDisplayFallback(event, {
+      ...this.previewMovie,
+      backdropUrl: this.effectiveBackdropUrl
+    });
   }
 
   onArtworkSeedChange(): void {

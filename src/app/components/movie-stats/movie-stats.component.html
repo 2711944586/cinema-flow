@@ -89,7 +89,14 @@
 
     <!-- 最高评分 -->
     <div class="panel top-panel" *ngIf="topRatedMovie">
-      <div class="top-poster-bg" [style.backgroundImage]="getTopBackdropStyle(topRatedMovie)"></div>
+      <img class="top-poster-bg"
+           [src]="getTopBackdropUrl(topRatedMovie)"
+           alt=""
+           aria-hidden="true"
+           loading="lazy"
+           decoding="async"
+           referrerpolicy="no-referrer"
+           (error)="onBackdropError($event, topRatedMovie)">
       <div class="top-content">
         <div class="panel-header">
           <mat-icon class="trophy">emoji_events</mat-icon>
@@ -156,7 +163,7 @@
       <div class="panel-body">
         <div class="recent-list">
           <div class="recent-item" *ngFor="let m of recentMovies">
-            <img [src]="m.posterUrl" [alt]="m.title" loading="lazy" (error)="onImageError($event, m)" />
+            <img [src]="m.posterUrl" [alt]="m.title" loading="lazy" decoding="async" referrerpolicy="no-referrer" (error)="onImageError($event, m)" />
             <div class="recent-info">
               <span class="recent-title">{{ m.title }}</span>
               <span class="recent-meta">{{ m.releaseDate | date:'yyyy-MM' }} · {{ m.rating }}分</span>

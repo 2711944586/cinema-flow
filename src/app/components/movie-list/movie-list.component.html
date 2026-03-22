@@ -1,8 +1,16 @@
 <div class="cinema-dashboard">
 
   <!-- Hero 区域 -->
-  <section class="hero-section" *ngIf="selectedMovie"
-           [style.backgroundImage]="getBackdropStyle(selectedMovie)">
+  <section class="hero-section" *ngIf="selectedMovie">
+    <img class="hero-bg-media"
+         [src]="getBackdropUrl(selectedMovie)"
+         alt=""
+         aria-hidden="true"
+         loading="eager"
+         fetchpriority="high"
+         decoding="async"
+         referrerpolicy="no-referrer"
+         (error)="onBackdropError($event, selectedMovie)">
     <div class="hero-content">
       <div class="hero-badges">
         <span class="hero-rating"><mat-icon>star</mat-icon> {{ selectedMovie.rating }} 高分神作</span>
@@ -116,7 +124,7 @@
                 (click)="onSelect(movie)">
 
         <div class="card-poster">
-          <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" (error)="onImageError($event, movie)" />
+          <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" decoding="async" referrerpolicy="no-referrer" (error)="onImageError($event, movie)" />
           <div class="poster-gradient"></div>
           <div class="overlay">
             <mat-icon class="play-icon">play_circle_outline</mat-icon>
