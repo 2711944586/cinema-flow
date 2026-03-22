@@ -1,0 +1,167 @@
+<div class="movie-review-wall">
+  <section class="review-hero" *ngIf="featuredReview as review">
+    <div class="hero-copy">
+      <span class="hero-kicker">评论编辑台</span>
+      <h1>影评墙</h1>
+      <p>不再是松散的卡片堆叠，而是更接近内容编辑台的结构。左侧负责筛选与创作，右侧聚焦阅读体验。</p>
+
+      <div class="hero-stats">
+        <div class="stat-pill">
+          <span class="stat-value">{{ totalReviews }}</span>
+          <span class="stat-label">总评论</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-value">{{ averageReviewScore }}</span>
+          <span class="stat-label">平均分</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-value">{{ averageLikes }}</span>
+          <span class="stat-label">平均热度</span>
+        </div>
+      </div>
+    </div>
+
+    <article class="hero-featured">
+      <div class="featured-topline">
+        <span class="featured-kicker">本页焦点影评</span>
+        <span class="featured-score"><mat-icon>star</mat-icon>{{ review.rating }}/10</span>
+      </div>
+      <h2>{{ review.movieTitle }}</h2>
+      <blockquote>{{ review.content }}</blockquote>
+      <div class="featured-footer">
+        <span>{{ review.author }}</span>
+        <span>{{ formatDate(review.createdAt) }}</span>
+        <span>{{ review.likes }} 赞</span>
+      </div>
+    </article>
+  </section>
+
+  <div class="wall-layout">
+    <aside class="wall-sidebar">
+      <mat-card class="filter-panel">
+        <div class="panel-title">
+          <span>筛选与排序</span>
+          <button mat-stroked-button class="compose-toggle" (click)="toggleNewReviewForm()">
+            <mat-icon>{{ showNewReviewForm ? 'close' : 'edit' }}</mat-icon>
+            {{ showNewReviewForm ? '收起' : '写影评' }}
+          </button>
+        </div>
+
+        <mat-form-field appearance="outline" class="cf-select-field">
+          <mat-label>筛选电影</mat-label>
+          <mat-select [(ngModel)]="selectedMovieId" (selectionChange)="onMovieSelect()" panelClass="cf-select-panel">
+            <mat-option [value]="null">全部电影</mat-option>
+            <mat-option *ngFor="let movie of movies" [value]="movie.id">
+              {{ movie.title }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="cf-select-field">
+          <mat-label>排序方式</mat-label>
+          <mat-select [(ngModel)]="sortBy" (selectionChange)="onSortChange()" panelClass="cf-select-panel">
+            <mat-option value="latest">最新发布</mat-option>
+            <mat-option value="highest">最高评分</mat-option>
+            <mat-option value="popular">最多点赞</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </mat-card>
+
+      <mat-card class="compose-panel" [class.is-open]="showNewReviewForm">
+        <div class="compose-preview" *ngIf="selectedComposeMovie as movie">
+          <img [src]="movie.posterUrl" [alt]="movie.title" (error)="onMoviePosterError($event, movie)">
+          <div class="compose-copy">
+            <span class="compose-kicker">当前撰写对象</span>
+            <h2>{{ movie.title }}</h2>
+            <p>{{ movie.director }} · {{ movie.releaseDate | date:'yyyy' }}</p>
+          </div>
+        </div>
+
+        <div class="compose-form" *ngIf="showNewReviewForm">
+          <mat-form-field appearance="outline" class="cf-select-field">
+            <mat-label>选择电影</mat-label>
+            <mat-select [(ngModel)]="newReviewMovieId" panelClass="cf-select-panel">
+              <mat-option *ngFor="let movie of movies" [value]="movie.id">
+                {{ movie.title }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div class="compose-row">
+            <mat-form-field appearance="outline" class="cf-select-field">
+              <mat-label>评分</mat-label>
+              <mat-select [(ngModel)]="newReviewRating" panelClass="cf-select-panel">
+                <mat-option *ngFor="let num of [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]" [value]="num">
+                  {{ num }} 分
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>昵称</mat-label>
+              <input matInput [(ngModel)]="newReviewAuthor" placeholder="请输入昵称">
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline">
+            <mat-label>影评内容</mat-label>
+            <textarea
+              matInput
+              [(ngModel)]="newReviewContent"
+              rows="6"
+              placeholder="写清楚你为什么喜欢，或者它为什么没有达到预期。">
+            </textarea>
+          </mat-form-field>
+
+          <div class="compose-actions">
+            <button mat-stroked-button class="secondary-btn" (click)="cancelReview()">
+              <mat-icon>close</mat-icon>
+              取消
+            </button>
+            <button mat-flat-button class="primary-btn" (click)="submitReview()" [disabled]="!newReviewMovieId || !newReviewContent.trim()">
+              <mat-icon>send</mat-icon>
+              发布影评
+            </button>
+          </div>
+        </div>
+      </mat-card>
+    </aside>
+
+    <section class="review-stage">
+      <div class="review-grid" *ngIf="visibleReviews.length > 0; else emptyState">
+        <article class="review-card" *ngFor="let review of visibleReviews; trackBy: trackByReviewId">
+          <div class="review-card-head">
+            <img [src]="review.posterUrl" [alt]="review.movieTitle" (error)="onReviewPosterError($event, review)">
+            <div class="review-head-copy">
+              <div class="review-title-row">
+                <div>
+                  <span class="review-label">第 {{ review.id }} 则</span>
+                  <h3>{{ review.movieTitle }}</h3>
+                </div>
+                <button mat-icon-button class="like-btn" (click)="toggleLike(review)" [class.liked]="review.liked">
+                  <mat-icon>{{ review.liked ? 'favorite' : 'favorite_border' }}</mat-icon>
+                </button>
+              </div>
+              <div class="review-meta-row">
+                <span class="score-chip"><mat-icon>star</mat-icon>{{ review.rating }}/10</span>
+                <span>{{ review.author }}</span>
+                <span>{{ formatDate(review.createdAt) }}</span>
+                <span>{{ review.likes }} 赞</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="review-content">{{ review.content }}</p>
+        </article>
+      </div>
+
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <mat-icon>forum</mat-icon>
+          <h2>当前条件下没有影评</h2>
+          <p>调整筛选条件，或者直接写下第一条更有观点的评论。</p>
+        </div>
+      </ng-template>
+    </section>
+  </div>
+</div>

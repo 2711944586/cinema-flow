@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Movie } from '../../models/movie';
 import { MovieService } from '../../services/movie.service';
+import { applyMovieImageFallback } from '../../utils/movie-media';
 
 interface DecadeGroup {
   decade: string;
@@ -49,7 +50,7 @@ export class MovieTimelineComponent implements OnInit {
       .sort((a, b) => a.decade.localeCompare(b.decade));
   }
 
-  onImageError(event: Event) {
-    (event.target as HTMLImageElement).style.display = 'none';
+  onImageError(event: Event, movie: Movie) {
+    applyMovieImageFallback(event, movie);
   }
 }

@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { Subscription } from 'rxjs';
 import { Movie } from '../../models/movie';
 import { MovieService } from '../../services/movie.service';
+import { applyMovieImageFallback } from '../../utils/movie-media';
 
 @Component({
   selector: 'app-movie-compare',
@@ -96,7 +97,7 @@ export class MovieCompareComponent implements OnInit, OnDestroy {
     if (!target.closest('.selector-b')) this.dropdownBOpen = false;
   }
 
-  onImageError(event: Event): void {
-    (event.target as HTMLImageElement).style.display = 'none';
+  onImageError(event: Event, movie: Movie): void {
+    applyMovieImageFallback(event, movie);
   }
 }

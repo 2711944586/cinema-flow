@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 import { Movie } from '../../models/movie';
 import { MovieService } from '../../services/movie.service';
 import { RatingLevelPipe } from '../../pipes/rating-level.pipe';
+import { applyMovieImageFallback } from '../../utils/movie-media';
 
 @Component({
   selector: 'app-movie-favorites',
@@ -46,7 +47,7 @@ export class MovieFavoritesComponent implements OnInit, OnDestroy {
     return (this.favorites.reduce((s, m) => s + m.rating, 0) / this.favorites.length).toFixed(1);
   }
 
-  onImageError(event: Event) {
-    (event.target as HTMLImageElement).style.display = 'none';
+  onImageError(event: Event, movie: Movie) {
+    applyMovieImageFallback(event, movie);
   }
 }

@@ -1,62 +1,160 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Movie } from '../models/movie';
 import { MOCK_MOVIES } from '../data/mock-movies';
+import { LoggerService } from './logger.service';
+import { coerceMovieDate, ensureMovieMedia, isGeneratedMovieArt } from '../utils/movie-media';
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
   private readonly moviesSubject = new BehaviorSubject<Movie[]>(
-    MOCK_MOVIES.map(m => ({ ...m }))
+    MOCK_MOVIES.map(m => this.normalizeMovie(m))
   );
 
   readonly movies$ = this.moviesSubject.asObservable();
 
+  constructor(private logger: LoggerService) {
+    this.logger.log('MovieService initialized with ' + this.moviesSubject.value.length + ' movies');
+  }
+
   getMovies(): Movie[] {
-    return this.moviesSubject.value.map(m => ({ ...m }));
+    const movies = this.moviesSubject.value.map(m => this.cloneMovie(m));
+    this.logger.log(`Retrieved ${movies.length} movies`);
+    return movies;
+  }
+
+  // Observable version for Phase 5
+  getMoviesObservable(): Observable<Movie[]> {
+    return this.movies$;
   }
 
   getMovieById(id: number): Movie | undefined {
     const movie = this.moviesSubject.value.find(m => m.id === id);
-    return movie ? { ...movie } : undefined;
+    if (movie) {
+      this.logger.log(`Retrieved movie: ${movie.title}`);
+      return this.cloneMovie(movie);
+    }
+    this.logger.warn(`Movie with id ${id} not found`);
+    return undefined;
+  }
+
+  // Observable version for Phase 5
+  getMovieByIdObservable(id: number): Observable<Movie | undefined> {
+    return of(this.getMovieById(id));
   }
 
   toggleFavorite(id: number): void {
+    const movie = this.moviesSubject.value.find(m => m.id === id);
     const updated = this.moviesSubject.value.map(m =>
-      m.id === id ? { ...m, isFavorite: !m.isFavorite } : m
+      m.id === id ? this.normalizeMovie({ ...m, isFavorite: !m.isFavorite }) : this.cloneMovie(m)
     );
     this.moviesSubject.next(updated);
+    this.logger.log(`${movie?.title} favorite status toggled to ${!movie?.isFavorite}`);
   }
 
   toggleWatched(id: number): void {
+    const movie = this.moviesSubject.value.find(m => m.id === id);
     const updated = this.moviesSubject.value.map(m =>
-      m.id === id ? { ...m, isWatched: !m.isWatched } : m
+      m.id === id ? this.normalizeMovie({ ...m, isWatched: !m.isWatched }) : this.cloneMovie(m)
     );
     this.moviesSubject.next(updated);
+    this.logger.log(`${movie?.title} watched status toggled to ${!movie?.isWatched}`);
   }
 
   setUserRating(id: number, rating: number): void {
+    const movie = this.moviesSubject.value.find(m => m.id === id);
     const updated = this.moviesSubject.value.map(m =>
-      m.id === id ? { ...m, userRating: rating } : m
+      m.id === id ? this.normalizeMovie({ ...m, userRating: rating }) : this.cloneMovie(m)
     );
     this.moviesSubject.next(updated);
+    this.logger.log(`${movie?.title} rated ${rating}/10`);
   }
 
   updateMovie(id: number, changes: Partial<Movie>): void {
+    if (changes.posterUrl !== undefined && !this.hasVerifiedPoster(changes.posterUrl)) {
+      this.logger.warn(`Rejected poster update for movie ${id}: poster must be a verified external image URL`);
+      return;
+    }
+
+    const movie = this.moviesSubject.value.find(m => m.id === id);
     const updated = this.moviesSubject.value.map(m =>
-      m.id === id ? { ...m, ...changes } : m
+      m.id === id ? this.normalizeMovie({ ...m, ...changes }) : this.cloneMovie(m)
     );
     this.moviesSubject.next(updated);
+    this.logger.log(`Updated movie ${movie?.title}: ${JSON.stringify(changes)}`);
   }
 
   setNotes(id: number, notes: string): void {
     this.updateMovie(id, { userNotes: notes });
+    this.logger.log(`Added notes to movie ${id}`);
+  }
+
+  // ==================== CRUD Operations ====================
+  
+  /**
+   * Add a new movie to the collection
+   * Generates a new unique ID automatically
+   */
+  addMovie(movie: Omit<Movie, 'id'>): void {
+    if (!this.hasVerifiedPoster(movie.posterUrl)) {
+      this.logger.warn(`Rejected new movie "${movie.title}": poster must be a verified external image URL`);
+      return;
+    }
+
+    const newId = this.moviesSubject.value.length > 0
+      ? Math.max(...this.moviesSubject.value.map(m => m.id)) + 1
+      : 1;
+    const newMovie: Movie = this.normalizeMovie({ ...movie, id: newId });
+    const updated = [...this.moviesSubject.value.map(m => this.cloneMovie(m)), newMovie];
+    this.moviesSubject.next(updated);
+    this.logger.log(`Added new movie: ${movie.title} (ID: ${newId})`);
+  }
+
+  /**
+   * Delete a movie by ID
+   * Returns true if deletion was successful, false if movie not found
+   */
+  deleteMovie(id: number): boolean {
+    const movie = this.moviesSubject.value.find(m => m.id === id);
+    if (!movie) {
+      this.logger.warn(`Cannot delete: Movie with id ${id} not found`);
+      return false;
+    }
+    const updated = this.moviesSubject.value
+      .filter(m => m.id !== id)
+      .map(m => this.cloneMovie(m));
+    this.moviesSubject.next(updated);
+    this.logger.log(`Deleted movie: ${movie.title} (ID: ${id})`);
+    return true;
+  }
+
+  /**
+   * Update an existing movie with new data
+   * Returns true if update was successful, false if movie not found
+   */
+  updateMovieFull(updatedMovie: Movie): boolean {
+    if (!this.hasVerifiedPoster(updatedMovie.posterUrl)) {
+      this.logger.warn(`Cannot update movie ${updatedMovie.id}: poster must be a verified external image URL`);
+      return false;
+    }
+
+    const index = this.moviesSubject.value.findIndex(m => m.id === updatedMovie.id);
+    if (index === -1) {
+      this.logger.warn(`Cannot update: Movie with id ${updatedMovie.id} not found`);
+      return false;
+    }
+    const updated = this.moviesSubject.value.map(m => this.cloneMovie(m));
+    updated[index] = this.normalizeMovie(updatedMovie);
+    this.moviesSubject.next(updated);
+    this.logger.log(`Fully updated movie: ${updatedMovie.title} (ID: ${updatedMovie.id})`);
+    return true;
   }
 
   getRandomMovie(excludeIds: number[] = []): Movie | undefined {
     const candidates = this.moviesSubject.value.filter(m => !excludeIds.includes(m.id));
     if (candidates.length === 0) return undefined;
-    return { ...candidates[Math.floor(Math.random() * candidates.length)] };
+    return this.cloneMovie(candidates[Math.floor(Math.random() * candidates.length)]);
   }
 
   getFavorites(): Observable<Movie[]> {
@@ -132,5 +230,23 @@ export class MovieService {
       range: r.range,
       count: this.moviesSubject.value.filter(m => m.rating >= r.min && m.rating < r.max).length
     }));
+  }
+
+  private cloneMovie(movie: Movie): Movie {
+    return this.normalizeMovie({ ...movie });
+  }
+
+  private normalizeMovie(movie: Movie): Movie {
+    return ensureMovieMedia({
+      ...movie,
+      releaseDate: coerceMovieDate(movie.releaseDate),
+      genres: [...(movie.genres || [])],
+      cast: movie.cast ? [...movie.cast] : []
+    });
+  }
+
+  private hasVerifiedPoster(url: string | undefined): boolean {
+    const posterUrl = url?.trim() ?? '';
+    return !!posterUrl && /^https?:\/\//i.test(posterUrl) && !isGeneratedMovieArt(posterUrl);
   }
 }

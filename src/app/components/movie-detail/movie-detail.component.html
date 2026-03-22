@@ -1,5 +1,5 @@
 <div class="detail-container" *ngIf="movie">
-  <div class="detail-hero" [style.backgroundImage]="'linear-gradient(to top, #1e1e2e, rgba(30, 30, 46, 0.4)), url(' + movie.backdropUrl + ')'">
+  <div class="detail-hero" [style.backgroundImage]="getBackdropStyle(movie)">
     <div class="video-mockup">
       <mat-icon class="play-icon huge">play_circle</mat-icon>
       <div class="video-overlay-text">官方预告片 · {{ movie.title }}</div>
@@ -8,7 +8,7 @@
 
   <div class="detail-body">
     <aside class="poster-sidebar">
-      <img [src]="movie.posterUrl" [alt]="movie.title" class="main-poster" (error)="onImageError($event)" />
+      <img [src]="movie.posterUrl" [alt]="movie.title" class="main-poster" (error)="onImageError($event, movie)" />
       <div class="action-buttons">
         <button mat-flat-button color="primary" class="full-btn" (click)="toggleFavorite()">
           <mat-icon>{{ movie.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
@@ -99,7 +99,7 @@
         <h3><mat-icon>recommend</mat-icon> 相似推荐</h3>
         <div class="rec-grid">
           <div class="rec-card" *ngFor="let rec of recommendations">
-            <img [src]="rec.posterUrl" [alt]="rec.title" loading="lazy" (error)="onImageError($event)" />
+            <img [src]="rec.posterUrl" [alt]="rec.title" loading="lazy" (error)="onImageError($event, rec)" />
             <div class="rec-info">
               <span class="rec-title">{{ rec.title }}</span>
               <span class="rec-rating"><mat-icon>star</mat-icon> {{ rec.rating }}</span>

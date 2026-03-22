@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Movie } from '../../models/movie';
 import { MovieService } from '../../services/movie.service';
+import { applyMovieImageFallback } from '../../utils/movie-media';
 
 interface GenreSection {
   genre: string;
@@ -54,7 +55,7 @@ export class MovieRecommendationsComponent implements OnInit {
     this.movieService.toggleFavorite(movie.id);
   }
 
-  onImageError(event: Event) {
-    (event.target as HTMLImageElement).style.display = 'none';
+  onImageError(event: Event, movie: Movie) {
+    applyMovieImageFallback(event, movie);
   }
 }

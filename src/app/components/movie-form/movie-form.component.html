@@ -1,0 +1,188 @@
+<div class="movie-form-container">
+  <div class="movie-form-shell">
+    <section class="preview-panel">
+      <div class="preview-backdrop" [style.backgroundImage]="backdropPreviewStyle">
+        <div class="preview-backdrop-overlay">
+          <span class="preview-kicker">{{ movie ? '编辑片库条目' : '新增片库条目' }}</span>
+          <h2>{{ previewMovie.title }}</h2>
+          <p>{{ previewMovie.description }}</p>
+          <div class="preview-chip-row">
+            <span class="preview-chip"><mat-icon>star</mat-icon>{{ previewMovie.rating | number:'1.0-1' }}</span>
+            <span class="preview-chip"><mat-icon>calendar_today</mat-icon>{{ previewMovie.releaseDate | date:'yyyy-MM-dd' }}</span>
+            <span class="preview-chip"><mat-icon>schedule</mat-icon>{{ previewMovie.duration }} 分钟</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-poster-card">
+        <div class="preview-poster-frame" [class.is-empty]="!posterPreviewUrl">
+          <img *ngIf="posterPreviewUrl; else posterPlaceholder" [src]="posterPreviewUrl" [alt]="previewMovie.title" (error)="onPosterError($event)">
+          <ng-template #posterPlaceholder>
+            <div class="poster-placeholder">
+              <mat-icon>verified</mat-icon>
+              <strong>等待真实海报</strong>
+              <span>只有通过真实电影校验后才会写入片库</span>
+            </div>
+          </ng-template>
+        </div>
+        <div class="poster-info">
+          <div class="poster-meta">
+            <span class="poster-status" [class.is-auto]="isUsingAutoPoster">
+              {{ posterStatusLabel }}
+            </span>
+            <span class="poster-status" [class.is-auto]="isUsingAutoBackdrop">
+              {{ backdropStatusLabel }}
+            </span>
+          </div>
+          <h3>{{ previewMovie.title }}</h3>
+          <p class="poster-director">{{ previewMovie.director }}</p>
+          <p class="poster-cast">主演：{{ castPreview }}</p>
+          <div class="poster-tags">
+            <span *ngFor="let genre of genrePreview">{{ genre }}</span>
+          </div>
+          <div class="auto-note">
+            <mat-icon [class.is-loading]="artworkState === 'loading'">
+              {{ artworkState === 'loading' ? 'sync' : 'photo_library' }}
+            </mat-icon>
+            {{ artworkHintText }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <mat-card class="movie-form-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>{{ movie ? 'edit' : 'add_circle' }}</mat-icon>
+          {{ movie ? '统一风格编辑电影' : '添加电影到片库' }}
+        </mat-card-title>
+        <mat-card-subtitle>
+          所有字段将同步到探索页、详情页、对比页与新功能模块，保证视觉和数据一致。
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form #form="ngForm" (ngSubmit)="onSubmit()" class="movie-form">
+          <div class="form-section">
+            <div class="section-heading">
+              <span class="section-index">01</span>
+              <div>
+                <h3>基本信息</h3>
+                <p>建立影片的核心身份与内容调性。</p>
+              </div>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>电影名称</mat-label>
+              <input matInput name="title" [(ngModel)]="formData.title" (ngModelChange)="onArtworkSeedChange()" required placeholder="例如：沙丘 2 / Dune: Part Two">
+            </mat-form-field>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>导演</mat-label>
+                <input matInput name="director" [(ngModel)]="formData.director" (ngModelChange)="onArtworkSeedChange()" required placeholder="导演姓名">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>语言</mat-label>
+                <input matInput name="language" [(ngModel)]="formData.language" placeholder="英语 / 中文 / 日语">
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>上映日期</mat-label>
+                <input matInput type="date" name="releaseDate" [(ngModel)]="formData.releaseDate" (ngModelChange)="onArtworkSeedChange()" required>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>片长(分钟)</mat-label>
+                <input matInput type="number" name="duration" [(ngModel)]="formData.duration" min="1" required>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>类型标签</mat-label>
+              <input matInput name="genres" [(ngModel)]="formData.genres" placeholder="科幻, 剧情, 冒险">
+            </mat-form-field>
+          </div>
+
+          <div class="form-section">
+            <div class="section-heading">
+              <span class="section-index">02</span>
+              <div>
+                <h3>电影观感</h3>
+                <p>统一评分、状态与主演信息的展示口径。</p>
+              </div>
+            </div>
+
+            <div class="rating-panel">
+              <div class="rating-copy">
+                <span class="rating-label">影片评分</span>
+                <strong>{{ formData.rating | number:'1.0-1' }}/10</strong>
+              </div>
+              <mat-slider min="0" max="10" step="0.1" discrete>
+                <input matSliderThumb name="rating" [(ngModel)]="formData.rating">
+              </mat-slider>
+            </div>
+
+            <mat-checkbox name="isWatched" [(ngModel)]="formData.isWatched" color="primary">
+              这部电影已经看过
+            </mat-checkbox>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>演员列表</mat-label>
+              <textarea matInput name="cast" [(ngModel)]="formData.cast" rows="3" placeholder="主演1, 主演2, 主演3"></textarea>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>电影简介</mat-label>
+              <textarea matInput name="description" [(ngModel)]="formData.description" rows="5" placeholder="写下剧情简介、风格特征或你希望在详情页中呈现的内容。"></textarea>
+            </mat-form-field>
+          </div>
+
+          <div class="form-section">
+            <div class="section-heading">
+              <span class="section-index">03</span>
+              <div>
+                <h3>媒体资源</h3>
+                <p>海报仅允许使用系统校验到的真实电影海报；背景图仍可按需补充。</p>
+              </div>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>背景图 URL</mat-label>
+              <input
+                matInput
+                name="backdropUrl"
+                [(ngModel)]="formData.backdropUrl"
+                placeholder="留空则保留统一背景主视觉"
+                type="url">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>预告片 URL</mat-label>
+              <input matInput name="trailerUrl" [(ngModel)]="formData.trailerUrl" placeholder="YouTube 或视频地址" type="url">
+            </mat-form-field>
+          </div>
+
+          <div class="validation-banner" *ngIf="posterValidationMessage">
+            <mat-icon>error</mat-icon>
+            <span>{{ posterValidationMessage }}</span>
+          </div>
+
+          <div class="form-actions">
+            <button mat-stroked-button type="button" class="secondary-btn" (click)="onCancel()">
+              <mat-icon>close</mat-icon>
+              取消
+            </button>
+            <button mat-flat-button type="submit" class="primary-btn" [disabled]="isSubmitting || !form.valid || !formData.title.trim() || !formData.director.trim()">
+              <mat-icon>save</mat-icon>
+              {{ isSubmitting ? '保存中' : (movie ? '保存本次升级' : '加入片库') }}
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

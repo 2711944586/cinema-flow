@@ -2,7 +2,7 @@
 
   <!-- Hero 区域 -->
   <section class="hero-section" *ngIf="selectedMovie"
-           [style.backgroundImage]="'linear-gradient(to top, #0f0f17 10%, rgba(15, 15, 23, 0.4) 60%), url(' + selectedMovie.backdropUrl + ')'">
+           [style.backgroundImage]="getBackdropStyle(selectedMovie)">
     <div class="hero-content">
       <div class="hero-badges">
         <span class="hero-rating"><mat-icon>star</mat-icon> {{ selectedMovie.rating }} 高分神作</span>
@@ -29,6 +29,10 @@
       <div class="hero-actions">
         <button mat-flat-button color="primary" class="play-btn" (click)="openDetail()">
           <mat-icon>play_arrow</mat-icon> 观看预告片与详情
+        </button>
+        <button mat-stroked-button class="action-btn edit-btn" (click)="openEditSelectedMovie()">
+          <mat-icon>edit</mat-icon>
+          编辑当前电影
         </button>
         <button mat-stroked-button class="action-btn" (click)="toggleFavorite($event, selectedMovie)">
           <mat-icon>{{ selectedMovie.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
@@ -88,6 +92,11 @@
           </div>
         </div>
       </div>
+
+      <button mat-raised-button color="primary" class="add-movie-btn" (click)="openAddForm()">
+        <mat-icon>add</mat-icon>
+        添加电影
+      </button>
     </div>
 
     <!-- 电影网格 -->
@@ -107,7 +116,7 @@
                 (click)="onSelect(movie)">
 
         <div class="card-poster">
-          <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" (error)="onImageError($event)" />
+          <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" (error)="onImageError($event, movie)" />
           <div class="poster-gradient"></div>
           <div class="overlay">
             <mat-icon class="play-icon">play_circle_outline</mat-icon>
@@ -122,6 +131,18 @@
           </button>
           <div class="watched-indicator" *ngIf="movie.isWatched" matTooltip="已观影">
             <mat-icon>check_circle</mat-icon>
+          </div>
+          
+          <!-- Action buttons overlay -->
+          <div class="card-actions">
+            <button mat-mini-fab color="accent" class="action-btn" 
+                    (click)="openEditForm($event, movie)" matTooltip="编辑">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-mini-fab color="warn" class="action-btn" 
+                    (click)="deleteMovie($event, movie)" matTooltip="删除">
+              <mat-icon>delete</mat-icon>
+            </button>
           </div>
         </div>
 
@@ -149,5 +170,16 @@
       <mat-icon>close</mat-icon>
     </button>
     <app-movie-detail [movie]="selectedMovie"></app-movie-detail>
+  </div>
+</div>
+
+<!-- 添加/编辑电影表单模态框 -->
+<div class="modal-overlay" *ngIf="showAddForm" (click)="closeAddForm()">
+  <div class="modal-content form-modal" (click)="$event.stopPropagation()">
+    <app-movie-form
+      [movie]="editingMovie"
+      (submitted)="onMovieSubmitted($event)"
+      (cancelled)="closeAddForm()">
+    </app-movie-form>
   </div>
 </div>

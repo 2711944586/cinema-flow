@@ -14,7 +14,7 @@
     <div class="scroll-row">
       <div class="rec-card" *ngFor="let movie of dir.movies">
         <div class="rec-poster">
-          <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" (error)="onImageError($event)" />
+          <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" (error)="onImageError($event, movie)" />
           <div class="rec-rating"><mat-icon>star</mat-icon> {{ movie.rating }}</div>
           <button class="rec-fav" [class.active]="movie.isFavorite" (click)="toggleFavorite(movie)" matTooltip="收藏">
             <mat-icon>{{ movie.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
@@ -38,7 +38,7 @@
     <div class="scroll-row">
       <div class="rec-card" *ngFor="let movie of section.movies">
         <div class="rec-poster">
-          <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" (error)="onImageError($event)" />
+          <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" (error)="onImageError($event, movie)" />
           <div class="rec-rating"><mat-icon>star</mat-icon> {{ movie.rating }}</div>
           <button class="rec-fav" [class.active]="movie.isFavorite" (click)="toggleFavorite(movie)" matTooltip="收藏">
             <mat-icon>{{ movie.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>

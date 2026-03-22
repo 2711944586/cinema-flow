@@ -10,11 +10,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { Movie } from '../../models/movie';
 import { MovieService } from '../../services/movie.service';
 import { MovieDetailComponent } from '../movie-detail/movie-detail.component';
+import { MovieFormComponent } from '../movie-form/movie-form.component';
 import { RatingLevelPipe } from '../../pipes/rating-level.pipe';
+import { applyMovieImageFallback, buildBackdropImage } from '../../utils/movie-media';
 
 @Component({
   selector: 'app-movie-list',
@@ -31,7 +35,10 @@ import { RatingLevelPipe } from '../../pipes/rating-level.pipe';
     MatTooltipModule,
     MatFormFieldModule,
     MatBadgeModule,
+    MatSnackBarModule,
+    MatDialogModule,
     MovieDetailComponent,
+    MovieFormComponent,
     RatingLevelPipe
   ],
   templateUrl: './movie-list.component.html',
@@ -50,6 +57,8 @@ export class MovieListComponent implements OnInit, OnDestroy {
   showOnlyWatched = false;
 
   showDetailModal = false;
+  showAddForm = false;
+  editingMovie?: Movie;
   genreDropdownOpen = false;
   sortDropdownOpen = false;
 
@@ -65,7 +74,11 @@ export class MovieListComponent implements OnInit, OnDestroy {
 
   private sub?: Subscription;
 
-  constructor(private movieService: MovieService) {}
+  constructor(
+    private movieService: MovieService,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     this.sub = this.movieService.movies$.subscribe(movies => {
@@ -154,6 +167,98 @@ export class MovieListComponent implements OnInit, OnDestroy {
     this.movieService.toggleWatched(movie.id);
   }
 
+  /**
+   * Delete a movie from the collection
+   */
+  deleteMovie(event: Event, movie: Movie): void {
+    event.stopPropagation();
+    
+    const confirmed = confirm(`确定要删除电影《${movie.title}》吗？\n\n此操作不可撤销!`);
+    if (confirmed) {
+      const success = this.movieService.deleteMovie(movie.id);
+      if (success) {
+        this.snackBar.open(`已删除：${movie.title}`, '关闭', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+        
+        // Clear selection if deleted movie was selected
+        if (this.selectedMovie?.id === movie.id) {
+          this.selectedMovie = undefined;
+        }
+      } else {
+        this.snackBar.open('删除失败：电影不存在', '关闭', {
+          duration: 3000
+        });
+      }
+    }
+  }
+
+  /**
+   * Open the add movie form
+   */
+  openAddForm(): void {
+    this.editingMovie = undefined;
+    this.showAddForm = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  openEditSelectedMovie(): void {
+    if (!this.selectedMovie) {
+      return;
+    }
+
+    this.editingMovie = this.selectedMovie;
+    this.showAddForm = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  /**
+   * Close the add/edit form
+   */
+  closeAddForm(): void {
+    this.showAddForm = false;
+    this.editingMovie = undefined;
+    document.body.style.overflow = 'auto';
+  }
+
+  /**
+   * Handle form submission for adding/editing movie
+   */
+  onMovieSubmitted(movieData: Omit<Movie, 'id'>): void {
+    if (this.editingMovie) {
+      // Edit mode - update existing movie
+      const success = this.movieService.updateMovieFull({ ...this.editingMovie, ...movieData });
+      if (success) {
+        this.snackBar.open(`已更新：${movieData.title}`, '关闭', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+      }
+    } else {
+      // Add mode - create new movie
+      this.movieService.addMovie(movieData);
+      this.snackBar.open(`已添加：${movieData.title}`, '关闭', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom'
+      });
+    }
+    this.closeAddForm();
+  }
+
+  /**
+   * Open edit form for a movie
+   */
+  openEditForm(event: Event, movie: Movie): void {
+    event.stopPropagation();
+    this.editingMovie = movie;
+    this.showAddForm = true;
+    document.body.style.overflow = 'hidden';
+  }
+
   toggleFavoritesFilter() {
     this.showOnlyFavorites = !this.showOnlyFavorites;
     this.applyFilters();
@@ -214,8 +319,11 @@ export class MovieListComponent implements OnInit, OnDestroy {
     return this.movies.filter(m => m.isWatched).length;
   }
 
-  onImageError(event: Event) {
-    const img = event.target as HTMLImageElement;
-    img.style.display = 'none';
+  getBackdropStyle(movie: Movie): string {
+    return buildBackdropImage(movie);
+  }
+
+  onImageError(event: Event, movie: Movie) {
+    applyMovieImageFallback(event, movie);
   }
 }

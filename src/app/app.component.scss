@@ -2,45 +2,50 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #0f0f17;
+  background: transparent;
 }
 
 .app-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(15, 15, 23, 0.85);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  background: rgba(7, 9, 16, 0.78);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--cf-border);
 
   .header-content {
-    max-width: 1400px;
+    max-width: 1440px;
     margin: 0 auto;
     padding: 14px 32px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 18px;
   }
 
   .brand {
     display: flex;
     align-items: center;
     gap: 14px;
+    min-width: 220px;
 
     .brand-icon {
       position: relative;
-      font-size: 32px;
-      line-height: 1;
+      width: 48px;
+      height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      background: rgba(231, 185, 93, 0.08);
+      border: 1px solid rgba(231, 185, 93, 0.18);
+      font-size: 24px;
 
       .icon-glow {
         position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 40px;
-        height: 40px;
-        transform: translate(-50%, -50%);
-        background: radial-gradient(circle, rgba(139, 92, 246, 0.4), transparent);
-        border-radius: 50%;
+        inset: -8px;
+        background: radial-gradient(circle, rgba(231, 185, 93, 0.35), transparent 68%);
+        border-radius: 24px;
         animation: headerGlow 3s ease-in-out infinite;
       }
     }
@@ -48,60 +53,69 @@
     .brand-text {
       h1 {
         margin: 0;
-        font-size: 22px;
+        font-size: 24px;
         font-weight: 700;
-        letter-spacing: 1px;
-        background: linear-gradient(135deg, #a78bfa, #818cf8, #c084fc);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        letter-spacing: 0.06em;
+        color: var(--cf-text-primary);
+        font-family: var(--cf-font-display);
       }
 
       .brand-subtitle {
         font-size: 11px;
-        color: #64748b;
-        letter-spacing: 1.5px;
+        color: var(--cf-text-muted);
+        letter-spacing: 0.2em;
         text-transform: uppercase;
       }
     }
   }
 
-  /* 主导航栏样式 */
   .main-nav {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.04);
     padding: 6px;
-    border-radius: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
 
     .nav-link {
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 8px 20px;
-      color: #94a3b8;
+      padding: 8px 16px;
+      color: var(--cf-text-secondary);
       text-decoration: none;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
-      border-radius: 20px;
-      transition: all 0.3s ease;
+      border-radius: 999px;
+      transition: all 0.24s ease;
+      white-space: nowrap;
 
       mat-icon {
         font-size: 18px;
-        width: 18px; height: 18px;
+        width: 18px;
+        height: 18px;
       }
 
       &:hover {
-        color: #e2e8f0;
-        background: rgba(255, 255, 255, 0.1);
+        color: var(--cf-text-primary);
+        background: rgba(255, 255, 255, 0.08);
       }
 
       &.active-link {
-        color: #fff;
-        background: #8b5cf6;
-        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        color: #111827;
+        background: linear-gradient(135deg, var(--cf-gold), #f1d39a);
+        box-shadow: 0 8px 20px rgba(231, 185, 93, 0.24);
+
+        mat-icon {
+          color: #111827;
+        }
       }
     }
   }
@@ -112,17 +126,17 @@
     gap: 16px;
 
     .user-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
       overflow: hidden;
-      border: 2px solid rgba(139, 92, 246, 0.5);
+      border: 1px solid rgba(231, 185, 93, 0.3);
       cursor: pointer;
-      transition: transform 0.3s ease;
+      transition: transform 0.24s ease, border-color 0.24s ease;
 
       &:hover {
-        transform: scale(1.1);
-        border-color: #c084fc;
+        transform: translateY(-1px) scale(1.03);
+        border-color: rgba(231, 185, 93, 0.52);
       }
 
       img {
@@ -131,28 +145,53 @@
         object-fit: cover;
       }
     }
-
-    .version-tag {
-      font-size: 11px;
-      color: #64748b;
-      padding: 4px 12px;
-      border: 1px solid rgba(100, 116, 139, 0.2);
-      border-radius: 20px;
-      letter-spacing: 0.5px;
-    }
   }
 }
 
 .app-content {
   flex: 1;
-  max-width: 1400px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 28px 32px;
+  padding: 28px 32px 36px;
   width: 100%;
   box-sizing: border-box;
 }
 
 @keyframes headerGlow {
-  0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
-  50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.2); }
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.08);
+  }
+}
+
+@media (max-width: 1100px) {
+  .app-header .header-content {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .app-header .brand {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-content {
+    padding: 20px 16px 28px;
+  }
+
+  .app-header .header-content {
+    padding: 12px 16px;
+  }
+
+  .app-header .main-nav {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }

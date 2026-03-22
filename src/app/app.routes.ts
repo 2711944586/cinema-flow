@@ -6,6 +6,8 @@ import { MovieTimelineComponent } from './components/movie-timeline/movie-timeli
 import { MovieRecommendationsComponent } from './components/movie-recommendations/movie-recommendations.component';
 import { MovieRandomComponent } from './components/movie-random/movie-random.component';
 import { MovieCompareComponent } from './components/movie-compare/movie-compare.component';
+import { MovieCalendarComponent } from './components/movie-calendar/movie-calendar.component';
+import { MovieReviewWallComponent } from './components/movie-review-wall/movie-review-wall.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/explore', pathMatch: 'full' },
@@ -16,5 +18,7 @@ export const routes: Routes = [
   { path: 'recommendations', component: MovieRecommendationsComponent },
   { path: 'random', component: MovieRandomComponent },
   { path: 'compare', component: MovieCompareComponent },
+  { path: 'calendar', component: MovieCalendarComponent },
+  { path: 'reviews', component: MovieReviewWallComponent },
   { path: '**', redirectTo: '/explore' }
 ];

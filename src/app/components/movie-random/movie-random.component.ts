@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Movie } from '../../models/movie';
 import { MovieService } from '../../services/movie.service';
+import { applyMovieImageFallback } from '../../utils/movie-media';
 
 @Component({
   selector: 'app-movie-random',
@@ -46,7 +47,7 @@ export class MovieRandomComponent {
     }
   }
 
-  onImageError(event: Event): void {
-    (event.target as HTMLImageElement).style.display = 'none';
+  onImageError(event: Event, movie: Movie): void {
+    applyMovieImageFallback(event, movie);
   }
 }

@@ -1,65 +1,161 @@
-/* ===== CinemaFlow 全局样式 ===== */
+/* ===== CinemaFlow 全局主题 ===== */
 
-/* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
-/* CSS Reset & Dark Theme Foundation */
+:root {
+  --cf-font-sans: 'Outfit', 'Noto Sans SC', sans-serif;
+  --cf-font-display: 'Noto Serif SC', 'Noto Sans SC', serif;
+  --cf-bg: #080b12;
+  --cf-bg-elevated: #0d111b;
+  --cf-surface: rgba(12, 16, 25, 0.92);
+  --cf-surface-elevated: linear-gradient(180deg, rgba(17, 22, 34, 0.94), rgba(11, 15, 24, 0.92));
+  --cf-border: rgba(255, 255, 255, 0.08);
+  --cf-border-strong: rgba(231, 185, 93, 0.22);
+  --cf-text-primary: #f7f2eb;
+  --cf-text-secondary: #c4bdb2;
+  --cf-text-muted: #877f74;
+  --cf-gold: #e7b95d;
+  --cf-gold-soft: rgba(231, 185, 93, 0.12);
+  --cf-crimson: #d35f5f;
+  --cf-indigo: #5661d8;
+  --cf-success: #4ad395;
+  --cf-shadow: 0 30px 90px rgba(0, 0, 0, 0.32);
+}
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
 }
 
 body {
-  font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;
-  background: #0f0f17;
-  color: #e2e8f0;
+  font-family: var(--cf-font-sans);
+  background:
+    radial-gradient(circle at top, rgba(231, 185, 93, 0.08), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(86, 97, 216, 0.08), transparent 26%),
+    linear-gradient(180deg, #05070d 0%, #080b12 60%, #070910 100%);
+  color: var(--cf-text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-/* ===== 深色主题覆盖 Angular Material ===== */
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
 
-/* Mat-Card 深色样式 */
+a {
+  color: inherit;
+}
+
 .mat-mdc-card {
-  --mdc-elevated-card-container-color: rgba(30, 30, 46, 0.7);
-  --mdc-outlined-card-container-color: rgba(30, 30, 46, 0.7);
-  --mdc-outlined-card-outline-color: rgba(139, 92, 246, 0.15);
-  color: #e2e8f0;
+  --mdc-elevated-card-container-color: rgba(17, 22, 34, 0.82);
+  --mdc-outlined-card-container-color: rgba(17, 22, 34, 0.82);
+  --mdc-outlined-card-outline-color: var(--cf-border);
+  color: var(--cf-text-primary);
 }
 
-/* Mat-Form-Field 深色样式 */
 .mat-mdc-form-field {
-  --mdc-filled-text-field-container-color: rgba(139, 92, 246, 0.05);
-  --mdc-outlined-text-field-outline-color: rgba(139, 92, 246, 0.25);
-  --mdc-outlined-text-field-focus-outline-color: #a78bfa;
-  --mdc-outlined-text-field-hover-outline-color: rgba(139, 92, 246, 0.4);
-  --mdc-outlined-text-field-label-text-color: #94a3b8;
-  --mdc-outlined-text-field-focus-label-text-color: #a78bfa;
-  --mdc-outlined-text-field-input-text-color: #e2e8f0;
+  --mdc-filled-text-field-container-color: rgba(255, 255, 255, 0.03);
+  --mdc-outlined-text-field-outline-color: rgba(255, 255, 255, 0.12);
+  --mdc-outlined-text-field-focus-outline-color: var(--cf-gold);
+  --mdc-outlined-text-field-hover-outline-color: rgba(231, 185, 93, 0.4);
+  --mdc-outlined-text-field-label-text-color: var(--cf-text-muted);
+  --mdc-outlined-text-field-focus-label-text-color: var(--cf-gold);
+  --mdc-outlined-text-field-input-text-color: var(--cf-text-primary);
+  --mat-select-enabled-trigger-text-color: var(--cf-text-primary);
+  --mat-select-enabled-arrow-color: var(--cf-text-muted);
 }
 
-/* Mat-Progress-Bar 深色样式 */
+.cf-select-field {
+  --mdc-outlined-text-field-container-shape: 22px;
+  --mdc-outlined-text-field-outline-width: 1px;
+  --mdc-outlined-text-field-focus-outline-width: 1px;
+
+  .mat-mdc-text-field-wrapper {
+    background: rgba(30, 30, 46, 0.5);
+    backdrop-filter: blur(10px);
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .mat-mdc-form-field-infix {
+    min-height: 44px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .mat-mdc-select-arrow svg {
+    fill: #64748b;
+  }
+
+  &:hover .mat-mdc-text-field-wrapper {
+    background: rgba(30, 30, 46, 0.68);
+  }
+
+  &.mat-focused .mat-mdc-text-field-wrapper {
+    box-shadow: 0 0 0 3px rgba(231, 185, 93, 0.08);
+  }
+}
+
+.cf-select-panel.mat-mdc-select-panel {
+  padding: 6px;
+  border-radius: 14px !important;
+  border: 1px solid rgba(231, 185, 93, 0.2);
+  background: rgba(28, 28, 46, 0.98) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+}
+
+.cf-select-panel .mat-mdc-option {
+  min-height: 40px;
+  border-radius: 8px;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.cf-select-panel .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background: rgba(231, 185, 93, 0.1);
+}
+
+.cf-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background: rgba(231, 185, 93, 0.15);
+}
+
+.cf-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
+  color: var(--cf-gold);
+  font-weight: 500;
+}
+
 .mat-mdc-progress-bar {
-  --mdc-linear-progress-active-indicator-color: #34d399;
-  --mdc-linear-progress-track-color: rgba(52, 211, 153, 0.1);
+  --mdc-linear-progress-active-indicator-color: var(--cf-success);
+  --mdc-linear-progress-track-color: rgba(74, 211, 149, 0.12);
 }
 
-/* Icon 颜色 */
 .mat-icon {
-  color: #94a3b8;
+  color: var(--cf-text-secondary);
 }
 
-/* ===== 全局动画 ===== */
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: rgba(10, 13, 21, 0.96);
+  --mdc-snackbar-supporting-text-color: var(--cf-text-primary);
+  --mat-snack-bar-button-color: var(--cf-gold);
+}
 
-/* 页面入场动画 */
+.mat-mdc-tooltip {
+  --mdc-plain-tooltip-container-color: rgba(7, 9, 16, 0.96);
+  --mdc-plain-tooltip-supporting-text-color: var(--cf-text-primary);
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -71,10 +167,9 @@ body {
   }
 }
 
-/* 全局滚动条样式 */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
@@ -82,16 +177,15 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.25);
-  border-radius: 3px;
+  background: rgba(231, 185, 93, 0.22);
+  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.4);
+  background: rgba(231, 185, 93, 0.4);
 }
 
-/* ===== 全局选中样式 ===== */
 ::selection {
-  background: rgba(139, 92, 246, 0.35);
+  background: rgba(231, 185, 93, 0.28);
   color: #fff;
 }

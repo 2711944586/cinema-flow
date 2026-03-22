@@ -1,0 +1,159 @@
+<div class="movie-calendar" *ngIf="calendarData as data">
+  <section class="calendar-header">
+    <div class="header-copy">
+      <span class="header-kicker">观影排期</span>
+      <h1>{{ data.year }} 年 {{ data.monthName }}</h1>
+      <p>以主探索页的电影化语言重组观影日历。点击有内容的日期，右侧会切换到当日影片详情，不再依赖悬停提示。</p>
+    </div>
+
+    <div class="header-stats">
+      <div class="stat-card">
+        <span class="stat-label">当月观影</span>
+        <strong>{{ monthMovieCount }}</strong>
+        <span class="stat-meta">已标记为看过的影片数</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">平均评分</span>
+        <strong>{{ monthAverageRating }}</strong>
+        <span class="stat-meta">当月影片整体口碑</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">总片长</span>
+        <strong>{{ monthWatchHours }}h</strong>
+        <span class="stat-meta">按片长累计的沉浸时间</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="calendar-toolbar">
+    <div class="toolbar-panel">
+      <button mat-icon-button (click)="changeMonth(-1)" aria-label="上一月">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+
+      <mat-form-field appearance="outline" class="cf-select-field">
+        <mat-label>月份</mat-label>
+        <mat-select [(ngModel)]="selectedMonth" (selectionChange)="onMonthChange()" panelClass="cf-select-panel">
+          <mat-option *ngFor="let month of months; let i = index" [value]="i">
+            {{ month }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="cf-select-field">
+        <mat-label>年份</mat-label>
+        <mat-select [(ngModel)]="selectedYear" (selectionChange)="onYearChange()" panelClass="cf-select-panel">
+          <mat-option *ngFor="let year of years" [value]="year">
+            {{ year }} 年
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-icon-button (click)="changeMonth(1)" aria-label="下一月">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+
+    <div class="toolbar-summary" *ngIf="monthFeaturedMovie as movie">
+      <span class="summary-label">本月焦点</span>
+      <span class="summary-title">{{ movie.title }}</span>
+      <span class="summary-meta">{{ movie.rating }}/10 · {{ movie.director }}</span>
+    </div>
+  </section>
+
+  <div class="calendar-layout">
+    <mat-card class="calendar-board">
+      <div class="weekday-row">
+        <span *ngFor="let weekday of weekDays">{{ weekday }}</span>
+      </div>
+
+      <div class="calendar-grid">
+        <button
+          type="button"
+          class="calendar-day"
+          *ngFor="let day of data.days"
+          [class.current-month]="day.isCurrentMonth"
+          [class.has-movies]="day.movies.length > 0"
+          [class.is-selected]="selectedDay && selectedDay.date.getTime() === day.date.getTime()"
+          [class.is-today]="day.isToday"
+          (click)="selectDay(day)">
+          <div class="day-topline">
+            <span class="day-number">{{ day.dayOfMonth }}</span>
+            <span class="day-count" *ngIf="day.movies.length">{{ day.movies.length }} 部</span>
+          </div>
+
+          <div class="day-stack" *ngIf="day.movies.length > 0">
+            <img
+              *ngFor="let movie of day.movies.slice(0, 3); trackBy: trackByMovieId"
+              [src]="movie.posterUrl"
+              [alt]="movie.title"
+              (error)="onImageError($event, movie)">
+          </div>
+
+          <div class="day-caption" *ngIf="day.movies.length > 0">
+            {{ day.movies[0].title }}
+          </div>
+        </button>
+      </div>
+    </mat-card>
+
+    <div class="calendar-side">
+      <mat-card class="selected-day-panel" *ngIf="selectedDay as day; else monthEmptyState">
+        <div class="panel-header">
+          <div>
+            <span class="panel-kicker">当日片单</span>
+            <h2>{{ day.date | date:'M月d日' }}</h2>
+          </div>
+          <span class="panel-count">{{ day.movies.length }} 部</span>
+        </div>
+
+        <div class="selected-movie-list">
+          <article class="selected-movie-card" *ngFor="let movie of selectedDayMovies; trackBy: trackByMovieId">
+            <img [src]="movie.posterUrl" [alt]="movie.title" (error)="onImageError($event, movie)">
+            <div class="selected-movie-copy">
+              <div class="movie-title-row">
+                <h3>{{ movie.title }}</h3>
+                <span class="movie-rating"><mat-icon>star</mat-icon>{{ movie.rating }}</span>
+              </div>
+              <p>{{ movie.description }}</p>
+              <div class="movie-meta">
+                <span>{{ movie.director }}</span>
+                <span>{{ movie.duration }} 分钟</span>
+                <span *ngIf="movie.language">{{ movie.language }}</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </mat-card>
+
+      <ng-template #monthEmptyState>
+        <mat-card class="selected-day-panel empty-panel">
+          <mat-icon>event_busy</mat-icon>
+          <h2>这个月没有已观影条目</h2>
+          <p>当前默认会优先聚焦有数据的月份。切换年份或月份后，如果没有影片，也会明确展示为空状态。</p>
+        </mat-card>
+      </ng-template>
+
+      <mat-card class="heatmap-panel">
+        <div class="panel-header compact">
+          <div>
+            <span class="panel-kicker">年度分布</span>
+            <h2>{{ selectedYear }} 年月度分布</h2>
+          </div>
+        </div>
+
+        <div class="heatmap-grid">
+          <div
+            class="heatmap-cell"
+            *ngFor="let cell of monthHeatCells"
+            [ngClass]="cell.level"
+            [matTooltip]="cell.label + '：' + cell.count + ' 部，均分 ' + cell.averageRating + '，总片长 ' + cell.totalDuration + ' 分钟'">
+            <span>{{ cell.label }}</span>
+            <strong>{{ cell.count }}</strong>
+            <small *ngIf="cell.count > 0">均分 {{ cell.averageRating }}</small>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>
