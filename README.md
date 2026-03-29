@@ -144,6 +144,49 @@ npm run build
 npm run test -- --watch=false
 ```
 
+## 提交要求对应说明
+
+### 1. 完整可运行的项目代码
+
+- 当前仓库包含完整 Angular 项目源码，可直接执行 `npm install`、`npm start`
+- 路由、页面、服务、样式与本地状态管理已全部在仓库中
+- 详细实现说明见 [docs/SUBMISSION.md](docs/SUBMISSION.md)
+
+### 2. 截图展示各页面路由切换效果
+
+建议将截图统一放到 `docs/screenshots/` 目录，并在提交材料中至少包含以下页面：
+
+| 建议文件名 | 页面 |
+|------|------|
+| `dashboard.png` | `/dashboard` |
+| `movies.png` | `/movies` |
+| `movies-query.png` | `/movies?search=inception&genre=科幻&sort=toprated` |
+| `movie-info.png` | `/movies/1/info` |
+| `movie-cast.png` | `/movies/1/cast` |
+| `add.png` | `/add` |
+| `about.png` | `/about` |
+| `explore.png` | `/explore` |
+| `command-palette.png` | 快速跳转面板 |
+| `recent-history.png` | 最近浏览区域 |
+| `data-management.png` | 数据备份与恢复区域 |
+
+### 3. 路由配置关键代码位置
+
+核心代码位置如下：
+
+- [src/app/app.routes.ts](src/app/app.routes.ts)
+  - 定义应用主路由、懒加载页面、详情子路由、404 重定向
+- [src/app/app.config.ts](src/app/app.config.ts)
+  - 注册 `provideRouter(...)`，启用组件输入绑定与滚动恢复
+- [src/app/app.component.html](src/app/app.component.html)
+  - 定义全局 App Shell、顶部导航、导航高亮入口、`router-outlet`
+- [src/app/components/breadcrumb/breadcrumb.component.ts](src/app/components/breadcrumb/breadcrumb.component.ts)
+  - 根据当前路由动态生成面包屑
+- [src/app/pages/movie-list-page/movie-list-page.component.ts](src/app/pages/movie-list-page/movie-list-page.component.ts)
+  - 处理 `/movies` 的查询参数同步与列表视图逻辑
+- [src/app/pages/movie-detail-page/movie-detail-page.component.ts](src/app/pages/movie-detail-page/movie-detail-page.component.ts)
+  - 处理 `/movies/:id` 父级详情上下文、上一部/下一部、删除与子页切换
+
 ## 已验证情况
 
 - `npm run build`：已通过
