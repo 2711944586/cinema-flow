@@ -2,6 +2,26 @@
 
 CinemaFlow 是一个基于 Angular 17 Standalone Components 构建的电影库管理系统，采用深色玻璃态界面、金色高光和电影化卡片语言，覆盖电影浏览、详情查看、收藏管理、随机选片、时间线、日历、影评、数据备份与恢复等完整场景。
 
+![CinemaFlow Dashboard Preview](docs/screenshots/dashboard.png)
+
+## 快速导航
+
+- [当前版本概览](#当前版本概览)
+- [主要功能](#主要功能)
+- [路由地图](#路由地图)
+- [数据与媒体策略](#数据与媒体策略)
+- [目录结构](#目录结构)
+- [启动方式](#启动方式)
+- [提交要求对应说明](#提交要求对应说明)
+- [已验证情况](#已验证情况)
+
+## 交付清单
+
+- 完整可运行的 Angular 项目代码
+- 各主要路由页面与关键功能区域截图
+- 路由配置关键代码位置说明
+- 补充提交文档 [docs/SUBMISSION.md](docs/SUBMISSION.md)
+
 ## 当前版本概览
 
 - Angular 17 Standalone + Angular Material + SCSS
