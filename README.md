@@ -154,19 +154,19 @@ npm run test -- --watch=false
 
 ### 2. 截图展示各页面路由切换效果
 
-建议将截图统一放到 `docs/screenshots/` 目录，并在提交材料中至少包含以下页面：
+实际截图已经直接生成并放在 `docs/screenshots/` 目录：
 
-| 建议文件名 | 页面 |
+| 文件名 | 对应页面 / 区域 |
 |------|------|
 | `dashboard.png` | `/dashboard` |
 | `movies.png` | `/movies` |
-| `movies-query.png` | `/movies?search=inception&genre=科幻&sort=toprated` |
-| `movie-info.png` | `/movies/1/info` |
-| `movie-cast.png` | `/movies/1/cast` |
+| `movies-search-inception.png` | `/movies?search=inception` |
+| `movie-detail-info.png` | `/movies/3/info` |
+| `movie-detail-cast.png` | `/movies/3/cast` |
 | `add.png` | `/add` |
 | `about.png` | `/about` |
 | `explore.png` | `/explore` |
-| `command-palette.png` | 快速跳转面板 |
+| `command-palette.png` | 全局快速跳转面板 |
 | `recent-history.png` | 最近浏览区域 |
 | `data-management.png` | 数据备份与恢复区域 |
 

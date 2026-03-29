@@ -93,14 +93,16 @@ npm run test -- --watch=false
 
 ## 6. 建议截图清单
 
-- `/dashboard`
-- `/movies`
-- `/movies?search=inception&genre=科幻&sort=toprated`
-- `/movies/1/info`
-- `/movies/1/cast`
-- `/add`
-- `/about`
-- `/explore`
-- 快速跳转面板
-- 最近浏览区域
-- 数据备份与恢复区域
+本仓库已直接生成以下截图文件，位于 `docs/screenshots/`：
+
+- `dashboard.png`
+- `movies.png`
+- `movies-search-inception.png`
+- `movie-detail-info.png`
+- `movie-detail-cast.png`
+- `add.png`
+- `about.png`
+- `explore.png`
+- `command-palette.png`
+- `recent-history.png`
+- `data-management.png`
