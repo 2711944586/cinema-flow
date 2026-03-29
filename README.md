@@ -170,6 +170,54 @@ npm run test -- --watch=false
 | `recent-history.png` | 最近浏览区域 |
 | `data-management.png` | 数据备份与恢复区域 |
 
+### 页面截图预览
+
+以下图片均直接来自运行中的项目页面：
+
+#### `/dashboard`
+
+![Dashboard](docs/screenshots/dashboard.png)
+
+#### `/movies`
+
+![Movies](docs/screenshots/movies.png)
+
+#### `/movies?search=inception`
+
+![Movies Search Inception](docs/screenshots/movies-search-inception.png)
+
+#### `/movies/3/info`
+
+![Movie Detail Info](docs/screenshots/movie-detail-info.png)
+
+#### `/movies/3/cast`
+
+![Movie Detail Cast](docs/screenshots/movie-detail-cast.png)
+
+#### `/add`
+
+![Add Movie](docs/screenshots/add.png)
+
+#### `/about`
+
+![About](docs/screenshots/about.png)
+
+#### `/explore`
+
+![Explore](docs/screenshots/explore.png)
+
+#### 全局快速跳转面板
+
+![Command Palette](docs/screenshots/command-palette.png)
+
+#### 最近浏览区域
+
+![Recent History](docs/screenshots/recent-history.png)
+
+#### 数据备份与恢复区域
+
+![Data Management](docs/screenshots/data-management.png)
+
 ### 3. 路由配置关键代码位置
 
 核心代码位置如下：
