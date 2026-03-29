@@ -1,0 +1,163 @@
+<section class="movie-list-page">
+  <div class="page-head">
+    <div>
+      <span class="page-kicker">Collection</span>
+      <h1>Movies</h1>
+      <p>在这里按标题、导演、类型和观看状态管理整套片库。当前筛选会自动保留，刷新后也能延续你刚才的视图。</p>
+    </div>
+    <a mat-flat-button routerLink="/add" class="primary-btn">
+      <mat-icon>add</mat-icon>
+      添加电影
+    </a>
+  </div>
+
+  <section class="toolbar-card">
+    <div class="toolbar-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>搜索电影 / 导演 / 演员</mat-label>
+        <input
+          matInput
+          [ngModel]="queryState.search"
+          (ngModelChange)="updateQueryState({ search: $event })"
+          placeholder="例如：Inception / 诺兰">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="cf-select-field">
+        <mat-label>类型</mat-label>
+        <mat-select
+          [ngModel]="queryState.genre"
+          (ngModelChange)="updateQueryState({ genre: $event })"
+          panelClass="cf-select-panel">
+          <mat-option value="all">全部类型</mat-option>
+          <mat-option *ngFor="let genre of genres" [value]="genre">{{ genre }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="cf-select-field">
+        <mat-label>排序</mat-label>
+        <mat-select
+          [ngModel]="queryState.sort"
+          (ngModelChange)="updateQueryState({ sort: $event })"
+          panelClass="cf-select-panel">
+          <mat-option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="toolbar-actions">
+      <button
+        type="button"
+        class="toggle-pill"
+        [class.is-active]="queryState.watched"
+        (click)="updateQueryState({ watched: !queryState.watched })">
+        <mat-icon>visibility</mat-icon>
+        仅看已观影
+      </button>
+      <button
+        type="button"
+        class="toggle-pill"
+        [class.is-active]="queryState.favorite"
+        (click)="updateQueryState({ favorite: !queryState.favorite })">
+        <mat-icon>favorite</mat-icon>
+        仅看收藏
+      </button>
+      <div class="view-switch">
+        <button
+          type="button"
+          *ngFor="let option of viewOptions"
+          [class.is-active]="queryState.view === option.value"
+          (click)="updateQueryState({ view: option.value })">
+          <mat-icon>{{ option.icon }}</mat-icon>
+          {{ option.label }}
+        </button>
+      </div>
+      <button mat-stroked-button class="secondary-btn" (click)="clearFilters()">
+        <mat-icon>restart_alt</mat-icon>
+        重置
+      </button>
+    </div>
+
+    <div class="state-row">
+      <span class="state-chip">{{ summaryLabel }}</span>
+      <span class="state-chip" *ngIf="queryState.search">search={{ queryState.search }}</span>
+      <span class="state-chip" *ngIf="queryState.genre !== 'all'">{{ queryState.genre }}</span>
+      <span class="state-chip" *ngIf="queryState.favorite">favorite=true</span>
+      <span class="state-chip" *ngIf="queryState.watched">watched=true</span>
+      <span class="state-chip accent-chip">view={{ queryState.view }}</span>
+    </div>
+  </section>
+
+  <section class="table-card" *ngIf="filteredMovies.length > 0 && queryState.view === 'table'; else gridOrEmpty">
+    <div class="table-head">
+      <span>电影</span>
+      <span>导演</span>
+      <span>评分</span>
+      <span>状态</span>
+      <span>操作</span>
+    </div>
+
+    <article class="movie-row" *ngFor="let movie of filteredMovies; trackBy: trackByMovieId">
+      <div class="movie-main">
+        <img [src]="movie.posterUrl" [alt]="movie.title">
+        <div class="movie-copy">
+          <a class="movie-title" [routerLink]="['/movies', movie.id, 'info']">{{ movie.title }}</a>
+          <p>{{ movie.releaseDate | date:'yyyy-MM-dd' }}</p>
+          <div class="genre-row">
+            <span *ngFor="let genre of movie.genres.slice(0, 3)">{{ genre }}</span>
+          </div>
+        </div>
+      </div>
+      <span class="text-cell">{{ movie.director }}</span>
+      <span class="rating-cell">{{ movie.rating | number:'1.0-1' }}</span>
+      <div class="status-cell">
+        <span class="status-pill" [class.is-active]="movie.isWatched">{{ movie.isWatched ? '已观影' : '未观影' }}</span>
+        <span class="status-pill favorite-pill" [class.is-active]="movie.isFavorite">{{ movie.isFavorite ? '已收藏' : '未收藏' }}</span>
+      </div>
+      <div class="action-cell">
+        <a mat-stroked-button class="action-btn" [routerLink]="['/movies', movie.id, 'info']">查看详情</a>
+        <button mat-icon-button class="action-icon" (click)="toggleFavorite(movie)">
+          <mat-icon>{{ movie.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+        </button>
+        <button mat-icon-button class="action-icon" (click)="toggleWatched(movie)">
+          <mat-icon>{{ movie.isWatched ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+        <button mat-icon-button class="action-icon danger" (click)="deleteMovie(movie)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </article>
+  </section>
+
+  <ng-template #gridOrEmpty>
+    <section class="grid-card" *ngIf="filteredMovies.length > 0; else emptyState">
+      <article class="grid-item" *ngFor="let movie of filteredMovies; trackBy: trackByMovieId">
+        <img [src]="movie.posterUrl" [alt]="movie.title">
+        <div class="grid-copy">
+          <a class="movie-title" [routerLink]="['/movies', movie.id, 'info']">{{ movie.title }}</a>
+          <p>{{ movie.director }} · {{ movie.rating }}/10</p>
+          <div class="grid-actions">
+            <button mat-stroked-button class="action-btn" [routerLink]="['/movies', movie.id, 'info']">详情</button>
+            <button mat-icon-button class="action-icon" (click)="toggleFavorite(movie)">
+              <mat-icon>{{ movie.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+            </button>
+            <button mat-icon-button class="action-icon danger" (click)="deleteMovie(movie)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </article>
+    </section>
+  </ng-template>
+
+  <ng-template #emptyState>
+    <section class="empty-card">
+      <mat-icon>search_off</mat-icon>
+      <h2>没有匹配结果</h2>
+      <p>当前筛选条件下没有电影。你可以重置查询参数，或者前往添加页面创建新的条目。</p>
+      <div class="empty-actions">
+        <button mat-stroked-button class="secondary-btn" (click)="clearFilters()">重置筛选</button>
+        <a mat-flat-button routerLink="/add" class="primary-btn">添加电影</a>
+      </div>
+    </section>
+  </ng-template>
+</section>

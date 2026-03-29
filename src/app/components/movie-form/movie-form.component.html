@@ -186,7 +186,7 @@
             </button>
             <button mat-flat-button type="submit" class="primary-btn" [disabled]="isSubmitting || !form.valid || !formData.title.trim() || !formData.director.trim()">
               <mat-icon>save</mat-icon>
-              {{ isSubmitting ? '保存中' : (movie ? '保存本次升级' : '加入片库') }}
+              {{ isSubmitting ? '保存中' : (movie ? '保存修改' : '加入片库') }}
             </button>
           </div>
         </form>

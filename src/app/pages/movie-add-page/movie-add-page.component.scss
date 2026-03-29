@@ -1,0 +1,37 @@
+.movie-add-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.page-head {
+  padding: 26px 28px;
+  border-radius: 28px;
+  border: 1px solid var(--cf-border);
+  background:
+    radial-gradient(circle at top right, rgba(231, 185, 93, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(16, 21, 33, 0.98), rgba(9, 12, 18, 0.98));
+  box-shadow: var(--cf-shadow);
+  color: var(--cf-text-primary);
+
+  h1 {
+    margin: 0.4rem 0 0.6rem;
+    font-size: 2.4rem;
+    font-family: var(--cf-font-display);
+  }
+
+  p {
+    margin: 0;
+    color: var(--cf-text-secondary);
+    line-height: 1.8;
+    max-width: 840px;
+  }
+}
+
+.page-kicker {
+  display: inline-flex;
+  color: var(--cf-gold);
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+}

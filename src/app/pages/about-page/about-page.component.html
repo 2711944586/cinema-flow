@@ -1,0 +1,85 @@
+<section class="about-page">
+  <div class="about-hero">
+    <div class="hero-copy">
+      <span class="hero-kicker">About CinemaFlow</span>
+      <h1>一套围绕电影浏览、收藏与整理而设计的影库系统</h1>
+      <p>CinemaFlow 把探索、收藏、推荐、时间线、随机选片、对比、日历和影评整合到同一套深色玻璃态视觉语言里，让每个入口都像一间独立的放映厅。</p>
+    </div>
+
+    <div class="hero-summary">
+      <div class="summary-card">
+        <span>版本</span>
+        <strong>CinemaFlow</strong>
+      </div>
+      <div class="summary-card">
+        <span>新增能力</span>
+        <strong>3 项</strong>
+      </div>
+      <div class="summary-card">
+        <span>模块总数</span>
+        <strong>{{ coreModules.length + enhancementModules.length }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <section class="content-card">
+      <span class="section-kicker">Highlights</span>
+      <h2>项目亮点</h2>
+      <ul>
+        <li *ngFor="let item of highlights">{{ item }}</li>
+      </ul>
+    </section>
+
+    <section class="content-card">
+      <span class="section-kicker">Tech Stack</span>
+      <h2>技术栈</h2>
+      <ul>
+        <li *ngFor="let item of techStack">{{ item }}</li>
+      </ul>
+    </section>
+
+    <section class="content-card">
+      <span class="section-kicker">Core</span>
+      <h2>核心页面</h2>
+      <div class="route-list">
+        <div class="route-item" *ngFor="let item of coreModules">
+          <strong>{{ item.route }}</strong>
+          <span>{{ item.description }}</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card">
+      <span class="section-kicker">Enhancements</span>
+      <h2>增强模块</h2>
+      <div class="route-list">
+        <div class="route-item" *ngFor="let item of enhancementModules">
+          <strong>{{ item.route }}</strong>
+          <span>{{ item.description }}</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="content-card wide-card">
+    <span class="section-kicker">Rules</span>
+    <h2>真实海报规则与数据说明</h2>
+    <div class="rule-grid">
+      <article>
+        <h3>真实海报校验</h3>
+        <p>新增和编辑电影时，系统会根据片名、导演和上映日期尝试匹配真实电影海报。未通过校验的条目不会写入片库。</p>
+      </article>
+      <article>
+        <h3>Movies 与 Explore 的区别</h3>
+        <p>`/movies` 更适合集中管理片库；`/explore` 更强调沉浸式浏览和主视觉探索，两者共享同一份电影数据。</p>
+      </article>
+      <article>
+        <h3>最近浏览与备份</h3>
+        <p>最近浏览会写入本地存储；导出 JSON 时会把电影数据、状态、影评和最近浏览一起带出，方便迁移与恢复。</p>
+      </article>
+    </div>
+  </section>
+
+  <app-data-management></app-data-management>
+</section>

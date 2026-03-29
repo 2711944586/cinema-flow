@@ -1,0 +1,60 @@
+<div class="command-palette" (keydown)="onKeydown($event)">
+  <div class="palette-search">
+    <mat-icon>search</mat-icon>
+    <input
+      #paletteInput
+      type="text"
+      [(ngModel)]="query"
+      (ngModelChange)="onInputChange()"
+      placeholder="搜索页面或电影，例如 Dashboard、Explore、Inception">
+    <span class="shortcut-pill">Ctrl / Cmd + K</span>
+  </div>
+
+  <div class="palette-results" *ngIf="visibleItems.length > 0; else emptyState">
+    <section class="result-group" *ngIf="pageItems.length > 0">
+      <div class="group-title">Pages</div>
+      <button
+        type="button"
+        class="result-item"
+        *ngFor="let item of pageItems"
+        [class.is-active]="isSelected(item)"
+        (click)="selectItem(item)">
+        <div class="item-icon"><mat-icon>{{ item.icon }}</mat-icon></div>
+        <div class="item-copy">
+          <strong>{{ item.title }}</strong>
+          <span>{{ item.subtitle }}</span>
+        </div>
+      </button>
+    </section>
+
+    <section class="result-group" *ngIf="movieItems.length > 0">
+      <div class="group-title">Movies</div>
+      <button
+        type="button"
+        class="result-item"
+        *ngFor="let item of movieItems"
+        [class.is-active]="isSelected(item)"
+        (click)="selectItem(item)">
+        <div class="item-icon"><mat-icon>{{ item.icon }}</mat-icon></div>
+        <div class="item-copy">
+          <strong>{{ item.title }}</strong>
+          <span>{{ item.subtitle }}</span>
+        </div>
+      </button>
+    </section>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="palette-empty">
+      <mat-icon>search_off</mat-icon>
+      <h3>没有匹配结果</h3>
+      <p>换个片名、导演或页面名试试。</p>
+    </div>
+  </ng-template>
+
+  <div class="palette-footer">
+    <span>↑ ↓ 选择</span>
+    <span>Enter 跳转</span>
+    <span>Esc 关闭</span>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+<section class="movie-add-page">
+  <div class="page-head">
+    <span class="page-kicker">New Entry</span>
+    <h1>添加电影</h1>
+    <p>为片库新增一部电影。系统会继续校验真实海报，并自动沿用当前影库的主视觉与背景策略。</p>
+  </div>
+
+  <app-movie-form (submitted)="onSubmit($event)" (cancelled)="onCancel()"></app-movie-form>
+</section>

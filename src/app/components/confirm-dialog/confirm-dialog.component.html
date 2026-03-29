@@ -1,0 +1,19 @@
+<div class="confirm-dialog" [class.is-danger]="data.tone === 'danger'">
+  <div class="dialog-icon">
+    <mat-icon>{{ data.icon || (data.tone === 'danger' ? 'warning' : 'help') }}</mat-icon>
+  </div>
+
+  <div class="dialog-copy">
+    <h2>{{ data.title }}</h2>
+    <p>{{ data.message }}</p>
+  </div>
+
+  <div class="dialog-actions">
+    <button mat-stroked-button type="button" class="secondary-btn" (click)="close(false)">
+      {{ data.cancelLabel || '取消' }}
+    </button>
+    <button mat-flat-button type="button" class="primary-btn" (click)="close(true)">
+      {{ data.confirmLabel || '确认' }}
+    </button>
+  </div>
+</div>

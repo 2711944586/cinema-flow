@@ -1,58 +1,62 @@
-<!-- CinemaFlow 主布局 -->
 <div class="app-shell">
-  <!-- 顶部导航栏 -->
   <header class="app-header">
-    <div class="header-content">
-      <div class="brand">
+    <div class="header-top">
+      <a class="brand" routerLink="/dashboard">
         <div class="brand-icon">
           <span class="icon-glow"></span>
-          🎬
+          <span>CF</span>
         </div>
-        <div class="brand-text">
-          <h1>CinemaFlow</h1>
-          <span class="brand-subtitle">内部电影库管理系统</span>
+        <div class="brand-copy">
+          <strong>CinemaFlow</strong>
+          <span>Private Screening Archive</span>
         </div>
+      </a>
+
+      <button mat-stroked-button class="command-button" (click)="openCommandPalette()">
+        <mat-icon>search</mat-icon>
+        <span>快速跳转</span>
+        <span class="shortcut">Ctrl / Cmd + K</span>
+      </button>
+    </div>
+
+    <div class="nav-shell">
+      <div class="nav-group">
+        <span class="nav-group-label">Core</span>
+        <nav class="nav-track">
+          <a
+            *ngFor="let item of coreNav"
+            class="nav-link"
+            [routerLink]="item.route"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: item.exact ?? false }">
+            <mat-icon>{{ item.icon }}</mat-icon>
+            <span>{{ item.label }}</span>
+          </a>
+        </nav>
       </div>
-      
-      <!-- 主导航 -->
-      <nav class="main-nav">
-        <a routerLink="/explore" routerLinkActive="active-link" class="nav-link">
-          <mat-icon>explore</mat-icon> 探索
-        </a>
-        <a routerLink="/favorites" routerLinkActive="active-link" class="nav-link">
-          <mat-icon>favorite</mat-icon> 收藏
-        </a>
-        <a routerLink="/recommendations" routerLinkActive="active-link" class="nav-link">
-          <mat-icon>auto_awesome</mat-icon> 推荐
-        </a>
-        <a routerLink="/timeline" routerLinkActive="active-link" class="nav-link">
-          <mat-icon>timeline</mat-icon> 时间轴
-        </a>
-        <a routerLink="/dashboard" routerLinkActive="active-link" class="nav-link">
-          <mat-icon>insights</mat-icon> 看板
-        </a>        <a routerLink="/calendar" routerLinkActive="active-link" class="nav-link">
-          <mat-icon>calendar_today</mat-icon>日历
-        </a>
-        <a routerLink="/reviews" routerLinkActive="active-link" class="nav-link">
-          <mat-icon>rate_review</mat-icon>影评
-        </a>        <a routerLink="/random" routerLinkActive="active-link" class="nav-link">
-          <mat-icon>casino</mat-icon> 随机
-        </a>
-        <a routerLink="/compare" routerLinkActive="active-link" class="nav-link">
-          <mat-icon>compare_arrows</mat-icon> 对比
-        </a>
-      </nav>
-      
-      <div class="header-meta">
-        <div class="user-avatar">
-          <img src="https://ui-avatars.com/api/?name=Admin&background=E7B95D&color=111827" alt="User">
-        </div>
+
+      <div class="nav-group nav-group-secondary">
+        <span class="nav-group-label">Enhancements</span>
+        <nav class="nav-track">
+          <a
+            *ngFor="let item of enhancementNav"
+            class="nav-link secondary-link"
+            [routerLink]="item.route"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: item.exact ?? false }">
+            <mat-icon>{{ item.icon }}</mat-icon>
+            <span>{{ item.label }}</span>
+          </a>
+        </nav>
       </div>
     </div>
   </header>
 
-  <!-- 主内容区 (路由出口) -->
-  <div class="app-content">
-    <router-outlet></router-outlet>
+  <div class="breadcrumb-wrap">
+    <app-breadcrumb></app-breadcrumb>
   </div>
+
+  <main class="app-content">
+    <router-outlet></router-outlet>
+  </main>
 </div>

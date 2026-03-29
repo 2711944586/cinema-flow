@@ -1,0 +1,83 @@
+.confirm-dialog {
+  width: min(440px, calc(100vw - 32px));
+  padding: 26px;
+  border-radius: 28px;
+  border: 1px solid var(--cf-border);
+  background:
+    radial-gradient(circle at top right, rgba(231, 185, 93, 0.12), transparent 26%),
+    linear-gradient(180deg, rgba(16, 21, 33, 0.98), rgba(9, 12, 18, 0.98));
+  box-shadow: var(--cf-shadow);
+  color: var(--cf-text-primary);
+}
+
+.dialog-icon {
+  width: 52px;
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  background: rgba(231, 185, 93, 0.12);
+  border: 1px solid rgba(231, 185, 93, 0.24);
+
+  mat-icon {
+    color: var(--cf-gold);
+  }
+}
+
+.dialog-copy {
+  margin-top: 16px;
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 1.35rem;
+    font-family: var(--cf-font-display);
+  }
+
+  p {
+    margin: 0;
+    color: var(--cf-text-secondary);
+    line-height: 1.8;
+  }
+}
+
+.dialog-actions {
+  margin-top: 22px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.primary-btn,
+.secondary-btn {
+  min-width: 108px;
+  height: 44px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, var(--cf-gold), #f1d39a) !important;
+  color: #0a0e17 !important;
+}
+
+.secondary-btn {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: var(--cf-text-secondary) !important;
+}
+
+.confirm-dialog.is-danger {
+  .dialog-icon {
+    background: rgba(211, 95, 95, 0.12);
+    border-color: rgba(211, 95, 95, 0.24);
+
+    mat-icon {
+      color: #ffb2b2;
+    }
+  }
+
+  .primary-btn {
+    background: linear-gradient(135deg, #d35f5f, #f28b82) !important;
+    color: #fff !important;
+  }
+}

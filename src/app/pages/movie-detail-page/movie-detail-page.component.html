@@ -1,0 +1,109 @@
+<section class="movie-detail-page" *ngIf="movie as currentMovie; else notFoundState">
+  <div class="detail-hero">
+    <img
+      class="hero-backdrop"
+      [src]="backdropUrl || currentMovie.posterUrl"
+      alt=""
+      aria-hidden="true"
+      (error)="onBackdropError($event)">
+
+    <div class="hero-overlay">
+      <button mat-stroked-button class="back-btn" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        返回 Movies
+      </button>
+
+      <div class="hero-main">
+        <img class="hero-poster" [src]="currentMovie.posterUrl" [alt]="currentMovie.title" (error)="onPosterError($event)">
+
+        <div class="hero-copy">
+          <span class="hero-kicker">Feature Presentation</span>
+          <h1>{{ currentMovie.title }}</h1>
+          <p>{{ currentMovie.director }} · {{ currentMovie.releaseDate | date:'yyyy-MM-dd' }} · {{ currentMovie.duration }} 分钟</p>
+
+          <div class="hero-tags">
+            <span>{{ currentMovie.rating }}/10</span>
+            <span>{{ currentMovie.language || '待补充语言' }}</span>
+            <span>{{ currentMovie.isWatched ? '已观影' : '未观影' }}</span>
+            <span>{{ currentMovie.isFavorite ? '已收藏' : '未收藏' }}</span>
+          </div>
+
+          <div class="hero-actions">
+            <button mat-flat-button class="primary-btn" (click)="toggleFavorite()">
+              <mat-icon>{{ currentMovie.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+              {{ currentMovie.isFavorite ? '取消收藏' : '加入收藏' }}
+            </button>
+            <button mat-stroked-button class="secondary-btn" (click)="toggleWatched()">
+              <mat-icon>{{ currentMovie.isWatched ? 'visibility' : 'visibility_off' }}</mat-icon>
+              {{ currentMovie.isWatched ? '标记未看' : '标记已看' }}
+            </button>
+            <button mat-stroked-button class="danger-btn" (click)="deleteMovie()">
+              <mat-icon>delete</mat-icon>
+              删除
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="neighbor-row">
+        <a *ngIf="previousMovie" class="neighbor-link" [routerLink]="['/movies', previousMovie.id, 'info']">
+          <span>上一部</span>
+          <strong>{{ previousMovie.title }}</strong>
+        </a>
+        <a *ngIf="nextMovie" class="neighbor-link" [routerLink]="['/movies', nextMovie.id, 'info']">
+          <span>下一部</span>
+          <strong>{{ nextMovie.title }}</strong>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-body">
+    <div class="detail-main">
+      <nav class="detail-tabs">
+        <a routerLink="info" routerLinkActive="is-active">基本信息</a>
+        <a routerLink="cast" routerLinkActive="is-active">演员表</a>
+      </nav>
+
+      <div class="detail-panel">
+        <router-outlet></router-outlet>
+      </div>
+
+      <section class="recommendation-panel" *ngIf="recommendations.length > 0">
+        <div class="section-head">
+          <span class="section-kicker">Recommendations</span>
+          <h2>相似推荐</h2>
+        </div>
+        <div class="recommendation-grid">
+          <a class="recommendation-card" *ngFor="let item of recommendations" [routerLink]="['/movies', item.id, 'info']">
+            <img [src]="item.posterUrl" [alt]="item.title" (error)="onRecommendationPosterError($event, item)">
+            <div class="recommendation-copy">
+              <strong>{{ item.title }}</strong>
+              <span>{{ item.director }} · {{ item.rating }}/10</span>
+            </div>
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <div class="detail-side">
+      <app-recent-history
+        [entries]="recentHistory"
+        [compact]="true"
+        title="继续浏览"
+        description="最近访问过的其他电影会在这里保持可达。"
+        emptyTitle="暂无其他最近浏览"
+        emptyDescription="继续访问不同的详情页后，这里会形成你的本地浏览轨迹。">
+      </app-recent-history>
+    </div>
+  </div>
+</section>
+
+<ng-template #notFoundState>
+  <section class="not-found-card">
+    <mat-icon>movie_off</mat-icon>
+    <h2>没有找到这部电影</h2>
+    <p>当前路由参数对应的电影不存在，可能已经被删除，或者链接中的 id 无效。</p>
+    <button mat-flat-button class="primary-btn" (click)="goBack()">返回 Movies</button>
+  </section>
+</ng-template>

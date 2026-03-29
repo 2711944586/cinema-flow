@@ -1,0 +1,41 @@
+<section class="recent-history" [class.is-compact]="compact">
+  <div class="section-head">
+    <div>
+      <span class="section-kicker">Recent Visits</span>
+      <h2>{{ title }}</h2>
+      <p>{{ description }}</p>
+    </div>
+    <a mat-stroked-button routerLink="/movies" class="section-link">
+      <mat-icon>movie</mat-icon>
+      进入片库
+    </a>
+  </div>
+
+  <div class="history-grid" *ngIf="entries.length > 0; else emptyState">
+    <a
+      class="history-card"
+      *ngFor="let entry of entries"
+      [routerLink]="['/movies', entry.movieId, entry.section]">
+      <img [src]="entry.posterUrl" [alt]="entry.title">
+      <div class="history-copy">
+        <div class="history-title-row">
+          <h3>{{ entry.title }}</h3>
+          <span class="history-rating">{{ entry.rating | number:'1.0-1' }}</span>
+        </div>
+        <p>{{ entry.director }} · {{ entry.releaseYear }}</p>
+        <div class="history-meta">
+          <span>上次浏览 {{ entry.visitedAt | date:'MM-dd HH:mm' }}</span>
+          <span>{{ entry.section === 'cast' ? '演员表' : '基本信息' }}</span>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="history-empty">
+      <mat-icon>history_toggle_off</mat-icon>
+      <h3>{{ emptyTitle }}</h3>
+      <p>{{ emptyDescription }}</p>
+    </div>
+  </ng-template>
+</section>

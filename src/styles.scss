@@ -156,6 +156,30 @@ a {
   --mdc-plain-tooltip-supporting-text-color: var(--cf-text-primary);
 }
 
+.cf-dialog-backdrop.cdk-overlay-backdrop {
+  background: rgba(4, 6, 12, 0.76);
+  backdrop-filter: blur(16px);
+}
+
+.cf-command-palette-panel .mat-mdc-dialog-container .mdc-dialog__surface,
+.cf-dialog-panel .mat-mdc-dialog-container .mdc-dialog__surface {
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible;
+}
+
+.cf-command-palette-panel .mat-mdc-dialog-container,
+.cf-dialog-panel .mat-mdc-dialog-container {
+  padding: 0 !important;
+}
+
+.cf-page-card {
+  border-radius: 28px;
+  border: 1px solid var(--cf-border);
+  background: var(--cf-surface-elevated);
+  box-shadow: var(--cf-shadow);
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;

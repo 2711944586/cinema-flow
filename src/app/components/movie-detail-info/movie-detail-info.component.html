@@ -1,0 +1,78 @@
+<section class="detail-info" *ngIf="movie as currentMovie">
+  <div class="info-grid">
+    <article class="info-card">
+      <h2>影片资料</h2>
+      <div class="spec-list">
+        <div class="spec-row">
+          <span>标题</span>
+          <strong>{{ currentMovie.title }}</strong>
+        </div>
+        <div class="spec-row">
+          <span>导演</span>
+          <strong>{{ currentMovie.director }}</strong>
+        </div>
+        <div class="spec-row">
+          <span>上映日期</span>
+          <strong>{{ currentMovie.releaseDate | date:'yyyy-MM-dd' }}</strong>
+        </div>
+        <div class="spec-row">
+          <span>评分</span>
+          <strong>{{ currentMovie.rating }} / 10</strong>
+        </div>
+        <div class="spec-row">
+          <span>等级</span>
+          <strong>{{ currentMovie.rating | ratingLevel }}</strong>
+        </div>
+        <div class="spec-row">
+          <span>片长</span>
+          <strong>{{ currentMovie.duration }} 分钟</strong>
+        </div>
+        <div class="spec-row">
+          <span>语言</span>
+          <strong>{{ currentMovie.language || '待补充' }}</strong>
+        </div>
+        <div class="spec-row">
+          <span>状态</span>
+          <strong>{{ currentMovie.isWatched ? '已观影' : '未观影' }}</strong>
+        </div>
+      </div>
+
+      <div class="genre-row">
+        <span *ngFor="let genre of currentMovie.genres">{{ genre }}</span>
+      </div>
+    </article>
+
+    <article class="info-card narrative-card">
+      <h2>剧情与笔记</h2>
+      <p class="description">{{ currentMovie.description }}</p>
+
+      <div class="user-rating">
+        <div class="rating-head">
+          <span>我的评分</span>
+          <strong>{{ currentMovie.userRating || 0 }}/10</strong>
+        </div>
+        <div class="star-row">
+          <button
+            type="button"
+            class="star-btn"
+            *ngFor="let star of ratingStars"
+            [class.is-active]="star <= (hoverRating || currentMovie.userRating || 0)"
+            (mouseenter)="hoverRating = star"
+            (mouseleave)="hoverRating = 0"
+            (click)="setUserRating(star)">
+            {{ star }}
+          </button>
+        </div>
+      </div>
+
+      <label class="notes-label" for="movie-notes">观影笔记</label>
+      <textarea
+        id="movie-notes"
+        rows="5"
+        [ngModel]="currentMovie.userNotes || ''"
+        (ngModelChange)="saveNotes($event)"
+        placeholder="记录这部电影给你的感受、画面记忆或值得反复回看的片段。">
+      </textarea>
+    </article>
+  </div>
+</section>

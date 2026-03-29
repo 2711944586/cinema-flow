@@ -1,0 +1,69 @@
+<section class="dashboard-page">
+  <div class="dashboard-hero" [style.background-image]="heroBackdrop ? 'linear-gradient(180deg, rgba(6,8,15,.25), rgba(6,8,15,.88)), url(' + heroBackdrop + ')' : null">
+    <div class="hero-copy">
+      <span class="hero-kicker">CinemaFlow</span>
+      <h1>从这里进入你的私人影库中枢</h1>
+      <p>总览片库状态、回到最近浏览的电影、继续探索高分片单，也可以直接切换到收藏、随机选片和完整电影列表。</p>
+
+      <div class="hero-actions">
+        <a mat-flat-button routerLink="/movies" class="primary-btn">
+          <mat-icon>movie</mat-icon>
+          打开 Movies
+        </a>
+        <a mat-stroked-button routerLink="/explore" class="secondary-btn">
+          <mat-icon>explore</mat-icon>
+          返回 Explore
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-side" *ngIf="heroMovie as movie">
+      <span class="side-label">馆藏焦点</span>
+      <h2>{{ movie.title }}</h2>
+      <p>{{ movie.director }} · {{ movie.releaseDate | date:'yyyy' }} · {{ movie.rating }}/10</p>
+      <div class="side-tags">
+        <span *ngFor="let genre of movie.genres.slice(0, 3)">{{ genre }}</span>
+      </div>
+      <a class="side-link" [routerLink]="['/movies', movie.id, 'info']">查看详情页</a>
+    </div>
+  </div>
+
+  <div class="quick-grid">
+    <a class="quick-card" *ngFor="let link of quickLinks" [routerLink]="link.route">
+      <div class="quick-icon"><mat-icon>{{ link.icon }}</mat-icon></div>
+      <div>
+        <h3>{{ link.label }}</h3>
+        <p>{{ link.hint }}</p>
+      </div>
+    </a>
+  </div>
+
+  <app-movie-stats [movies]="movies"></app-movie-stats>
+
+  <div class="dashboard-lower">
+    <app-recent-history
+      [entries]="recentHistory"
+      title="最近浏览"
+      description="你访问过的电影会保存在本地，重新进入项目后也能继续接着看。">
+    </app-recent-history>
+
+    <section class="recent-added">
+      <div class="section-head">
+        <span class="section-kicker">Library Updates</span>
+        <h2>最近添加电影</h2>
+        <p>按片库录入顺序显示最近进入收藏馆的条目，新添加的电影会立刻出现在这里。</p>
+      </div>
+
+      <div class="recent-list" *ngIf="recentAdded.length > 0">
+        <a class="recent-item" *ngFor="let movie of recentAdded" [routerLink]="['/movies', movie.id, 'info']">
+          <img [src]="movie.posterUrl" [alt]="movie.title">
+          <div class="recent-copy">
+            <h3>{{ movie.title }}</h3>
+            <p>{{ movie.director }}</p>
+          </div>
+          <span class="recent-rating">{{ movie.rating | number:'1.0-1' }}</span>
+        </a>
+      </div>
+    </section>
+  </div>
+</section>

@@ -1,89 +1,127 @@
-# CinemaFlow 电影库管理系统
+# CinemaFlow
 
-基于 **Angular 17** Standalone Components 构建的电影管理平台，覆盖电影浏览、收藏、分析、对比、时间线、随机选片、观影日历与影评墙等场景。
+CinemaFlow 是一个基于 Angular 17 Standalone Components 构建的电影库管理系统，采用深色玻璃态界面、金色高光和电影化卡片语言，覆盖电影浏览、详情查看、收藏管理、随机选片、时间线、日历、影评、数据备份与恢复等完整场景。
 
-## 核心能力
+## 当前版本概览
 
-| 模块 | 描述 |
+- Angular 17 Standalone + Angular Material + SCSS
+- 标准片库页 `/movies` 与沉浸式探索页 `/explore` 并存
+- 电影详情拆分为 `/movies/:id/info` 与 `/movies/:id/cast`
+- 全局快速跳转：`Ctrl / Cmd + K`
+- 最近浏览：在仪表盘与详情页继续回到最近访问的电影
+- 本地数据备份 / 恢复：导出与导入 JSON
+- 真实海报校验：新增与编辑电影时必须匹配真实海报资源
+
+## 主要功能
+
+| 模块 | 说明 |
 |------|------|
-| **探索影库** | Hero Banner + 电影网格，支持搜索、分类、排序、收藏筛选 |
-| **新增 / 编辑电影** | 表单录入影片信息，自动校验真实电影海报后才允许保存 |
-| **电影详情** | 展示剧情、演员、评分、预告片、笔记与相关推荐 |
-| **收藏中心** | 管理个人收藏与已观看状态 |
-| **数据看板** | 统计影片总数、评分分布、年代分布、导演排行 |
-| **分类推荐** | 按类型与导演查看推荐电影 |
-| **电影时间轴** | 以时间线形式浏览影片上映年代 |
-| **随机选片** | 一键抽片，保留近期抽片历史 |
-| **电影对比** | 对比两部电影的评分、时长、类型和其他信息 |
-| **观影日历** | 以日历形式浏览片单与观影节奏 |
-| **影评墙** | 查看与录入观影短评 |
+| `Dashboard` | 首页总览，聚合统计、快捷入口、最近浏览、最近添加 |
+| `Movies` | 标准片库页，支持搜索、类型筛选、排序、已看/收藏过滤、列表/卡片切换 |
+| `Movie Detail` | 支持基本信息、演员表、上一部/下一部、删除、相关推荐 |
+| `Add Movie` | 独立新增页面，复用真实海报校验与预览表单 |
+| `Explore` | 保留原有沉浸式探索页，支持 Hero Banner、搜索、排序、收藏筛选 |
+| `Favorites` | 收藏中心与已观看状态管理 |
+| `Timeline` | 按年代组织电影时间线 |
+| `Recommendations` | 按导演与类型查看推荐片单 |
+| `Random` | 随机选片与抽选历史 |
+| `Compare` | 两部电影并列对比评分、时长、语言、票房等信息 |
+| `Calendar` | 按月份查看观影分布与当日片单 |
+| `Reviews` | 影评墙、筛选、排序与手动录入 |
+| `Command Palette` | 搜索页面与电影并快速跳转 |
+| `Recent History` | 记录最近访问的电影详情 |
+| `Data Management` | 导出和导入本地片库 JSON |
 
-## 真实海报规则
-
-- 片库内置 **44 部真实电影**，已清理重复条目，海报不再使用伪造占位数据。
-- 已失效的海报地址已替换为真实可访问资源。
-- 新增或编辑电影时，会根据 **片名 + 导演 + 上映日期** 自动匹配真实海报。
-- 若未匹配到真实海报，条目不能保存，避免继续写入假电影或假海报。
-- 海报资源目前来自 **TMDB** 与 **Wikimedia / Wikipedia** 的真实电影物料。
-
-## 背景图策略
-
-- 电影背景优先使用真实 `backdrop` 资源。
-- 若背景图失效或缺失，系统会自动退回到对应电影海报，保证 Hero / 详情 / 统计卡片至少有图可显示。
-- 远程图片会在前端统一做尺寸清洗与异常链接过滤，避免部分超大图卡顿或伪造背景地址导致整块空白。
-- 第二批补充电影中原本失效的背景地址已统一修正，不再保留那批明显不可访问的伪造链接。
-
-## 技术栈
-
-- Angular 17.3
-- Angular Material 17.3 + CDK
-- RxJS
-- TypeScript 5.4
-- SCSS
-
-## 路由
+## 路由地图
 
 | 路径 | 页面 |
 |------|------|
+| `/` | 重定向到 `/dashboard` |
+| `/dashboard` | 仪表盘 |
+| `/movies` | 标准电影列表页 |
+| `/movies/:id/info` | 电影基本信息 |
+| `/movies/:id/cast` | 电影演员表 |
+| `/add` | 添加电影 |
+| `/about` | 项目说明与数据管理 |
 | `/explore` | 探索影库 |
-| `/dashboard` | 数据看板 |
 | `/favorites` | 收藏中心 |
-| `/timeline` | 电影时间轴 |
-| `/recommendations` | 分类推荐 |
+| `/timeline` | 时间线 |
+| `/recommendations` | 推荐 |
 | `/random` | 随机选片 |
-| `/compare` | 电影对比 |
-| `/calendar` | 观影日历 |
+| `/compare` | 对比 |
+| `/calendar` | 日历 |
 | `/reviews` | 影评墙 |
+| `**` | 重定向到 `/dashboard` |
 
-## 项目结构
+## 数据与媒体策略
+
+### 片库数据
+
+- 当前内置 `44` 部电影种子数据
+- `MovieService` 使用 `BehaviorSubject` 管理全局状态
+- 电影数据会写入本地存储，刷新后保留当前片库状态
+
+### 海报与背景图
+
+- 新增 / 编辑电影时会根据片名、导演、上映日期匹配真实海报
+- 未通过真实海报校验的条目不会保存
+- 背景图优先使用真实 `backdrop`
+- 若背景图缺失或失效，会自动退回海报或生成兜底视觉
+
+### 本地持久化
+
+- 电影数据
+- 最近浏览记录
+- 影评墙数据
+- 导出包中的完整片库状态
+
+## 目录结构
 
 ```text
 src/app/
+├── app.component.*                 # 全局壳层、导航、快捷跳转入口
+├── app.routes.ts                   # 路由定义
 ├── components/
-│   ├── movie-calendar/        # 观影日历
-│   ├── movie-compare/         # 电影对比
-│   ├── movie-dashboard/       # 数据看板入口
-│   ├── movie-detail/          # 电影详情
-│   ├── movie-favorites/       # 收藏中心
-│   ├── movie-form/            # 新增 / 编辑表单
-│   ├── movie-list/            # 主探索页
-│   ├── movie-random/          # 随机选片
-│   ├── movie-recommendations/ # 分类推荐
-│   ├── movie-review-wall/     # 影评墙
-│   ├── movie-stats/           # 统计组件
-│   └── movie-timeline/        # 时间轴页
+│   ├── breadcrumb/                 # 面包屑
+│   ├── command-palette/            # 全局快速跳转
+│   ├── confirm-dialog/             # 删除 / 导入确认弹窗
+│   ├── data-management/            # 导出 / 导入 JSON
+│   ├── movie-calendar/             # 观影日历
+│   ├── movie-compare/              # 电影对比
+│   ├── movie-detail-info/          # 详情基本信息子页
+│   ├── movie-detail-cast/          # 详情演员表子页
+│   ├── movie-favorites/            # 收藏中心
+│   ├── movie-form/                 # 新增 / 编辑表单
+│   ├── movie-list/                 # Explore 页面
+│   ├── movie-random/               # 随机选片
+│   ├── movie-recommendations/      # 推荐页
+│   ├── movie-review-wall/          # 影评墙
+│   ├── movie-stats/                # 统计组件
+│   ├── movie-timeline/             # 时间线
+│   └── recent-history/             # 最近浏览
+├── config/
+│   └── navigation.ts               # 导航与面包屑配置
 ├── data/
-│   └── mock-movies.ts         # 44 部电影种子数据
+│   └── mock-movies.ts              # 种子电影数据
 ├── models/
-│   └── movie.ts               # Movie 接口定义
-├── pipes/
-│   └── rating-level.pipe.ts   # 评分等级管道
+│   ├── movie.ts                    # 电影类型
+│   └── review.ts                   # 影评类型
+├── pages/
+│   ├── about-page/                 # About 页面
+│   ├── dashboard-page/             # Dashboard 页面
+│   ├── movie-add-page/             # Add 页面
+│   ├── movie-detail-page/          # 详情父页
+│   └── movie-list-page/            # Movies 页面
 ├── services/
-│   ├── logger.service.ts      # 日志服务
-│   ├── movie-artwork.service.ts # 真实海报匹配服务
-│   └── movie.service.ts       # 电影数据状态管理
+│   ├── data-port.service.ts        # 备份 / 恢复
+│   ├── logger.service.ts           # 日志输出
+│   ├── movie-artwork.service.ts    # 海报匹配
+│   ├── movie.service.ts            # 电影状态管理
+│   ├── recent-history.service.ts   # 最近浏览
+│   └── review-store.service.ts     # 影评状态管理
 └── utils/
-    └── movie-media.ts         # 海报 / 背景图辅助逻辑
+    ├── movie-media.ts              # 海报 / 背景图工具
+    └── movie-query.ts              # Movies 页面查询参数工具
 ```
 
 ## 启动方式
@@ -93,19 +131,25 @@ npm install
 npm start
 ```
 
-本地访问 `http://localhost:4200`
+默认访问：
+
+```text
+http://localhost:4200
+```
 
 ## 常用命令
 
 ```bash
 npm run build
-npm run test
+npm run test -- --watch=false
 ```
 
-## 架构说明
+## 已验证情况
 
-- **状态管理**: `MovieService` 使用 `BehaviorSubject` 管理全局电影数据。
-- **响应式更新**: 各组件通过 Observable 或服务方法消费统一数据源。
-- **独立组件**: 全项目采用 Standalone Components，无需 NgModule。
-- **媒体校验**: `MovieArtworkService` 负责真实电影海报匹配与兜底校验。
-- **展示兜底**: 图片加载失败时统一走前端降级逻辑，背景图会自动退回海报，避免空白 Hero / 详情头图。
+- `npm run build`：已通过
+- `npm run test -- --watch=false`：命令已执行；当前环境下 Karma 启动 Chrome 时出现 `spawn EPERM`
+- `lint`：`package.json` 中没有 `lint` 脚本
+
+## 补充文档
+
+- 提交说明见 [docs/SUBMISSION.md](docs/SUBMISSION.md)

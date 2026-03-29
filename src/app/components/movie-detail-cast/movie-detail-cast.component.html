@@ -1,0 +1,26 @@
+<section class="detail-cast" *ngIf="movie as currentMovie">
+  <div class="cast-head">
+    <div>
+      <span class="section-kicker">Cast</span>
+      <h2>演员表</h2>
+      <p>展示这部电影的核心演员阵容。如果原始数据中没有演员信息，会在这里显示一个优雅空状态。</p>
+    </div>
+  </div>
+
+  <div class="cast-grid" *ngIf="currentMovie.cast?.length; else emptyState">
+    <article class="cast-card" *ngFor="let actor of currentMovie.cast; let index = index">
+      <span class="cast-index">{{ (index + 1) | number:'2.0' }}</span>
+      <div class="cast-copy">
+        <h3>{{ actor }}</h3>
+        <p>主演阵容 · {{ currentMovie.title }}</p>
+      </div>
+    </article>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="cast-empty">
+      <h3>暂无演员信息</h3>
+      <p>当前条目尚未录入 cast 数组。你可以返回编辑页补全主演阵容，之后这里会自动更新。</p>
+    </div>
+  </ng-template>
+</section>
