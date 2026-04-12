@@ -3,7 +3,7 @@
     <div>
       <span class="section-kicker">Library Archive</span>
       <h2>数据备份与恢复</h2>
-      <p>导出当前片库、收藏/已看状态、个人评分、笔记、影评与最近浏览记录；也可以从 JSON 直接恢复。</p>
+      <p>导出当前片库、收藏/已看状态、个人评分、笔记、影评、最近浏览、待看片单、观影日志与智能选片预设；也可以从 JSON 直接恢复。</p>
     </div>
     <div class="section-actions">
       <button mat-stroked-button class="secondary-btn" (click)="openImportPicker()">
@@ -18,7 +18,7 @@
     </div>
   </div>
 
-  <div class="summary-grid">
+  <div class="summary-grid" *ngIf="summary$ | async as summary">
     <mat-card class="summary-card">
       <span class="summary-label">电影条目</span>
       <strong>{{ summary.movieCount }}</strong>
@@ -33,6 +33,21 @@
       <span class="summary-label">影评数据</span>
       <strong>{{ summary.reviewCount }}</strong>
       <p>影评墙与手动录入内容</p>
+    </mat-card>
+    <mat-card class="summary-card">
+      <span class="summary-label">待看片单</span>
+      <strong>{{ summary.watchPlanCount }}</strong>
+      <p>计划中的电影安排</p>
+    </mat-card>
+    <mat-card class="summary-card">
+      <span class="summary-label">观影日志</span>
+      <strong>{{ summary.watchLogCount }}</strong>
+      <p>已记录的观影会话</p>
+    </mat-card>
+    <mat-card class="summary-card">
+      <span class="summary-label">智能预设</span>
+      <strong>{{ summary.viewingPresetCount }}</strong>
+      <p>智能选片保存的偏好组合</p>
     </mat-card>
   </div>
 </section>

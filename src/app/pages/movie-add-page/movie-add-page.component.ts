@@ -3,8 +3,10 @@ import { Component } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { delay, finalize, of } from 'rxjs';
 import { MovieFormComponent } from '../../components/movie-form/movie-form.component';
 import { Movie } from '../../models/movie';
+import { MessageService } from '../../services/message.service';
 import { MovieService } from '../../services/movie.service';
 
 @Component({
@@ -15,23 +17,41 @@ import { MovieService } from '../../services/movie.service';
   styleUrl: './movie-add-page.component.scss'
 })
 export class MovieAddPageComponent {
+  isSaving = false;
+  saveError = '';
+
   constructor(
     private router: Router,
     private snackBar: MatSnackBar,
-    private movieService: MovieService
+    private movieService: MovieService,
+    private messageService: MessageService
   ) {}
 
   onSubmit(movieData: Omit<Movie, 'id'>): void {
-    const success = this.movieService.addMovie(movieData);
-    this.snackBar.open(
-      success ? `已添加：${movieData.title}` : `未添加：${movieData.title}，片库中已存在同名同年份条目`,
-      '关闭',
-      { duration: 3200 }
-    );
-
-    if (success) {
-      void this.router.navigate(['/movies']);
+    if (this.isSaving) {
+      return;
     }
+
+    this.isSaving = true;
+    this.saveError = '';
+
+    of(this.movieService.addMovie(movieData)).pipe(
+      delay(180),
+      finalize(() => {
+        this.isSaving = false;
+      })
+    ).subscribe(success => {
+      if (success) {
+        this.messageService.success(`已把《${movieData.title}》写入片库，Movies 页面会立即同步。`, 'Movie Add');
+        this.snackBar.open(`已添加：${movieData.title}`, '关闭', { duration: 3200 });
+        void this.router.navigate(['/movies']);
+        return;
+      }
+
+      this.saveError = `未添加《${movieData.title}》。片库中已存在同名同年份条目，或当前海报校验未通过。`;
+      this.messageService.error(this.saveError, 'Movie Add');
+      this.snackBar.open(this.saveError, '关闭', { duration: 3600 });
+    });
   }
 
   onCancel(): void {

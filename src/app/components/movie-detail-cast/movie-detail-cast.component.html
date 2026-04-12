@@ -1,4 +1,4 @@
-<section class="detail-cast" *ngIf="movie as currentMovie">
+<section class="detail-cast" *ngIf="movie$ | async as currentMovie">
   <div class="cast-head">
     <div>
       <span class="section-kicker">Cast</span>

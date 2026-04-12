@@ -71,6 +71,12 @@
     font-size: 2rem;
     font-family: var(--cf-font-display);
   }
+
+  p {
+    margin: 0.5rem 0 0;
+    color: var(--cf-text-secondary);
+    line-height: 1.6;
+  }
 }
 
 .content-grid {
@@ -125,6 +131,109 @@
   padding-bottom: 26px;
 }
 
+.service-grid,
+.signal-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.service-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.service-item,
+.signal-card {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.service-item {
+  h3 {
+    margin: 0 0 8px;
+  }
+
+  p {
+    margin: 0;
+    color: var(--cf-text-secondary);
+    line-height: 1.75;
+  }
+}
+
+.service-meta {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  span {
+    padding: 0.28rem 0.62rem;
+    border-radius: 999px;
+    background: rgba(231, 185, 93, 0.1);
+    color: var(--cf-gold);
+    font-size: 0.76rem;
+  }
+}
+
+.signal-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.signal-card {
+  h3 {
+    margin: 0 0 14px;
+    font-family: var(--cf-font-display);
+  }
+}
+
+.message-list,
+.log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.signal-line {
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  strong,
+  span,
+  p {
+    display: block;
+  }
+
+  strong {
+    color: var(--cf-text-primary);
+  }
+
+  span {
+    margin-top: 4px;
+    color: var(--cf-gold);
+    font-size: 0.76rem;
+  }
+
+  p {
+    margin: 8px 0 0;
+    color: var(--cf-text-secondary);
+    line-height: 1.75;
+  }
+}
+
+.latest-line {
+  margin-bottom: 14px;
+}
+
+.signal-empty {
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--cf-text-secondary);
+}
+
 .rule-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -151,7 +260,9 @@
 @media (max-width: 1024px) {
   .about-hero,
   .content-grid,
-  .rule-grid {
+  .rule-grid,
+  .service-grid,
+  .signal-grid {
     grid-template-columns: 1fr;
   }
 }

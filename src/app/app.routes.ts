@@ -95,5 +95,23 @@ export const routes: Routes = [
     data: { breadcrumb: '影评墙' },
     loadComponent: () => import('./components/movie-review-wall/movie-review-wall.component').then(m => m.MovieReviewWallComponent)
   },
+  {
+    path: 'watch-plans',
+    title: '待看片单 | CinemaFlow',
+    data: { breadcrumb: '待看片单' },
+    loadComponent: () => import('./components/watch-plans/watch-plans.component').then(m => m.WatchPlansComponent)
+  },
+  {
+    path: 'watch-logs',
+    title: '观影日志 | CinemaFlow',
+    data: { breadcrumb: '观影日志' },
+    loadComponent: () => import('./components/watch-logs/watch-logs.component').then(m => m.WatchLogsComponent)
+  },
+  {
+    path: 'smart-picks',
+    title: '智能选片 | CinemaFlow',
+    data: { breadcrumb: '智能选片' },
+    loadComponent: () => import('./components/smart-picks/smart-picks.component').then(m => m.SmartPicksComponent)
+  },
   { path: '**', redirectTo: '/dashboard' }
 ];

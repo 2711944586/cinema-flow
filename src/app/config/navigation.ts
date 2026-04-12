@@ -80,6 +80,24 @@ export const ENHANCEMENT_NAV_ITEMS: AppNavItem[] = [
     route: '/reviews',
     icon: 'rate_review',
     description: '影评墙与短评创作'
+  },
+  {
+    label: 'Watch Plans',
+    route: '/watch-plans',
+    icon: 'playlist_add_check',
+    description: '安排待看片单、优先级与观影日期'
+  },
+  {
+    label: 'Watch Logs',
+    route: '/watch-logs',
+    icon: 'history_edu',
+    description: '记录观影日志、心情标签与会话评分'
+  },
+  {
+    label: 'Smart Picks',
+    route: '/smart-picks',
+    icon: 'auto_awesome_motion',
+    description: '用预设条件智能推荐下一部要看的电影'
   }
 ];
 
@@ -96,6 +114,9 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   compare: '对比',
   calendar: '日历',
   reviews: '影评墙',
+  'watch-plans': '待看片单',
+  'watch-logs': '观影日志',
+  'smart-picks': '智能选片',
   info: '基本信息',
   cast: '演员表'
 };

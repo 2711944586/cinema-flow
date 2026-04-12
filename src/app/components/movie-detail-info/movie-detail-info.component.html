@@ -1,4 +1,4 @@
-<section class="detail-info" *ngIf="movie as currentMovie">
+<section class="detail-info" *ngIf="movie$ | async as currentMovie">
   <div class="info-grid">
     <article class="info-card">
       <h2>影片资料</h2>
@@ -59,7 +59,7 @@
             [class.is-active]="star <= (hoverRating || currentMovie.userRating || 0)"
             (mouseenter)="hoverRating = star"
             (mouseleave)="hoverRating = 0"
-            (click)="setUserRating(star)">
+            (click)="setUserRating(currentMovie.id, star)">
             {{ star }}
           </button>
         </div>
@@ -70,7 +70,7 @@
         id="movie-notes"
         rows="5"
         [ngModel]="currentMovie.userNotes || ''"
-        (ngModelChange)="saveNotes($event)"
+        (ngModelChange)="saveNotes(currentMovie.id, $event)"
         placeholder="记录这部电影给你的感受、画面记忆或值得反复回看的片段。">
       </textarea>
     </article>

@@ -1,4 +1,4 @@
-<section class="movie-list-page">
+<section class="movie-list-page" *ngIf="vm$ | async as vm; else loadingState">
   <div class="page-head">
     <div>
       <span class="page-kicker">Collection</span>
@@ -17,27 +17,27 @@
         <mat-label>搜索电影 / 导演 / 演员</mat-label>
         <input
           matInput
-          [ngModel]="queryState.search"
-          (ngModelChange)="updateQueryState({ search: $event })"
+          [ngModel]="vm.queryState.search"
+          (ngModelChange)="updateQueryState(vm.queryState, { search: $event })"
           placeholder="例如：Inception / 诺兰">
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="cf-select-field">
         <mat-label>类型</mat-label>
         <mat-select
-          [ngModel]="queryState.genre"
-          (ngModelChange)="updateQueryState({ genre: $event })"
+          [ngModel]="vm.queryState.genre"
+          (ngModelChange)="updateQueryState(vm.queryState, { genre: $event })"
           panelClass="cf-select-panel">
           <mat-option value="all">全部类型</mat-option>
-          <mat-option *ngFor="let genre of genres" [value]="genre">{{ genre }}</mat-option>
+          <mat-option *ngFor="let genre of vm.genres" [value]="genre">{{ genre }}</mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="cf-select-field">
         <mat-label>排序</mat-label>
         <mat-select
-          [ngModel]="queryState.sort"
-          (ngModelChange)="updateQueryState({ sort: $event })"
+          [ngModel]="vm.queryState.sort"
+          (ngModelChange)="updateQueryState(vm.queryState, { sort: $event })"
           panelClass="cf-select-panel">
           <mat-option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</mat-option>
         </mat-select>
@@ -48,16 +48,16 @@
       <button
         type="button"
         class="toggle-pill"
-        [class.is-active]="queryState.watched"
-        (click)="updateQueryState({ watched: !queryState.watched })">
+        [class.is-active]="vm.queryState.watched"
+        (click)="updateQueryState(vm.queryState, { watched: !vm.queryState.watched })">
         <mat-icon>visibility</mat-icon>
         仅看已观影
       </button>
       <button
         type="button"
         class="toggle-pill"
-        [class.is-active]="queryState.favorite"
-        (click)="updateQueryState({ favorite: !queryState.favorite })">
+        [class.is-active]="vm.queryState.favorite"
+        (click)="updateQueryState(vm.queryState, { favorite: !vm.queryState.favorite })">
         <mat-icon>favorite</mat-icon>
         仅看收藏
       </button>
@@ -65,8 +65,8 @@
         <button
           type="button"
           *ngFor="let option of viewOptions"
-          [class.is-active]="queryState.view === option.value"
-          (click)="updateQueryState({ view: option.value })">
+          [class.is-active]="vm.queryState.view === option.value"
+          (click)="updateQueryState(vm.queryState, { view: option.value })">
           <mat-icon>{{ option.icon }}</mat-icon>
           {{ option.label }}
         </button>
@@ -78,16 +78,16 @@
     </div>
 
     <div class="state-row">
-      <span class="state-chip">{{ summaryLabel }}</span>
-      <span class="state-chip" *ngIf="queryState.search">search={{ queryState.search }}</span>
-      <span class="state-chip" *ngIf="queryState.genre !== 'all'">{{ queryState.genre }}</span>
-      <span class="state-chip" *ngIf="queryState.favorite">favorite=true</span>
-      <span class="state-chip" *ngIf="queryState.watched">watched=true</span>
-      <span class="state-chip accent-chip">view={{ queryState.view }}</span>
+      <span class="state-chip">{{ vm.summaryLabel }}</span>
+      <span class="state-chip" *ngIf="vm.queryState.search">search={{ vm.queryState.search }}</span>
+      <span class="state-chip" *ngIf="vm.queryState.genre !== 'all'">{{ vm.queryState.genre }}</span>
+      <span class="state-chip" *ngIf="vm.queryState.favorite">favorite=true</span>
+      <span class="state-chip" *ngIf="vm.queryState.watched">watched=true</span>
+      <span class="state-chip accent-chip">view={{ vm.queryState.view }}</span>
     </div>
   </section>
 
-  <section class="table-card" *ngIf="filteredMovies.length > 0 && queryState.view === 'table'; else gridOrEmpty">
+  <section class="table-card" *ngIf="vm.filteredMovies.length > 0 && vm.queryState.view === 'table'; else gridOrEmpty">
     <div class="table-head">
       <span>电影</span>
       <span>导演</span>
@@ -96,7 +96,7 @@
       <span>操作</span>
     </div>
 
-    <article class="movie-row" *ngFor="let movie of filteredMovies; trackBy: trackByMovieId">
+    <article class="movie-row" *ngFor="let movie of vm.filteredMovies; trackBy: trackByMovieId">
       <div class="movie-main">
         <img [src]="movie.posterUrl" [alt]="movie.title">
         <div class="movie-copy">
@@ -129,8 +129,8 @@
   </section>
 
   <ng-template #gridOrEmpty>
-    <section class="grid-card" *ngIf="filteredMovies.length > 0; else emptyState">
-      <article class="grid-item" *ngFor="let movie of filteredMovies; trackBy: trackByMovieId">
+    <section class="grid-card" *ngIf="vm.filteredMovies.length > 0; else emptyState">
+      <article class="grid-item" *ngFor="let movie of vm.filteredMovies; trackBy: trackByMovieId">
         <img [src]="movie.posterUrl" [alt]="movie.title">
         <div class="grid-copy">
           <a class="movie-title" [routerLink]="['/movies', movie.id, 'info']">{{ movie.title }}</a>
@@ -161,3 +161,11 @@
     </section>
   </ng-template>
 </section>
+
+<ng-template #loadingState>
+  <section class="loading-card">
+    <mat-icon>hourglass_top</mat-icon>
+    <h2>正在同步 Movies 视图</h2>
+    <p>查询参数与片库状态正在合并，请稍候片刻。</p>
+  </section>
+</ng-template>

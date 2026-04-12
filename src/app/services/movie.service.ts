@@ -27,9 +27,7 @@ export class MovieService {
   }
 
   getMovies(): Movie[] {
-    const movies = this.moviesSubject.value.map(movie => this.cloneMovie(movie));
-    this.logger.log(`Retrieved ${movies.length} movies`);
-    return movies;
+    return this.moviesSubject.value.map(movie => this.cloneMovie(movie));
   }
 
   getMoviesObservable(): Observable<Movie[]> {
@@ -39,7 +37,6 @@ export class MovieService {
   getMovieById(id: number): Movie | undefined {
     const movie = this.moviesSubject.value.find(item => item.id === id);
     if (movie) {
-      this.logger.log(`Retrieved movie: ${movie.title}`);
       return this.cloneMovie(movie);
     }
 

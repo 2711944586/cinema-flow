@@ -5,5 +5,15 @@
     <p>为片库新增一部电影。系统会继续校验真实海报，并自动沿用当前影库的主视觉与背景策略。</p>
   </div>
 
+  <section class="status-card" *ngIf="isSaving || saveError">
+    <div class="status-indicator" [class.is-error]="!!saveError">
+      <mat-icon>{{ saveError ? 'error' : 'hourglass_top' }}</mat-icon>
+    </div>
+    <div>
+      <h2>{{ saveError ? '本次提交未通过校验' : '正在写入片库' }}</h2>
+      <p>{{ saveError || 'MovieService 正在处理新增请求并同步更新 Movies 视图。' }}</p>
+    </div>
+  </section>
+
   <app-movie-form (submitted)="onSubmit($event)" (cancelled)="onCancel()"></app-movie-form>
 </section>

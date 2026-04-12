@@ -1,0 +1,156 @@
+<section class="smart-picks-page" *ngIf="vm$ | async as vm">
+  <div class="page-head">
+    <div>
+      <span class="page-kicker">Smart Picks</span>
+      <h1>按你的偏好，为今晚选出最合适的一部</h1>
+      <p>设置时长、评分、类型、语言与待看片单偏好，CinemaFlow 会即时算出最匹配的候选电影。满意的话，一键就能把结果塞回待看片单。</p>
+    </div>
+    <button mat-stroked-button class="secondary-btn" (click)="resetDraft()">
+      <mat-icon>restart_alt</mat-icon>
+      恢复默认条件
+    </button>
+  </div>
+
+  <div class="summary-grid">
+    <article class="summary-card" *ngFor="let card of vm.summaryCards">
+      <span>{{ card.label }}</span>
+      <strong>{{ card.value }}</strong>
+      <p>{{ card.hint }}</p>
+    </article>
+  </div>
+
+  <div class="layout-grid">
+    <section class="criteria-card">
+      <span class="section-kicker">Criteria</span>
+      <h2>智能选片条件</h2>
+
+      <div class="form-grid">
+        <mat-form-field appearance="outline" class="wide-field">
+          <mat-label>预设名称</mat-label>
+          <input matInput [ngModel]="draft.name" (ngModelChange)="updateDraft({ name: $event })" placeholder="例如：周末长片 / 下班后轻松看">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>最长时长（分钟）</mat-label>
+          <input matInput type="number" min="60" step="10" [ngModel]="draft.maxDuration" (ngModelChange)="updateMaxDuration($event)">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>最低评分</mat-label>
+          <input matInput type="number" min="0" max="10" step="0.1" [ngModel]="draft.minRating" (ngModelChange)="updateMinRating($event)">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="wide-field">
+          <mat-label>偏好类型</mat-label>
+          <mat-select multiple [ngModel]="draft.includeGenres" (ngModelChange)="updateDraft({ includeGenres: $event })" panelClass="cf-select-panel">
+            <mat-option *ngFor="let genre of vm.genres" [value]="genre">{{ genre }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="wide-field">
+          <mat-label>排除类型</mat-label>
+          <mat-select multiple [ngModel]="draft.excludeGenres" (ngModelChange)="updateDraft({ excludeGenres: $event })" panelClass="cf-select-panel">
+            <mat-option *ngFor="let genre of vm.genres" [value]="genre">{{ genre }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="wide-field">
+          <mat-label>偏好语言</mat-label>
+          <mat-select multiple [ngModel]="draft.preferredLanguages" (ngModelChange)="updateDraft({ preferredLanguages: $event })" panelClass="cf-select-panel">
+            <mat-option *ngFor="let language of vm.languages" [value]="language">{{ language }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="toggle-grid">
+        <label class="toggle-row">
+          <input type="checkbox" [ngModel]="draft.allowWatched" (ngModelChange)="updateDraft({ allowWatched: $event })">
+          <span>允许推荐已经看过的电影</span>
+        </label>
+        <label class="toggle-row">
+          <input type="checkbox" [ngModel]="draft.preferFavorites" (ngModelChange)="updateDraft({ preferFavorites: $event })">
+          <span>优先考虑已收藏电影</span>
+        </label>
+        <label class="toggle-row">
+          <input type="checkbox" [ngModel]="draft.onlyWatchlist" (ngModelChange)="updateDraft({ onlyWatchlist: $event })">
+          <span>仅从待看片单中推荐</span>
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button mat-flat-button class="primary-btn" (click)="savePreset()">
+          <mat-icon>save</mat-icon>
+          保存预设
+        </button>
+      </div>
+    </section>
+
+    <section class="preset-card">
+      <span class="section-kicker">Presets</span>
+      <h2>已保存预设</h2>
+      <div class="preset-list" *ngIf="vm.presets.length > 0; else emptyPresetState">
+        <article class="preset-item" *ngFor="let preset of vm.presets; trackBy: trackByPresetId">
+          <div>
+            <strong>{{ preset.name }}</strong>
+            <p>最小时评分 {{ preset.minRating }} / 时长上限 {{ preset.maxDuration ?? '不限' }} 分钟</p>
+          </div>
+          <div class="preset-actions">
+            <button mat-stroked-button class="action-btn" (click)="applyPreset(preset)">应用</button>
+            <button mat-icon-button class="action-icon danger" (click)="deletePreset(preset)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <section class="results-card">
+    <div class="card-head">
+      <div>
+        <span class="section-kicker">Recommendations</span>
+        <h2>当前推荐结果</h2>
+      </div>
+    </div>
+
+    <div class="results-grid" *ngIf="vm.recommendations.length > 0; else emptyResultState">
+      <article class="result-item" *ngFor="let result of vm.recommendations; trackBy: trackByMovieId">
+        <img [src]="result.movie.posterUrl" [alt]="result.movie.title">
+        <div class="result-copy">
+          <div class="title-row">
+            <a [routerLink]="['/movies', result.movie.id, 'info']">{{ result.movie.title }}</a>
+            <span class="score-pill">{{ result.score }}</span>
+          </div>
+          <p>{{ result.movie.director }} · {{ result.movie.duration }} 分钟 · {{ result.movie.rating }}/10</p>
+
+          <div class="reason-list">
+            <span *ngFor="let reason of result.reasons">{{ reason }}</span>
+          </div>
+
+          <div class="result-actions">
+            <a mat-stroked-button class="action-btn" [routerLink]="['/movies', result.movie.id, 'info']">详情</a>
+            <button mat-flat-button class="primary-btn" (click)="addToWatchPlan(result)">
+              <mat-icon>{{ result.inWatchlist ? 'playlist_add_check' : 'playlist_add' }}</mat-icon>
+              {{ result.inWatchlist ? '更新片单' : '加入片单' }}
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+</section>
+
+<ng-template #emptyPresetState>
+  <div class="empty-card compact-empty">
+    <mat-icon>bookmark_border</mat-icon>
+    <p>目前还没有保存的预设。调整好条件后点一次“保存预设”，以后就能重复使用。</p>
+  </div>
+</ng-template>
+
+<ng-template #emptyResultState>
+  <section class="empty-card">
+    <mat-icon>auto_awesome</mat-icon>
+    <h2>当前条件下没有推荐结果</h2>
+    <p>可以适当放宽时长、评分或待看片单限制，让 Smart Picks 有更多可挑选的电影。</p>
+  </section>
+</ng-template>

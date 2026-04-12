@@ -1,0 +1,50 @@
+<aside class="message-panel" [class.is-collapsed]="collapsed">
+  <header class="panel-head">
+    <div>
+      <span class="panel-kicker">Service Console</span>
+      <h3>服务消息面板</h3>
+    </div>
+
+    <div class="panel-actions">
+      <button
+        type="button"
+        mat-icon-button
+        aria-label="折叠或展开消息面板"
+        (click)="toggleCollapsed()">
+        <mat-icon>{{ collapsed ? 'expand_more' : 'expand_less' }}</mat-icon>
+      </button>
+      <button
+        type="button"
+        mat-icon-button
+        aria-label="清空消息"
+        (click)="clear()">
+        <mat-icon>cleaning_services</mat-icon>
+      </button>
+    </div>
+  </header>
+
+  <div class="panel-body" *ngIf="!collapsed">
+    <ng-container *ngIf="messages$ | async as messages">
+      <p class="empty-state" *ngIf="messages.length === 0">
+        当前还没有新的服务消息。后续的导入、删除、推荐和计划操作都会在这里留下痕迹。
+      </p>
+
+      <article class="message-card" *ngFor="let message of messages">
+        <div class="message-meta">
+          <span class="message-level" [class]="'level-' + message.level">{{ message.level }}</span>
+          <span class="message-source">{{ message.source }}</span>
+          <span class="message-time">{{ message.createdAt | date:'HH:mm:ss' }}</span>
+          <button
+            type="button"
+            mat-icon-button
+            class="dismiss-btn"
+            aria-label="关闭消息"
+            (click)="dismiss(message.id)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <p>{{ message.text }}</p>
+      </article>
+    </ng-container>
+  </div>
+</aside>

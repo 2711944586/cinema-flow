@@ -181,7 +181,7 @@
 
 .app-content {
   flex: 1;
-  padding: 22px 0 36px;
+  padding: 22px 0 120px;
 }
 
 @keyframes headerGlow {
@@ -222,5 +222,9 @@
   .breadcrumb-wrap,
   .app-content {
     width: min(100%, calc(100vw - 24px));
+  }
+
+  .app-content {
+    padding-bottom: 148px;
   }
 }

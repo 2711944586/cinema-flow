@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 import { CommandPaletteComponent } from './components/command-palette/command-palette.component';
+import { MessagePanelComponent } from './components/message-panel/message-panel.component';
 import { CORE_NAV_ITEMS, ENHANCEMENT_NAV_ITEMS } from './config/navigation';
 
 @Component({
@@ -17,7 +18,8 @@ import { CORE_NAV_ITEMS, ENHANCEMENT_NAV_ITEMS } from './config/navigation';
     MatIconModule,
     MatButtonModule,
     MatDialogModule,
-    BreadcrumbComponent
+    BreadcrumbComponent,
+    MessagePanelComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'

@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -10,19 +9,17 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { combineLatest } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
 import { Movie } from '../../models/movie';
+import { MessageService } from '../../services/message.service';
 import { MovieService } from '../../services/movie.service';
+import { MovieListViewModel, MovieStateService } from '../../services/movie-state.service';
 import {
-  collectMovieGenres,
-  DEFAULT_MOVIE_QUERY_STATE,
-  filterMoviesByQueryState,
   MOVIE_SORT_OPTIONS,
   MOVIE_VIEW_OPTIONS,
   MovieQueryState,
-  toMovieQueryParams,
-  parseMovieQueryState
+  toMovieQueryParams
 } from '../../utils/movie-query';
 
 @Component({
@@ -43,40 +40,26 @@ import {
   styleUrl: './movie-list-page.component.scss'
 })
 export class MovieListPageComponent {
-  movies: Movie[] = [];
-  filteredMovies: Movie[] = [];
-  genres: string[] = [];
-  queryState: MovieQueryState = { ...DEFAULT_MOVIE_QUERY_STATE };
+  readonly vm$: Observable<MovieListViewModel>;
 
   readonly sortOptions = MOVIE_SORT_OPTIONS;
   readonly viewOptions = MOVIE_VIEW_OPTIONS;
 
-  private readonly destroyRef = inject(DestroyRef);
-
   constructor(
+    private movieStateService: MovieStateService,
     private movieService: MovieService,
     private route: ActivatedRoute,
     private router: Router,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private messageService: MessageService
   ) {
-    combineLatest([this.movieService.movies$, this.route.queryParamMap])
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(([movies, queryParamMap]) => {
-        this.movies = movies;
-        this.genres = collectMovieGenres(movies);
-        this.queryState = parseMovieQueryState(queryParamMap, this.genres);
-        this.filteredMovies = filterMoviesByQueryState(movies, this.queryState);
-      });
+    this.vm$ = this.movieStateService.movieListVm$(this.route.queryParamMap);
   }
 
-  get summaryLabel(): string {
-    return `${this.filteredMovies.length} / ${this.movies.length} 部`;
-  }
-
-  updateQueryState(patch: Partial<MovieQueryState>): void {
+  updateQueryState(currentState: MovieQueryState, patch: Partial<MovieQueryState>): void {
     const nextState: MovieQueryState = {
-      ...this.queryState,
+      ...currentState,
       ...patch
     };
 
@@ -89,15 +72,34 @@ export class MovieListPageComponent {
   }
 
   clearFilters(): void {
-    this.updateQueryState({ ...DEFAULT_MOVIE_QUERY_STATE });
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: toMovieQueryParams({
+        search: '',
+        genre: 'all',
+        sort: 'newest',
+        watched: false,
+        favorite: false,
+        view: 'table'
+      }),
+      replaceUrl: true
+    });
   }
 
   toggleFavorite(movie: Movie): void {
     this.movieService.toggleFavorite(movie.id);
+    this.messageService.info(
+      movie.isFavorite ? `已将《${movie.title}》移出收藏中心。` : `已将《${movie.title}》加入收藏中心。`,
+      'Movies'
+    );
   }
 
   toggleWatched(movie: Movie): void {
     this.movieService.toggleWatched(movie.id);
+    this.messageService.info(
+      movie.isWatched ? `已把《${movie.title}》标记为未观影。` : `已把《${movie.title}》标记为已观影。`,
+      'Movies'
+    );
   }
 
   deleteMovie(movie: Movie): void {
@@ -116,6 +118,11 @@ export class MovieListPageComponent {
       }
 
       const success = this.movieService.deleteMovie(movie.id);
+      if (success) {
+        this.messageService.success(`已删除《${movie.title}》，Movies 与增强页会同步刷新。`, 'Movies');
+      } else {
+        this.messageService.error(`删除《${movie.title}》失败：电影不存在。`, 'Movies');
+      }
       this.snackBar.open(success ? `已删除：${movie.title}` : '删除失败：电影不存在', '关闭', {
         duration: 3000
       });

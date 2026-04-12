@@ -1,0 +1,145 @@
+<section class="watch-plans-page" *ngIf="vm$ | async as vm">
+  <div class="page-head">
+    <div>
+      <span class="page-kicker">Watch Plans</span>
+      <h1>把想看的电影真正排进日程</h1>
+      <p>待看片单不再只是“收藏以后再说”。在这里你可以为电影设定优先级、排期时间和观影场景，让下一次打开 CinemaFlow 时不再从零犹豫。</p>
+    </div>
+    <button mat-stroked-button class="secondary-btn" (click)="resetDraft()">
+      <mat-icon>restart_alt</mat-icon>
+      重置表单
+    </button>
+  </div>
+
+  <div class="summary-grid">
+    <article class="summary-card" *ngFor="let card of vm.summaryCards">
+      <span>{{ card.label }}</span>
+      <strong>{{ card.value }}</strong>
+      <p>{{ card.hint }}</p>
+    </article>
+  </div>
+
+  <div class="layout-grid">
+    <section class="planner-card">
+      <div class="section-head">
+        <div>
+          <span class="section-kicker">Plan Builder</span>
+          <h2>{{ isEditing ? '编辑当前计划' : '新增 / 更新计划' }}</h2>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <mat-form-field appearance="outline" class="wide-field">
+          <mat-label>选择电影</mat-label>
+          <mat-select [(ngModel)]="draft.movieId" panelClass="cf-select-panel">
+            <mat-option [value]="null">请选择电影</mat-option>
+            <mat-option *ngFor="let option of vm.movieOptions" [value]="option.movie.id">
+              {{ option.movie.title }} · {{ option.movie.rating }}/10{{ option.hasActivePlan ? '（已在清单）' : '' }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>计划状态</mat-label>
+          <mat-select [(ngModel)]="draft.status" panelClass="cf-select-panel">
+            <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>优先级</mat-label>
+          <mat-select [(ngModel)]="draft.priority" panelClass="cf-select-panel">
+            <mat-option *ngFor="let option of priorityOptions" [value]="option.value">{{ option.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>计划观看日期</mat-label>
+          <input matInput type="date" [(ngModel)]="draft.plannedFor">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="wide-field">
+          <mat-label>观影情境标签</mat-label>
+          <input matInput [(ngModel)]="draft.contextTag" placeholder="例如：周末夜场 / 与朋友一起 / 补课导演作品">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="wide-field">
+          <mat-label>备注</mat-label>
+          <textarea matInput rows="4" [(ngModel)]="draft.note" placeholder="记录为什么现在想看、是否需要连看某个系列、或适合什么心情。"></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="form-actions">
+        <button mat-flat-button class="primary-btn" (click)="savePlan()">
+          <mat-icon>{{ isEditing ? 'save_as' : 'playlist_add' }}</mat-icon>
+          {{ isEditing ? '更新计划' : '保存计划' }}
+        </button>
+        <button mat-stroked-button class="secondary-btn" (click)="resetDraft()">
+          <mat-icon>ink_eraser</mat-icon>
+          清空当前编辑
+        </button>
+      </div>
+    </section>
+
+    <section class="guide-card">
+      <span class="section-kicker">Workflow</span>
+      <h2>推荐用法</h2>
+      <ul>
+        <li>先把高优先级电影排到具体日期，避免想看时再次犹豫。</li>
+        <li>为计划补上情境标签，例如“下班后轻松片”或“周末硬核长片”。</li>
+        <li>在 `Watch Logs` 记录观影后，对应计划会自动标记完成。</li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="plans-card">
+    <div class="card-head">
+      <div>
+        <span class="section-kicker">Queue</span>
+        <h2>当前待看片单</h2>
+      </div>
+      <div class="filter-row">
+        <button type="button" [class.is-active]="vm.statusFilter === 'all'" (click)="setStatusFilter('all')">全部</button>
+        <button type="button" *ngFor="let option of statusOptions" [class.is-active]="vm.statusFilter === option.value" (click)="setStatusFilter(option.value)">
+          {{ option.label }}
+        </button>
+      </div>
+    </div>
+
+    <div class="plan-list" *ngIf="vm.visiblePlans.length > 0; else emptyState">
+      <article class="plan-item" *ngFor="let item of vm.visiblePlans; trackBy: trackByPlanId">
+        <img [src]="item.movie.posterUrl" [alt]="item.movie.title">
+        <div class="plan-copy">
+          <div class="title-row">
+            <a [routerLink]="['/movies', item.movie.id, 'info']">{{ item.movie.title }}</a>
+            <span class="status-pill" [class]="'status-' + item.entry.status">{{ item.statusLabel }}</span>
+            <span class="priority-pill" [class]="'priority-' + item.entry.priority">{{ item.priorityLabel }}</span>
+          </div>
+          <p>{{ item.movie.director }} · {{ item.movie.duration }} 分钟 · {{ item.plannedForLabel }}</p>
+          <div class="meta-row">
+            <span *ngIf="item.entry.contextTag">{{ item.entry.contextTag }}</span>
+            <span>更新于 {{ item.entry.updatedAt | date:'MM-dd HH:mm' }}</span>
+          </div>
+          <p class="note" *ngIf="item.entry.note">{{ item.entry.note }}</p>
+        </div>
+        <div class="plan-actions">
+          <button mat-stroked-button class="action-btn" (click)="editPlan(item)">编辑</button>
+          <button mat-stroked-button class="action-btn" (click)="updatePlanStatus(item.entry, 'scheduled')">安排</button>
+          <button mat-stroked-button class="action-btn" (click)="updatePlanStatus(item.entry, 'paused')">暂缓</button>
+          <button mat-stroked-button class="action-btn success-btn" (click)="updatePlanStatus(item.entry, 'completed')">完成</button>
+          <button mat-icon-button class="action-icon danger" (click)="removePlan(item.entry)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </article>
+    </div>
+  </section>
+</section>
+
+<ng-template #emptyState>
+  <section class="empty-card">
+    <mat-icon>playlist_remove</mat-icon>
+    <h2>当前筛选下没有计划</h2>
+    <p>先把一部想看的电影加进待看片单，再逐步安排观看时间与场景。</p>
+  </section>
+</ng-template>

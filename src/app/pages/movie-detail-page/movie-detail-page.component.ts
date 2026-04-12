@@ -6,13 +6,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
-import { combineLatest } from 'rxjs';
-import { filter, startWith } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, Observable, shareReplay, startWith } from 'rxjs';
 import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
 import { RecentHistoryComponent } from '../../components/recent-history/recent-history.component';
 import { Movie } from '../../models/movie';
+import { MessageService } from '../../services/message.service';
+import { MovieDetailViewModel, MovieStateService } from '../../services/movie-state.service';
 import { MovieService } from '../../services/movie.service';
-import { RecentHistoryEntry, RecentHistoryService } from '../../services/recent-history.service';
+import { RecentHistoryService } from '../../services/recent-history.service';
 import {
   applyBackdropDisplayFallback,
   applyMovieImageFallback,
@@ -34,12 +35,15 @@ import {
   styleUrl: './movie-detail-page.component.scss'
 })
 export class MovieDetailPageComponent {
-  movie?: Movie;
-  recommendations: Movie[] = [];
-  previousMovie?: Movie;
-  nextMovie?: Movie;
-  recentHistory: RecentHistoryEntry[] = [];
-  notFound = false;
+  readonly currentSection$: Observable<'info' | 'cast'> = this.router.events.pipe(
+    filter(event => event instanceof NavigationEnd),
+    startWith(null),
+    map(() => this.route.firstChild?.snapshot.url[0]?.path === 'cast' ? 'cast' : 'info'),
+    distinctUntilChanged(),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  readonly vm$ = this.movieStateService.movieDetailVm$(this.route.paramMap, this.currentSection$);
 
   private lastRecordedKey = '';
   private readonly destroyRef = inject(DestroyRef);
@@ -49,138 +53,93 @@ export class MovieDetailPageComponent {
     private router: Router,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
+    private movieStateService: MovieStateService,
     private movieService: MovieService,
-    private recentHistoryService: RecentHistoryService
+    private recentHistoryService: RecentHistoryService,
+    private messageService: MessageService
   ) {
-    combineLatest([this.route.paramMap, this.movieService.movies$])
+    this.vm$
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(([params]) => {
-        const movieId = Number(params.get('id'));
-
-        if (!Number.isFinite(movieId)) {
-          this.movie = undefined;
-          this.notFound = true;
-          return;
-        }
-
-        const currentMovie = this.movieService.getMovieById(movieId);
-        this.movie = currentMovie;
-        this.notFound = !currentMovie;
-        this.recommendations = currentMovie ? this.movieService.getRecommendations(currentMovie.id, 4) : [];
-
-        const neighbors = this.movieService.getMovieNeighbors(movieId);
-        this.previousMovie = neighbors.previous;
-        this.nextMovie = neighbors.next;
-        this.recordCurrentVisit();
-      });
-
-    this.recentHistoryService.history$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(entries => {
-        this.recentHistory = this.movie
-          ? entries.filter(entry => entry.movieId !== this.movie?.id).slice(0, 4)
-          : entries.slice(0, 4);
-      });
-
-    this.router.events
-      .pipe(
-        filter(event => event instanceof NavigationEnd),
-        startWith(null),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(() => {
-        this.recordCurrentVisit();
+      .subscribe(vm => {
+        this.recordCurrentVisit(vm);
       });
   }
 
-  get currentSection(): 'info' | 'cast' {
-    const childPath = this.route.firstChild?.snapshot.url[0]?.path;
-    return childPath === 'cast' ? 'cast' : 'info';
-  }
-
-  get backdropUrl(): string | null {
-    return this.movie ? getBackdropDisplayUrl(this.movie) : null;
+  getBackdropUrl(movie: Movie): string | null {
+    return getBackdropDisplayUrl(movie);
   }
 
   goBack(): void {
     void this.router.navigate(['/movies']);
   }
 
-  toggleFavorite(): void {
-    if (!this.movie) {
-      return;
-    }
-
-    this.movieService.toggleFavorite(this.movie.id);
-    this.movie = this.movieService.getMovieById(this.movie.id);
+  toggleFavorite(movie: Movie): void {
+    this.movieService.toggleFavorite(movie.id);
+    this.messageService.info(
+      movie.isFavorite ? `已取消收藏《${movie.title}》。` : `已把《${movie.title}》加入收藏中心。`,
+      'Movie Detail'
+    );
   }
 
-  toggleWatched(): void {
-    if (!this.movie) {
-      return;
-    }
-
-    this.movieService.toggleWatched(this.movie.id);
-    this.movie = this.movieService.getMovieById(this.movie.id);
+  toggleWatched(movie: Movie): void {
+    this.movieService.toggleWatched(movie.id);
+    this.messageService.info(
+      movie.isWatched ? `已把《${movie.title}》恢复为未观影状态。` : `已把《${movie.title}》标记为已观影。`,
+      'Movie Detail'
+    );
   }
 
-  deleteMovie(): void {
-    if (!this.movie) {
-      return;
-    }
-
+  deleteMovie(movie: Movie): void {
     this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: '确认删除当前电影',
-        message: `删除《${this.movie.title}》后，Movies、Explore、Favorites 和其他增强模块中的对应条目都会消失。`,
+        message: `删除《${movie.title}》后，Movies、Explore、Favorites 和其他增强模块中的对应条目都会消失。`,
         confirmLabel: '删除电影',
         cancelLabel: '取消',
         tone: 'danger'
       },
       panelClass: 'cf-dialog-panel'
     }).afterClosed().subscribe(confirmed => {
-      if (!confirmed || !this.movie) {
+      if (!confirmed) {
         return;
       }
 
-      const deletedTitle = this.movie.title;
-      const success = this.movieService.deleteMovie(this.movie.id);
+      const deletedTitle = movie.title;
+      const success = this.movieService.deleteMovie(movie.id);
       if (success) {
+        this.messageService.success(`已删除《${deletedTitle}》，详情上下文已返回 Movies。`, 'Movie Detail');
         this.snackBar.open(`已删除：${deletedTitle}`, '关闭', { duration: 3000 });
         void this.router.navigate(['/movies']);
       } else {
+        this.messageService.error(`删除《${deletedTitle}》失败：电影不存在。`, 'Movie Detail');
         this.snackBar.open('删除失败：电影不存在', '关闭', { duration: 3000 });
       }
     });
   }
 
-  onPosterError(event: Event): void {
-    if (this.movie) {
-      applyMovieImageFallback(event, this.movie);
-    }
+  onPosterError(event: Event, movie: Movie): void {
+    applyMovieImageFallback(event, movie);
   }
 
-  onBackdropError(event: Event): void {
-    if (this.movie) {
-      applyBackdropDisplayFallback(event, this.movie);
-    }
+  onBackdropError(event: Event, movie: Movie): void {
+    applyBackdropDisplayFallback(event, movie);
   }
 
   onRecommendationPosterError(event: Event, movie: Movie): void {
     applyMovieImageFallback(event, movie);
   }
 
-  private recordCurrentVisit(): void {
-    if (!this.movie) {
+  private recordCurrentVisit(vm: MovieDetailViewModel): void {
+    if (!vm.movie) {
       return;
     }
 
-    const currentKey = `${this.movie.id}-${this.currentSection}-${this.router.url}`;
+    const currentKey = `${vm.movie.id}-${vm.currentSection}-${this.router.url}`;
     if (currentKey === this.lastRecordedKey) {
       return;
     }
 
     this.lastRecordedKey = currentKey;
-    this.recentHistoryService.recordVisit(this.movie, this.currentSection);
+    this.recentHistoryService.recordVisit(vm.movie, vm.currentSection);
   }
 }

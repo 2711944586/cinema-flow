@@ -1,23 +1,16 @@
-<section class="about-page">
+<section class="about-page" *ngIf="vm$ | async as vm">
   <div class="about-hero">
     <div class="hero-copy">
       <span class="hero-kicker">About CinemaFlow</span>
-      <h1>一套围绕电影浏览、收藏与整理而设计的影库系统</h1>
-      <p>CinemaFlow 把探索、收藏、推荐、时间线、随机选片、对比、日历和影评整合到同一套深色玻璃态视觉语言里，让每个入口都像一间独立的放映厅。</p>
+      <h1>一套围绕电影浏览、收藏、计划与观影记录构建的响应式影库系统</h1>
+      <p>CinemaFlow 不再只是一个静态片库，而是把 MovieService、日志、消息、待看片单、观影日志与智能选片收束进统一的服务化结构里，让第四次上机课的服务中枢真正落地到页面体验。</p>
     </div>
 
     <div class="hero-summary">
-      <div class="summary-card">
-        <span>版本</span>
-        <strong>CinemaFlow</strong>
-      </div>
-      <div class="summary-card">
-        <span>新增能力</span>
-        <strong>3 项</strong>
-      </div>
-      <div class="summary-card">
-        <span>模块总数</span>
-        <strong>{{ coreModules.length + enhancementModules.length }}</strong>
+      <div class="summary-card" *ngFor="let card of vm.summaryCards">
+        <span>{{ card.label }}</span>
+        <strong>{{ card.value }}</strong>
+        <p>{{ card.hint }}</p>
       </div>
     </div>
   </div>
@@ -25,17 +18,17 @@
   <div class="content-grid">
     <section class="content-card">
       <span class="section-kicker">Highlights</span>
-      <h2>项目亮点</h2>
+      <h2>本轮实验亮点</h2>
       <ul>
-        <li *ngFor="let item of highlights">{{ item }}</li>
+        <li *ngFor="let item of vm.highlights">{{ item }}</li>
       </ul>
     </section>
 
     <section class="content-card">
       <span class="section-kicker">Tech Stack</span>
-      <h2>技术栈</h2>
+      <h2>技术栈与响应式手法</h2>
       <ul>
-        <li *ngFor="let item of techStack">{{ item }}</li>
+        <li *ngFor="let item of vm.techStack">{{ item }}</li>
       </ul>
     </section>
 
@@ -43,7 +36,7 @@
       <span class="section-kicker">Core</span>
       <h2>核心页面</h2>
       <div class="route-list">
-        <div class="route-item" *ngFor="let item of coreModules">
+        <div class="route-item" *ngFor="let item of vm.coreModules">
           <strong>{{ item.route }}</strong>
           <span>{{ item.description }}</span>
         </div>
@@ -52,15 +45,66 @@
 
     <section class="content-card">
       <span class="section-kicker">Enhancements</span>
-      <h2>增强模块</h2>
+      <h2>增强页面</h2>
       <div class="route-list">
-        <div class="route-item" *ngFor="let item of enhancementModules">
+        <div class="route-item" *ngFor="let item of vm.enhancementModules">
           <strong>{{ item.route }}</strong>
           <span>{{ item.description }}</span>
         </div>
       </div>
     </section>
   </div>
+
+  <section class="content-card wide-card">
+    <span class="section-kicker">Service Registry</span>
+    <h2>根级服务与状态信号</h2>
+    <div class="service-grid">
+      <article class="service-item" *ngFor="let service of vm.serviceSummaries">
+        <h3>{{ service.name }}</h3>
+        <p>{{ service.summary }}</p>
+        <div class="service-meta">
+          <span>存储：{{ service.storageKey }}</span>
+          <span>信号：{{ service.reactiveSignal }}</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="content-card wide-card">
+    <span class="section-kicker">Signals</span>
+    <h2>最近消息与服务日志</h2>
+    <div class="signal-grid">
+      <article class="signal-card">
+        <h3>最新消息</h3>
+        <div class="signal-empty" *ngIf="!vm.latestMessage">当前尚无服务消息。</div>
+        <div class="signal-line latest-line" *ngIf="vm.latestMessage as latestMessage">
+          <strong>{{ latestMessage.source }}</strong>
+          <span>{{ latestMessage.createdAt | date:'MM-dd HH:mm:ss' }}</span>
+          <p>{{ latestMessage.text }}</p>
+        </div>
+
+        <div class="message-list" *ngIf="vm.recentMessages.length > 0">
+          <div class="signal-line" *ngFor="let message of vm.recentMessages">
+            <strong>{{ message.level | uppercase }} · {{ message.source }}</strong>
+            <span>{{ message.createdAt | date:'HH:mm:ss' }}</span>
+            <p>{{ message.text }}</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="signal-card">
+        <h3>最近日志</h3>
+        <div class="signal-empty" *ngIf="vm.recentLogs.length === 0">LoggerService 还没有新的记录。</div>
+        <div class="log-list" *ngIf="vm.recentLogs.length > 0">
+          <div class="signal-line" *ngFor="let log of vm.recentLogs">
+            <strong>{{ log.level | uppercase }} · {{ log.source }}</strong>
+            <span>{{ log.createdAt | date:'MM-dd HH:mm:ss' }}</span>
+            <p>{{ log.message }}</p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
 
   <section class="content-card wide-card">
     <span class="section-kicker">Rules</span>
@@ -76,7 +120,7 @@
       </article>
       <article>
         <h3>最近浏览与备份</h3>
-        <p>最近浏览会写入本地存储；导出 JSON 时会把电影数据、状态、影评和最近浏览一起带出，方便迁移与恢复。</p>
+        <p>导出 JSON 时会带上电影数据、最近浏览、影评、待看片单、观影日志与智能选片预设，确保跨设备恢复时状态完整。</p>
       </article>
     </div>
   </section>

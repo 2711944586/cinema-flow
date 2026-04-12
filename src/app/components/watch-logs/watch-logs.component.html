@@ -1,0 +1,144 @@
+<section class="watch-logs-page" *ngIf="vm$ | async as vm">
+  <div class="page-head">
+    <div>
+      <span class="page-kicker">Watch Logs</span>
+      <h1>把每次观影都记成有温度的记录</h1>
+      <p>除了“看没看过”，你还可以在这里记录观影时间、地点、陪伴对象、临场评分与心情标签。CinemaFlow 会把计划与日志自动串起来，形成完整的看片轨迹。</p>
+    </div>
+    <button mat-stroked-button class="secondary-btn" (click)="resetDraft()">
+      <mat-icon>restart_alt</mat-icon>
+      重置表单
+    </button>
+  </div>
+
+  <div class="summary-grid">
+    <article class="summary-card" *ngFor="let card of vm.summaryCards">
+      <span>{{ card.label }}</span>
+      <strong>{{ card.value }}</strong>
+      <p>{{ card.hint }}</p>
+    </article>
+  </div>
+
+  <div class="layout-grid">
+    <section class="log-form-card">
+      <span class="section-kicker">Log Entry</span>
+      <h2>新增观影日志</h2>
+
+      <div class="form-grid">
+        <mat-form-field appearance="outline" class="wide-field">
+          <mat-label>选择电影</mat-label>
+          <mat-select [(ngModel)]="draft.movieId" panelClass="cf-select-panel">
+            <mat-option [value]="null">请选择电影</mat-option>
+            <mat-option *ngFor="let movie of vm.movieOptions" [value]="movie.id">
+              {{ movie.title }} · {{ movie.rating }}/10
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>观影日期</mat-label>
+          <input matInput type="date" [(ngModel)]="draft.watchedAt">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>会话评分</mat-label>
+          <input matInput type="number" min="0" max="10" step="0.1" [(ngModel)]="draft.sessionRating" placeholder="可选，0-10">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>观影地点</mat-label>
+          <input matInput [(ngModel)]="draft.location" placeholder="例如：家里客厅 / IMAX 厅">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>陪同对象</mat-label>
+          <input matInput [(ngModel)]="draft.companion" placeholder="例如：一个人 / 朋友 / 家人">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="wide-field">
+          <mat-label>情绪标签</mat-label>
+          <input matInput [(ngModel)]="draft.moodTags" placeholder="例如：治愈, 热血, 失眠夜, 压力释放">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="wide-field">
+          <mat-label>观影感受</mat-label>
+          <textarea matInput rows="4" [(ngModel)]="draft.note" placeholder="记录此刻最想留下的感受、台词或画面记忆。"></textarea>
+        </mat-form-field>
+      </div>
+
+      <label class="checkbox-row">
+        <input type="checkbox" [(ngModel)]="draft.isRewatch">
+        <span>这是一次重看</span>
+      </label>
+
+      <div class="form-actions">
+        <button mat-flat-button class="primary-btn" (click)="saveLog()">
+          <mat-icon>history_edu</mat-icon>
+          保存日志
+        </button>
+      </div>
+    </section>
+
+    <section class="guide-card">
+      <span class="section-kicker">Filter</span>
+      <h2>筛选当前日志</h2>
+      <mat-form-field appearance="outline">
+        <mat-label>按电影过滤</mat-label>
+        <mat-select [ngModel]="vm.filterMovieId" (ngModelChange)="setFilterMovieId($event)" panelClass="cf-select-panel">
+          <mat-option value="all">全部电影</mat-option>
+          <mat-option *ngFor="let movie of vm.movieOptions" [value]="movie.id">{{ movie.title }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <ul>
+        <li>记录日志后，对应电影会自动标记为已观影。</li>
+        <li>如果该电影已存在待看片单，记录后会自动完成计划。</li>
+        <li>会话评分会在电影还没有个人评分时自动作为第一次主观评分信号。</li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="logs-card">
+    <div class="card-head">
+      <div>
+        <span class="section-kicker">Timeline</span>
+        <h2>最近观影记录</h2>
+      </div>
+    </div>
+
+    <div class="log-list" *ngIf="vm.visibleLogs.length > 0; else emptyState">
+      <article class="log-item" *ngFor="let item of vm.visibleLogs; trackBy: trackByLogId">
+        <img [src]="item.movie.posterUrl" [alt]="item.movie.title">
+        <div class="log-copy">
+          <div class="title-row">
+            <a [routerLink]="['/movies', item.movie.id, 'info']">{{ item.movie.title }}</a>
+            <span class="log-date">{{ item.watchedAtLabel }}</span>
+            <span class="rating-pill" *ngIf="item.entry.sessionRating !== null">{{ item.entry.sessionRating }}/10</span>
+          </div>
+          <p>{{ item.movie.director }} · {{ item.movie.duration }} 分钟</p>
+          <div class="meta-row">
+            <span *ngIf="item.entry.location">地点：{{ item.entry.location }}</span>
+            <span *ngIf="item.entry.companion">陪同：{{ item.entry.companion }}</span>
+            <span>{{ item.moodLabel }}</span>
+            <span *ngIf="item.entry.isRewatch">重看</span>
+          </div>
+          <p class="note" *ngIf="item.entry.note">{{ item.entry.note }}</p>
+        </div>
+        <div class="log-actions">
+          <a mat-stroked-button class="action-btn" [routerLink]="['/movies', item.movie.id, 'info']">详情</a>
+          <button mat-icon-button class="action-icon danger" (click)="removeLog(item.entry)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </article>
+    </div>
+  </section>
+</section>
+
+<ng-template #emptyState>
+  <section class="empty-card">
+    <mat-icon>history_toggle_off</mat-icon>
+    <h2>还没有观影日志</h2>
+    <p>先记录一次最近看完的电影，CinemaFlow 就会开始形成你的观看轨迹与偏好数据。</p>
+  </section>
+</ng-template>

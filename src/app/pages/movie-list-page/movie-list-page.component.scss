@@ -9,7 +9,8 @@
 .toolbar-card,
 .table-card,
 .grid-card,
-.empty-card {
+.empty-card,
+.loading-card {
   border-radius: 28px;
   border: 1px solid var(--cf-border);
   background: var(--cf-surface-elevated);
@@ -326,6 +327,29 @@
     margin: 0;
     color: var(--cf-text-secondary);
     line-height: 1.8;
+  }
+}
+
+.loading-card {
+  padding: 52px 24px;
+  text-align: center;
+
+  mat-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 36px;
+    color: var(--cf-gold);
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    margin: 0 0 8px;
+    font-family: var(--cf-font-display);
+  }
+
+  p {
+    margin: 0;
+    color: var(--cf-text-secondary);
   }
 }
 

@@ -3,7 +3,7 @@
 ## 1. 新旧路由对照
 
 | 类型 | 路径 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | 根路由 | `/` | 重定向到 `/dashboard` |
 | 新增标准页 | `/dashboard` | 首页仪表盘，整合统计、快捷入口、最近浏览、最近添加 |
 | 新增标准页 | `/movies` | 标准电影列表页，支持查询参数同步 |
@@ -20,6 +20,9 @@
 | 保留增强页 | `/compare` | 电影对比 |
 | 保留增强页 | `/calendar` | 观影日历 |
 | 保留增强页 | `/reviews` | 影评墙 |
+| 新增创新页 | `/watch-plans` | 待看片单、优先级与观影日期 |
+| 新增创新页 | `/watch-logs` | 观影日志、心情标签与会话评分 |
+| 新增创新页 | `/smart-picks` | 智能选片与一键写回待看片单 |
 | 兜底路由 | `**` | 重定向到 `/dashboard` |
 
 ## 2. Pages 与 Components 的职责划分
@@ -40,9 +43,21 @@
 - `command-palette`: 全局快速跳转。
 - `recent-history`: 最近浏览展示。
 - `data-management`: 导出 / 导入 JSON。
+- `message-panel`: 全局服务消息面板。
 - `movie-detail-info`: 详情基本信息子页。
 - `movie-detail-cast`: 详情演员表子页。
 - `confirm-dialog`: 删除与导入确认。
+- `watch-plans`: 待看片单与排期页面。
+- `watch-logs`: 观影日志页面。
+- `smart-picks`: 智能选片与预设管理页面。
+
+### Services
+
+- `message.service`: 统一服务消息流，支持右下角消息面板。
+- `movie-state.service`: 聚合多服务的页面级 view-model façade。
+- `watch-plan.service`: 待看片单状态。
+- `watch-log.service`: 观影日志状态。
+- `smart-picks.service`: 智能选片预设与推荐结果。
 
 ## 3. 课设要求落地方式
 
@@ -56,39 +71,45 @@
 - 添加后跳转：`/add` 保存成功后进入 `/movies`。
 - 删除后返回：详情页删除成功后返回 `/movies`。
 - 上一部 / 下一部：详情页按片库顺序切换相邻电影。
+- 服务化重构：新增 `MessageService`、`LoggerService` 日志流、`MovieStateService` 页面 façade。
+- 响应式数据层：Dashboard / Movies / Movie Detail / About 通过 `vm$ + async` 消费页面状态。
+- 服务消息面板：右下角常驻消息面板展示最近服务消息，About 页同步展示服务日志。
+- 导入导出扩展：JSON 备份除电影、影评、最近浏览外，也包含待看片单、观影日志与智能选片预设。
 
-## 4. 三个新增功能
+## 4. 三个新增创新页面
 
-### 全局快速跳转
+### Watch Plans / 待看片单
 
-- 快捷键：`Ctrl+K / Cmd+K`
-- 支持搜索页面与电影
-- 支持键盘上下选择、回车跳转
+- 管理待看片单、优先级与计划状态
+- 支持安排观看日期、观影情境标签与备注
+- 计划可切换为待安排 / 已排期 / 暂缓 / 已完成
 
-### 最近浏览
+### Watch Logs / 观影日志
 
-- 访问详情页时记录最近浏览
-- 使用 `localStorage` 持久化
-- 仪表盘与详情页侧边都可继续查看
+- 记录观影时间、地点、陪同对象、情绪标签与会话评分
+- 记录日志后自动把电影标记为已观影
+- 若电影已存在待看片单，记录日志后会自动完成计划
 
-### 数据备份与恢复
+### Smart Picks / 智能选片
 
-- 支持导出当前片库为 JSON
-- 支持导入 JSON 覆盖本地状态
-- 备份内容包含电影、收藏/已看状态、评分、笔记、影评、最近浏览
+- 基于时长、评分、类型、语言、待看片单与收藏偏好做即时推荐
+- 支持保存 / 应用 / 删除预设
+- 可将推荐结果一键加入待看片单，形成“推荐 → 计划 → 观影日志”闭环
+
+> 第三次上机课中的全局快速跳转、最近浏览、数据备份与恢复能力仍然保留，并已与本轮服务化架构兼容。
 
 ## 5. 运行与验证
 
 ```bash
 npm install
 npm run build
-npm run test -- --watch=false
+CHROME_BIN="C:\Program Files\Google\Chrome\Application\chrome.exe" npm run test -- --watch=false --browsers=ChromeHeadless
 ```
 
 ### 本次实际执行结果
 
-- `npm run build`：成功
-- `npm run test -- --watch=false`：已执行，但 Karma 在当前沙箱环境中启动 Chrome 时 `spawn EPERM`
+- `npm run build`：成功（存在 Angular bundle budget warning，不影响产物生成）
+- `CHROME_BIN="C:\Program Files\Google\Chrome\Application\chrome.exe" npm run test -- --watch=false --browsers=ChromeHeadless`：成功（1 / 1 测试通过）
 - `lint`：`package.json` 中没有 `lint` 脚本，因此未执行
 
 ## 6. 建议截图清单
@@ -102,6 +123,9 @@ npm run test -- --watch=false
 - `movie-detail-cast.png`
 - `add.png`
 - `about.png`
+- `watch-plans.png`
+- `watch-logs.png`
+- `smart-picks.png`
 - `explore.png`
 - `command-palette.png`
 - `recent-history.png`
