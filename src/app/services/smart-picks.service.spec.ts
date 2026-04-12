@@ -5,7 +5,7 @@ import { SmartPicksService } from './smart-picks.service';
 import { WatchPlanService } from './watch-plan.service';
 
 const STORAGE_KEYS = [
-  'cinemaflow.movies.v2',
+  'cinemaflow.movies.v3',
   'cinemaflow.smart-picks.presets.v1',
   'cinemaflow.watch-plans.v1'
 ];

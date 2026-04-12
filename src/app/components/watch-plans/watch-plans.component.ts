@@ -8,12 +8,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { RouterModule } from '@angular/router';
 import { BehaviorSubject, combineLatest, map, shareReplay } from 'rxjs';
+import { ListPagerComponent } from '../list-pager/list-pager.component';
 import { Movie } from '../../models/movie';
 import { WatchPlanEntry, WatchPlanPriority, WatchPlanStatus } from '../../models/watch-plan';
 import { MessageService } from '../../services/message.service';
 import { MovieService } from '../../services/movie.service';
 import { WatchPlanService } from '../../services/watch-plan.service';
 import { formatDateInputValue } from '../../utils/movie-media';
+import { paginateItems } from '../../utils/pagination';
 
 interface SummaryCard {
   label: string;
@@ -49,6 +51,10 @@ interface WatchPlansViewModel {
   visiblePlans: PlanViewItem[];
   movieOptions: MovieOption[];
   statusFilter: 'all' | WatchPlanStatus;
+  totalVisiblePlans: number;
+  page: number;
+  pageSize: number;
+  pageSizeOptions: number[];
 }
 
 const STATUS_LABELS: Record<WatchPlanStatus, string> = {
@@ -75,13 +81,17 @@ const PRIORITY_LABELS: Record<WatchPlanPriority, string> = {
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule
+    MatSelectModule,
+    ListPagerComponent
   ],
   templateUrl: './watch-plans.component.html',
   styleUrl: './watch-plans.component.scss'
 })
 export class WatchPlansComponent {
   private readonly statusFilterSubject = new BehaviorSubject<'all' | WatchPlanStatus>('all');
+  private readonly currentPageSubject = new BehaviorSubject<number>(1);
+  private readonly pageSizeSubject = new BehaviorSubject<number>(6);
+  private readonly pageSizeOptions = [6, 12, 24];
 
   readonly statusOptions: Array<{ value: WatchPlanStatus; label: string }> = [
     { value: 'queued', label: STATUS_LABELS.queued },
@@ -99,9 +109,11 @@ export class WatchPlansComponent {
   readonly vm$ = combineLatest([
     this.watchPlanService.plans$,
     this.movieService.movies$,
-    this.statusFilterSubject
+    this.statusFilterSubject,
+    this.currentPageSubject,
+    this.pageSizeSubject
   ]).pipe(
-    map(([plans, movies, statusFilter]): WatchPlansViewModel => {
+    map(([plans, movies, statusFilter, currentPage, pageSize]): WatchPlansViewModel => {
       const activePlanMovieIds = new Set(plans
         .filter(entry => entry.status !== 'completed')
         .map(entry => entry.movieId));
@@ -126,6 +138,7 @@ export class WatchPlansComponent {
       const visiblePlans = statusFilter === 'all'
         ? allPlanItems
         : allPlanItems.filter(item => item.entry.status === statusFilter);
+      const pagination = paginateItems(visiblePlans, currentPage, pageSize);
 
       return {
         summaryCards: [
@@ -150,14 +163,18 @@ export class WatchPlansComponent {
             hint: '已经通过观影或手动结束的计划'
           }
         ],
-        visiblePlans,
+        visiblePlans: pagination.items,
         movieOptions: [...movies]
           .sort((first, second) => second.rating - first.rating || first.title.localeCompare(second.title, 'zh-CN'))
           .map(movie => ({
             movie,
             hasActivePlan: activePlanMovieIds.has(movie.id)
           })),
-        statusFilter
+        statusFilter,
+        totalVisiblePlans: visiblePlans.length,
+        page: pagination.page,
+        pageSize: pagination.pageSize,
+        pageSizeOptions: this.pageSizeOptions
       };
     }),
     shareReplay({ bufferSize: 1, refCount: true })
@@ -173,6 +190,7 @@ export class WatchPlansComponent {
 
   setStatusFilter(status: 'all' | WatchPlanStatus): void {
     this.statusFilterSubject.next(status);
+    this.currentPageSubject.next(1);
   }
 
   get isEditing(): boolean {
@@ -208,6 +226,7 @@ export class WatchPlansComponent {
         : `已更新《${targetTitle}》的观影计划。`,
       'Watch Plans'
     );
+    this.currentPageSubject.next(1);
     this.resetDraft();
   }
 
@@ -263,6 +282,15 @@ export class WatchPlansComponent {
 
   trackByPlanId(index: number, item: PlanViewItem): number {
     return item.entry.id;
+  }
+
+  setPage(page: number): void {
+    this.currentPageSubject.next(page);
+  }
+
+  setPageSize(pageSize: number): void {
+    this.pageSizeSubject.next(pageSize);
+    this.currentPageSubject.next(1);
   }
 
   private createDraft(): PlanFormState {

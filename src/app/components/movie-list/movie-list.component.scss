@@ -559,6 +559,10 @@
   }
 }
 
+.grid-pager {
+  margin-top: 24px;
+}
+
 /* 动画 */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(30px); }

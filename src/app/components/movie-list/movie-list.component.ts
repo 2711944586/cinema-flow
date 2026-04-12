@@ -13,12 +13,14 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
+import { ListPagerComponent } from '../list-pager/list-pager.component';
 import { Movie } from '../../models/movie';
 import { MovieService } from '../../services/movie.service';
 import { MovieDetailComponent } from '../movie-detail/movie-detail.component';
 import { MovieFormComponent } from '../movie-form/movie-form.component';
 import { RatingLevelPipe } from '../../pipes/rating-level.pipe';
 import { applyBackdropDisplayFallback, applyMovieImageFallback, getBackdropDisplayUrl } from '../../utils/movie-media';
+import { paginateItems } from '../../utils/pagination';
 
 @Component({
   selector: 'app-movie-list',
@@ -37,6 +39,7 @@ import { applyBackdropDisplayFallback, applyMovieImageFallback, getBackdropDispl
     MatBadgeModule,
     MatSnackBarModule,
     MatDialogModule,
+    ListPagerComponent,
     MovieDetailComponent,
     MovieFormComponent,
     RatingLevelPipe
@@ -47,6 +50,7 @@ import { applyBackdropDisplayFallback, applyMovieImageFallback, getBackdropDispl
 export class MovieListComponent implements OnInit, OnDestroy {
   movies: Movie[] = [];
   filteredMovies: Movie[] = [];
+  visibleMovies: Movie[] = [];
   selectedMovie?: Movie;
 
   genres: string[] = [];
@@ -61,6 +65,10 @@ export class MovieListComponent implements OnInit, OnDestroy {
   editingMovie?: Movie;
   genreDropdownOpen = false;
   sortDropdownOpen = false;
+  currentPage = 1;
+  pageSize = 12;
+  totalPages = 1;
+  readonly pageSizeOptions = [12, 24, 48];
 
   readonly sortOptions = [
     { value: 'newest', label: '最新上映' },
@@ -89,7 +97,7 @@ export class MovieListComponent implements OnInit, OnDestroy {
         this.selectedMovie = movies.find(m => m.id === this.selectedMovie!.id);
       }
       if (!this.selectedMovie) {
-        this.selectedMovie = this.movies[0];
+        this.selectedMovie = this.filteredMovies[0] ?? this.movies[0];
       }
     });
   }
@@ -313,6 +321,23 @@ export class MovieListComponent implements OnInit, OnDestroy {
     }
 
     this.filteredMovies = result;
+
+    if (!this.filteredMovies.some(movie => movie.id === this.selectedMovie?.id)) {
+      this.selectedMovie = this.filteredMovies[0] ?? this.movies[0];
+    }
+
+    this.updatePagination();
+  }
+
+  setPage(page: number): void {
+    this.currentPage = page;
+    this.updatePagination();
+  }
+
+  setPageSize(pageSize: number): void {
+    this.pageSize = pageSize;
+    this.currentPage = 1;
+    this.updatePagination();
   }
 
   get favoriteCount(): number {
@@ -333,5 +358,12 @@ export class MovieListComponent implements OnInit, OnDestroy {
 
   onBackdropError(event: Event, movie: Movie): void {
     applyBackdropDisplayFallback(event, movie);
+  }
+
+  private updatePagination(): void {
+    const pagination = paginateItems(this.filteredMovies, this.currentPage, this.pageSize);
+    this.currentPage = pagination.page;
+    this.totalPages = pagination.totalPages;
+    this.visibleMovies = pagination.items;
   }
 }

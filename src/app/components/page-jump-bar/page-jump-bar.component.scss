@@ -1,0 +1,100 @@
+:host {
+  display: block;
+}
+
+.page-jump-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+  border-radius: 26px;
+  border: 1px solid var(--cf-border);
+  background:
+    radial-gradient(circle at top right, rgba(231, 185, 93, 0.1), transparent 26%),
+    linear-gradient(180deg, rgba(16, 21, 33, 0.96), rgba(9, 12, 18, 0.96));
+  box-shadow: var(--cf-shadow);
+}
+
+.jump-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  p {
+    margin: 0;
+    color: var(--cf-text-secondary);
+    line-height: 1.7;
+  }
+}
+
+.jump-kicker {
+  color: var(--cf-gold);
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+}
+
+.jump-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  strong {
+    font-size: 1.2rem;
+    color: var(--cf-text-primary);
+    font-family: var(--cf-font-display);
+  }
+}
+
+.jump-index {
+  padding: 0.26rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--cf-text-muted);
+  font-size: 0.78rem;
+}
+
+.jump-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.jump-btn {
+  min-height: 44px;
+  border-radius: 999px;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: var(--cf-text-secondary) !important;
+
+  mat-icon {
+    color: var(--cf-gold);
+  }
+}
+
+.page-select-field {
+  min-width: 220px;
+}
+
+:host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+@media (max-width: 960px) {
+  .page-jump-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .jump-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-select-field {
+    width: 100%;
+    min-width: 0;
+  }
+}

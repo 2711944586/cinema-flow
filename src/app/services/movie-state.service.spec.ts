@@ -1,5 +1,6 @@
-import { filter, firstValueFrom } from 'rxjs';
+import { filter, firstValueFrom, of } from 'rxjs';
 import { TestBed } from '@angular/core/testing';
+import { convertToParamMap } from '@angular/router';
 import { LoggerService } from './logger.service';
 import { MessageService } from './message.service';
 import { MovieService } from './movie.service';
@@ -11,7 +12,7 @@ import { WatchLogService } from './watch-log.service';
 import { WatchPlanService } from './watch-plan.service';
 
 const STORAGE_KEYS = [
-  'cinemaflow.movies.v2',
+  'cinemaflow.movies.v3',
   'cinemaflow.recent-history.v2',
   'cinemaflow.reviews.v2',
   'cinemaflow.watch-plans.v1',
@@ -70,5 +71,18 @@ describe('MovieStateService', () => {
     expect(vm.recentMessages[0]?.text).toBe('反馈链路测试');
     expect(feedbackLog?.source).toBe('Data Management');
     expect(feedbackLog?.message).toContain('MessagePanel: 反馈链路测试');
+  });
+
+  it('derives paginated movie list state from query params', async () => {
+    const vm = await firstValueFrom(
+      movieStateService.movieListVm$(of(convertToParamMap({ page: '2', pageSize: '12' })))
+    );
+
+    expect(vm.filteredMovies.length).toBe(44);
+    expect(vm.page).toBe(2);
+    expect(vm.pageSize).toBe(12);
+    expect(vm.visibleMovies.length).toBe(12);
+    expect(vm.startItem).toBe(13);
+    expect(vm.endItem).toBe(24);
   });
 });

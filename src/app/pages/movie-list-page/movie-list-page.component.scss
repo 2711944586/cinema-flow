@@ -359,6 +359,10 @@
   gap: 12px;
 }
 
+.list-pager-wrap {
+  margin-top: -2px;
+}
+
 @media (max-width: 1120px) {
   .page-head,
   .toolbar-grid,

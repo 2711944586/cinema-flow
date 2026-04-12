@@ -150,6 +150,10 @@
   gap: 14px;
 }
 
+.logs-pager {
+  margin-top: 18px;
+}
+
 .log-item {
   display: grid;
   grid-template-columns: 92px minmax(0, 1fr) auto;

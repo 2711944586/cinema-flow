@@ -1,0 +1,115 @@
+<section class="mood-atlas">
+  <div class="atlas-header">
+    <div class="header-copy">
+      <span class="header-kicker">Mood Atlas</span>
+      <h1>把观影时的情绪，整理成可回看的偏好地图</h1>
+      <p>日志里的情绪标签不该只躺在表单里。这里会把它们聚成可浏览的 mood cluster，帮助你判断什么类型的电影最适合什么状态。</p>
+    </div>
+
+    <div class="header-stats">
+      <article class="stat-card">
+        <span>情绪标签</span>
+        <strong>{{ totalClusters }}</strong>
+        <p>已经形成记录的 mood cluster 数量</p>
+      </article>
+      <article class="stat-card" *ngIf="hottestCluster as cluster">
+        <span>最常出现</span>
+        <strong>{{ cluster.tag }}</strong>
+        <p>{{ cluster.count }} 条记录 · 均分 {{ cluster.averageScore }}</p>
+      </article>
+      <article class="stat-card">
+        <span>总记录数</span>
+        <strong>{{ uniqueSessionCount }}</strong>
+        <p>被纳入情绪图谱的观影条目总数</p>
+      </article>
+      <article class="stat-card">
+        <span>最高均分</span>
+        <strong>{{ strongestAverageScore }}</strong>
+        <p>当前表现最好的情绪片单均分</p>
+      </article>
+    </div>
+  </div>
+
+  <div class="atlas-layout" *ngIf="clusters.length > 0; else emptyState">
+    <section class="cluster-panel">
+      <div class="panel-head">
+        <div>
+          <span class="panel-kicker">Cluster List</span>
+          <h2>情绪簇</h2>
+        </div>
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>搜索情绪或电影</mat-label>
+          <input matInput [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()" placeholder="例如：治愈 / 热血 / Interstellar">
+        </mat-form-field>
+      </div>
+
+      <div class="cluster-list" *ngIf="filteredClusters.length > 0; else searchEmptyState">
+        <button
+          type="button"
+          class="cluster-card"
+          *ngFor="let cluster of filteredClusters; trackBy: trackByMood"
+          [class.is-active]="selectedCluster?.tag === cluster.tag"
+          (click)="selectCluster(cluster)">
+          <div class="cluster-topline">
+            <strong>{{ cluster.tag }}</strong>
+            <span>{{ cluster.count }} 条</span>
+          </div>
+          <p>{{ cluster.featuredMovie?.title ?? '暂无代表作品' }}</p>
+          <div class="cluster-meta">
+            <span>均分 {{ cluster.averageScore }}</span>
+            <span *ngIf="cluster.lastWatchedAt">最近 {{ cluster.lastWatchedAt | date:'MM-dd' }}</span>
+          </div>
+        </button>
+      </div>
+
+      <ng-template #searchEmptyState>
+        <section class="search-empty-panel">
+          <mat-icon>search_off</mat-icon>
+          <h3>当前搜索没有命中</h3>
+          <p>换个情绪词、影片名，或者清空搜索词后再试一次。</p>
+        </section>
+      </ng-template>
+    </section>
+
+    <section class="detail-panel" *ngIf="selectedCluster as cluster">
+      <div class="panel-head detail-head">
+        <div>
+          <span class="panel-kicker">Selected Mood</span>
+          <h2>{{ cluster.tag }}</h2>
+          <p>共 {{ cluster.count }} 条记录，推荐从这些片子里继续延伸这个情绪方向。</p>
+        </div>
+        <div class="detail-chips">
+          <span>均分 {{ cluster.averageScore }}</span>
+          <span *ngIf="cluster.lastWatchedAt">最近 {{ cluster.lastWatchedAt | date:'yyyy-MM-dd' }}</span>
+        </div>
+      </div>
+
+      <div class="entry-list">
+        <article class="entry-card" *ngFor="let entry of cluster.entries.slice(0, 12); trackBy: trackByEntry">
+          <img [src]="entry.movie.posterUrl" [alt]="entry.movie.title" loading="lazy" decoding="async" referrerpolicy="no-referrer" (error)="onImageError($event, entry.movie)">
+          <div class="entry-copy">
+            <a [routerLink]="['/movies', entry.movie.id, 'info']">{{ entry.movie.title }}</a>
+            <p>{{ entry.watchedAtLabel }} · {{ entry.movie.director }} · {{ entry.sessionRating ?? entry.movie.rating }}/10</p>
+            <div class="entry-meta">
+              <span *ngIf="entry.location">{{ entry.location }}</span>
+              <span *ngFor="let genre of entry.movie.genres.slice(0, 3)">{{ genre }}</span>
+            </div>
+            <p class="entry-note" *ngIf="entry.note">{{ entry.note }}</p>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+</section>
+
+<ng-template #emptyState>
+  <section class="empty-panel">
+    <mat-icon>mood</mat-icon>
+    <h2>还没有足够的情绪日志</h2>
+    <p>先去 `Watch Logs` 写几条带情绪标签的观影记录，这里就会自动生成你的情绪图谱。</p>
+    <a mat-flat-button class="primary-btn" routerLink="/watch-logs">
+      <mat-icon>history_edu</mat-icon>
+      去写观影日志
+    </a>
+  </section>
+</ng-template>

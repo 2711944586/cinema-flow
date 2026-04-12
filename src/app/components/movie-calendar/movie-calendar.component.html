@@ -1,21 +1,21 @@
 <div class="movie-calendar" *ngIf="calendarData as data">
   <section class="calendar-header">
     <div class="header-copy">
-      <span class="header-kicker">观影排期</span>
+      <span class="header-kicker">观影日历</span>
       <h1>{{ data.year }} 年 {{ data.monthName }}</h1>
-      <p>把观影记录整理进日历视图。点击有内容的日期，右侧会切换到当日的片单详情，方便快速回看。</p>
+      <p>这里完全按照真实观影日志整理时间线。年份范围会自动覆盖到当前年份；如果某个月还没写日志，就明确展示为空状态，方便你后续补记。</p>
     </div>
 
     <div class="header-stats">
       <div class="stat-card">
-        <span class="stat-label">当月观影</span>
+        <span class="stat-label">当月记录</span>
         <strong>{{ monthMovieCount }}</strong>
-        <span class="stat-meta">已标记为看过的影片数</span>
+        <span class="stat-meta">观影会话与补录条目总数</span>
       </div>
       <div class="stat-card">
-        <span class="stat-label">平均评分</span>
+        <span class="stat-label">平均观感</span>
         <strong>{{ monthAverageRating }}</strong>
-        <span class="stat-meta">当月影片整体口碑</span>
+        <span class="stat-meta">优先采用会话评分，没有时回退到影片评分</span>
       </div>
       <div class="stat-card">
         <span class="stat-label">总片长</span>
@@ -54,10 +54,10 @@
       </button>
     </div>
 
-    <div class="toolbar-summary" *ngIf="monthFeaturedMovie as movie">
+    <div class="toolbar-summary" *ngIf="monthFeaturedEntry as entry">
       <span class="summary-label">本月焦点</span>
-      <span class="summary-title">{{ movie.title }}</span>
-      <span class="summary-meta">{{ movie.rating }}/10 · {{ movie.director }}</span>
+      <span class="summary-title">{{ entry.movie.title }}</span>
+      <span class="summary-meta">{{ entry.sessionRating ?? entry.movie.rating }}/10 · {{ entry.movie.director }}</span>
     </div>
   </section>
 
@@ -73,28 +73,28 @@
           class="calendar-day"
           *ngFor="let day of data.days"
           [class.current-month]="day.isCurrentMonth"
-          [class.has-movies]="day.movies.length > 0"
+          [class.has-movies]="day.entries.length > 0"
           [class.is-selected]="selectedDay && selectedDay.date.getTime() === day.date.getTime()"
           [class.is-today]="day.isToday"
           (click)="selectDay(day)">
           <div class="day-topline">
             <span class="day-number">{{ day.dayOfMonth }}</span>
-            <span class="day-count" *ngIf="day.movies.length">{{ day.movies.length }} 部</span>
+            <span class="day-count" *ngIf="day.entries.length">{{ day.entries.length }} 条</span>
           </div>
 
-          <div class="day-stack" *ngIf="day.movies.length > 0">
+          <div class="day-stack" *ngIf="day.entries.length > 0">
             <img
-              *ngFor="let movie of day.movies.slice(0, 3); trackBy: trackByMovieId"
-              [src]="movie.posterUrl"
-              [alt]="movie.title"
+              *ngFor="let entry of day.entries.slice(0, 3); trackBy: trackByCalendarEntry"
+              [src]="entry.movie.posterUrl"
+              [alt]="entry.movie.title"
               loading="lazy"
               decoding="async"
               referrerpolicy="no-referrer"
-              (error)="onImageError($event, movie)">
+              (error)="onImageError($event, entry.movie)">
           </div>
 
-          <div class="day-caption" *ngIf="day.movies.length > 0">
-            {{ day.movies[0].title }}
+          <div class="day-caption" *ngIf="day.entries.length > 0">
+            {{ day.entries[0].movie.title }}
           </div>
         </button>
       </div>
@@ -104,25 +104,28 @@
       <mat-card class="selected-day-panel" *ngIf="selectedDay as day; else monthEmptyState">
         <div class="panel-header">
           <div>
-            <span class="panel-kicker">当日片单</span>
+            <span class="panel-kicker">当日记录</span>
             <h2>{{ day.date | date:'M月d日' }}</h2>
           </div>
-          <span class="panel-count">{{ day.movies.length }} 部</span>
+          <span class="panel-count">{{ day.entries.length }} 条</span>
         </div>
 
         <div class="selected-movie-list">
-          <article class="selected-movie-card" *ngFor="let movie of selectedDayMovies; trackBy: trackByMovieId">
-            <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" decoding="async" referrerpolicy="no-referrer" (error)="onImageError($event, movie)">
+          <article class="selected-movie-card" *ngFor="let entry of selectedDayEntries; trackBy: trackByCalendarEntry">
+            <img [src]="entry.movie.posterUrl" [alt]="entry.movie.title" loading="lazy" decoding="async" referrerpolicy="no-referrer" (error)="onImageError($event, entry.movie)">
             <div class="selected-movie-copy">
               <div class="movie-title-row">
-                <h3>{{ movie.title }}</h3>
-                <span class="movie-rating"><mat-icon>star</mat-icon>{{ movie.rating }}</span>
+                <h3>{{ entry.movie.title }}</h3>
+                <span class="movie-rating"><mat-icon>star</mat-icon>{{ entry.sessionRating ?? entry.movie.rating }}</span>
               </div>
-              <p>{{ movie.description }}</p>
+              <p>{{ entry.note || entry.movie.description }}</p>
               <div class="movie-meta">
-                <span>{{ movie.director }}</span>
-                <span>{{ movie.duration }} 分钟</span>
-                <span *ngIf="movie.language">{{ movie.language }}</span>
+                <span>{{ entry.watchedAtLabel }}</span>
+                <span>{{ entry.movie.director }}</span>
+                <span>{{ entry.movie.duration }} 分钟</span>
+                <span *ngIf="entry.location">{{ entry.location }}</span>
+                <span *ngIf="entry.companion">与 {{ entry.companion }}</span>
+                <span *ngIf="entry.moodTags.length">{{ entry.moodTags.join(' / ') }}</span>
               </div>
             </div>
           </article>
@@ -132,8 +135,8 @@
       <ng-template #monthEmptyState>
         <mat-card class="selected-day-panel empty-panel">
           <mat-icon>event_busy</mat-icon>
-          <h2>这个月没有已观影条目</h2>
-          <p>当前默认会优先聚焦有数据的月份。切换年份或月份后，如果没有影片，也会明确展示为空状态。</p>
+          <h2>这个月还没有观影记录</h2>
+          <p>年份范围已经会自动覆盖到当前年份。切到最近月份后，如果还没写日志，也会明确展示空状态，方便你随时补记。</p>
         </mat-card>
       </ng-template>
 
@@ -150,7 +153,7 @@
             class="heatmap-cell"
             *ngFor="let cell of monthHeatCells"
             [ngClass]="cell.level"
-            [matTooltip]="cell.label + '：' + cell.count + ' 部，均分 ' + cell.averageRating + '，总片长 ' + cell.totalDuration + ' 分钟'">
+            [matTooltip]="cell.label + '：' + cell.count + ' 条记录，均分 ' + cell.averageRating + '，总片长 ' + cell.totalDuration + ' 分钟'">
             <span>{{ cell.label }}</span>
             <strong>{{ cell.count }}</strong>
             <small *ngIf="cell.count > 0">均分 {{ cell.averageRating }}</small>

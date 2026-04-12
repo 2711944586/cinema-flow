@@ -11,11 +11,14 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
+import { ListPagerComponent } from '../../components/list-pager/list-pager.component';
 import { Movie } from '../../models/movie';
 import { MessageService } from '../../services/message.service';
 import { MovieService } from '../../services/movie.service';
 import { MovieListViewModel, MovieStateService } from '../../services/movie-state.service';
 import {
+  DEFAULT_MOVIE_QUERY_STATE,
+  MOVIE_PAGE_SIZE_OPTIONS,
   MOVIE_SORT_OPTIONS,
   MOVIE_VIEW_OPTIONS,
   MovieQueryState,
@@ -34,7 +37,8 @@ import {
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    ListPagerComponent
   ],
   templateUrl: './movie-list-page.component.html',
   styleUrl: './movie-list-page.component.scss'
@@ -44,6 +48,7 @@ export class MovieListPageComponent {
 
   readonly sortOptions = MOVIE_SORT_OPTIONS;
   readonly viewOptions = MOVIE_VIEW_OPTIONS;
+  readonly pageSizeOptions = MOVIE_PAGE_SIZE_OPTIONS;
 
   constructor(
     private movieStateService: MovieStateService,
@@ -58,9 +63,21 @@ export class MovieListPageComponent {
   }
 
   updateQueryState(currentState: MovieQueryState, patch: Partial<MovieQueryState>): void {
+    const shouldResetPage = [
+      'search',
+      'genre',
+      'sort',
+      'watched',
+      'favorite',
+      'view',
+      'pageSize'
+    ].some(field => Object.prototype.hasOwnProperty.call(patch, field))
+      && !Object.prototype.hasOwnProperty.call(patch, 'page');
+
     const nextState: MovieQueryState = {
       ...currentState,
-      ...patch
+      ...patch,
+      page: shouldResetPage ? 1 : patch.page ?? currentState.page
     };
 
     void this.router.navigate([], {
@@ -74,16 +91,17 @@ export class MovieListPageComponent {
   clearFilters(): void {
     void this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: toMovieQueryParams({
-        search: '',
-        genre: 'all',
-        sort: 'newest',
-        watched: false,
-        favorite: false,
-        view: 'table'
-      }),
+      queryParams: toMovieQueryParams({ ...DEFAULT_MOVIE_QUERY_STATE }),
       replaceUrl: true
     });
+  }
+
+  changePage(currentState: MovieQueryState, page: number): void {
+    this.updateQueryState(currentState, { page });
+  }
+
+  changePageSize(currentState: MovieQueryState, pageSize: number): void {
+    this.updateQueryState(currentState, { pageSize, page: 1 });
   }
 
   toggleFavorite(movie: Movie): void {

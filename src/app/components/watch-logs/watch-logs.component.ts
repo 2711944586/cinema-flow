@@ -8,12 +8,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { RouterModule } from '@angular/router';
 import { BehaviorSubject, combineLatest, map, shareReplay } from 'rxjs';
+import { ListPagerComponent } from '../list-pager/list-pager.component';
 import { Movie } from '../../models/movie';
 import { WatchLogEntry } from '../../models/watch-log';
 import { MessageService } from '../../services/message.service';
 import { MovieService } from '../../services/movie.service';
 import { WatchLogService } from '../../services/watch-log.service';
 import { formatDateInputValue } from '../../utils/movie-media';
+import { paginateItems } from '../../utils/pagination';
 
 interface SummaryCard {
   label: string;
@@ -33,6 +35,10 @@ interface WatchLogsViewModel {
   visibleLogs: LogViewItem[];
   movieOptions: Movie[];
   filterMovieId: number | 'all';
+  totalVisibleLogs: number;
+  page: number;
+  pageSize: number;
+  pageSizeOptions: number[];
 }
 
 @Component({
@@ -46,20 +52,26 @@ interface WatchLogsViewModel {
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule
+    MatSelectModule,
+    ListPagerComponent
   ],
   templateUrl: './watch-logs.component.html',
   styleUrl: './watch-logs.component.scss'
 })
 export class WatchLogsComponent {
   private readonly filterMovieIdSubject = new BehaviorSubject<number | 'all'>('all');
+  private readonly currentPageSubject = new BehaviorSubject<number>(1);
+  private readonly pageSizeSubject = new BehaviorSubject<number>(6);
+  private readonly pageSizeOptions = [6, 12, 24];
 
   readonly vm$ = combineLatest([
     this.watchLogService.logs$,
     this.movieService.movies$,
-    this.filterMovieIdSubject
+    this.filterMovieIdSubject,
+    this.currentPageSubject,
+    this.pageSizeSubject
   ]).pipe(
-    map(([logs, movies, filterMovieId]): WatchLogsViewModel => {
+    map(([logs, movies, filterMovieId, currentPage, pageSize]): WatchLogsViewModel => {
       const movieMap = new Map(movies.map(movie => [movie.id, movie]));
       const allLogItems = logs
         .map(entry => {
@@ -76,6 +88,10 @@ export class WatchLogsComponent {
           } satisfies LogViewItem;
         })
         .filter((item): item is LogViewItem => item !== null);
+      const filteredLogs = filterMovieId === 'all'
+        ? allLogItems
+        : allLogItems.filter(item => item.movie.id === filterMovieId);
+      const pagination = paginateItems(filteredLogs, currentPage, pageSize);
 
       return {
         summaryCards: [
@@ -100,11 +116,13 @@ export class WatchLogsComponent {
             hint: '附带会话评分的观影记录'
           }
         ],
-        visibleLogs: filterMovieId === 'all'
-          ? allLogItems
-          : allLogItems.filter(item => item.movie.id === filterMovieId),
+        visibleLogs: pagination.items,
         movieOptions: [...movies].sort((first, second) => second.rating - first.rating || first.title.localeCompare(second.title, 'zh-CN')),
-        filterMovieId
+        filterMovieId,
+        totalVisibleLogs: filteredLogs.length,
+        page: pagination.page,
+        pageSize: pagination.pageSize,
+        pageSizeOptions: this.pageSizeOptions
       };
     }),
     shareReplay({ bufferSize: 1, refCount: true })
@@ -120,6 +138,7 @@ export class WatchLogsComponent {
 
   setFilterMovieId(movieId: number | 'all'): void {
     this.filterMovieIdSubject.next(movieId);
+    this.currentPageSubject.next(1);
   }
 
   saveLog(): void {
@@ -146,6 +165,7 @@ export class WatchLogsComponent {
 
     const movie = this.movieService.getMovieById(result.entry.movieId);
     this.messageService.success(`已记录《${movie?.title ?? `#${result.entry.movieId}` }》的观影日志。`, 'Watch Logs');
+    this.currentPageSubject.next(1);
     this.resetDraft();
   }
 
@@ -166,6 +186,15 @@ export class WatchLogsComponent {
 
   trackByLogId(index: number, item: LogViewItem): number {
     return item.entry.id;
+  }
+
+  setPage(page: number): void {
+    this.currentPageSubject.next(page);
+  }
+
+  setPageSize(pageSize: number): void {
+    this.pageSizeSubject.next(pageSize);
+    this.currentPageSubject.next(1);
   }
 
   private createDraft(): {

@@ -7,9 +7,11 @@ import {
   collectMovieGenres,
   DEFAULT_MOVIE_QUERY_STATE,
   filterMoviesByQueryState,
+  MOVIE_PAGE_SIZE_OPTIONS,
   parseMovieQueryState,
   MovieQueryState
 } from '../utils/movie-query';
+import { paginateItems } from '../utils/pagination';
 import { AppMessage, MessageService } from './message.service';
 import { LogEntry, LoggerService } from './logger.service';
 import { MovieService } from './movie.service';
@@ -43,9 +45,16 @@ export interface DashboardViewModel {
 export interface MovieListViewModel {
   movies: Movie[];
   filteredMovies: Movie[];
+  visibleMovies: Movie[];
   genres: string[];
   queryState: MovieQueryState;
   summaryLabel: string;
+  page: number;
+  pageSize: number;
+  pageSizeOptions: number[];
+  totalPages: number;
+  startItem: number;
+  endItem: number;
 }
 
 export interface MovieDetailViewModel {
@@ -76,7 +85,7 @@ export class MovieStateService {
     {
       name: 'MovieService',
       summary: '电影主库、收藏与已观看状态的单一事实来源。',
-      storageKey: 'cinemaflow.movies.v2',
+      storageKey: 'cinemaflow.movies.v3',
       reactiveSignal: 'movies$'
     },
     {
@@ -216,13 +225,21 @@ export class MovieStateService {
         const genres = collectMovieGenres(movies);
         const queryState = parseMovieQueryState(queryParamMap, genres);
         const filteredMovies = filterMoviesByQueryState(movies, queryState);
+        const pagination = paginateItems(filteredMovies, queryState.page, queryState.pageSize);
 
         return {
           movies,
           filteredMovies,
+          visibleMovies: pagination.items,
           genres,
           queryState,
-          summaryLabel: `${filteredMovies.length} / ${movies.length} 部`
+          summaryLabel: `${filteredMovies.length} / ${movies.length} 部`,
+          page: pagination.page,
+          pageSize: pagination.pageSize,
+          pageSizeOptions: MOVIE_PAGE_SIZE_OPTIONS,
+          totalPages: pagination.totalPages,
+          startItem: pagination.startItem,
+          endItem: pagination.endItem
         };
       }),
       shareReplay({ bufferSize: 1, refCount: true })
@@ -276,9 +293,16 @@ export class MovieStateService {
     return {
       movies: [],
       filteredMovies: [],
+      visibleMovies: [],
       genres: [],
       queryState: { ...DEFAULT_MOVIE_QUERY_STATE },
-      summaryLabel: '0 / 0 部'
+      summaryLabel: '0 / 0 部',
+      page: DEFAULT_MOVIE_QUERY_STATE.page,
+      pageSize: DEFAULT_MOVIE_QUERY_STATE.pageSize,
+      pageSizeOptions: MOVIE_PAGE_SIZE_OPTIONS,
+      totalPages: 1,
+      startItem: 0,
+      endItem: 0
     };
   }
 }

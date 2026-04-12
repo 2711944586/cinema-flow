@@ -1,0 +1,31 @@
+<section class="page-jump-bar" *ngIf="currentPage as page">
+  <div class="jump-copy">
+    <span class="jump-kicker">页面导航器</span>
+    <div class="jump-title-row">
+      <strong>{{ page.label }}</strong>
+      <span class="jump-index">{{ currentIndex + 1 }} / {{ pages.length }}</span>
+    </div>
+    <p>{{ page.description }}</p>
+  </div>
+
+  <div class="jump-actions">
+    <button type="button" mat-stroked-button class="jump-btn" [disabled]="!previousPage" (click)="previousPage && navigateTo(previousPage.route)">
+      <mat-icon>chevron_left</mat-icon>
+      <span>{{ previousPage?.label ?? '已到第一页' }}</span>
+    </button>
+
+    <mat-form-field appearance="outline" class="page-select-field">
+      <mat-label>页面跳转</mat-label>
+      <mat-select [ngModel]="selectedRoute" (ngModelChange)="navigateTo($event)">
+        <mat-option *ngFor="let item of pages" [value]="item.route">
+          {{ item.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button type="button" mat-stroked-button class="jump-btn" [disabled]="!nextPage" (click)="nextPage && navigateTo(nextPage.route)">
+      <span>{{ nextPage?.label ?? '已到最后一页' }}</span>
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+</section>

@@ -98,6 +98,24 @@ export const ENHANCEMENT_NAV_ITEMS: AppNavItem[] = [
     route: '/smart-picks',
     icon: 'auto_awesome_motion',
     description: '用预设条件智能推荐下一部要看的电影'
+  },
+  {
+    label: 'Director Atlas',
+    route: '/director-atlas',
+    icon: 'theater_comedy',
+    description: '按导演聚合作品数量、均分与已看进度'
+  },
+  {
+    label: 'Mood Atlas',
+    route: '/mood-atlas',
+    icon: 'mood',
+    description: '把观影日志里的情绪标签整理成偏好地图'
+  },
+  {
+    label: 'Marathon',
+    route: '/marathon',
+    icon: 'playlist_play',
+    description: '按时长预算自动生成连看片单并推入待看片单'
   }
 ];
 
@@ -117,6 +135,9 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   'watch-plans': '待看片单',
   'watch-logs': '观影日志',
   'smart-picks': '智能选片',
+  'director-atlas': '导演图谱',
+  'mood-atlas': '情绪图谱',
+  marathon: '马拉松规划器',
   info: '基本信息',
   cast: '演员表'
 };

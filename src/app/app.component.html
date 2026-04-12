@@ -57,8 +57,16 @@
   </div>
 
   <main class="app-content">
-    <router-outlet></router-outlet>
+    <app-page-jump-bar></app-page-jump-bar>
+
+    <div class="content-grid">
+      <section class="content-column">
+        <router-outlet></router-outlet>
+      </section>
+
+      <aside class="sidebar-column">
+        <app-message-panel></app-message-panel>
+      </aside>
+    </div>
   </main>
 </div>
-
-<app-message-panel></app-message-panel>

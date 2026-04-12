@@ -1,8 +1,11 @@
 import { ParamMap, Params } from '@angular/router';
 import { Movie } from '../models/movie';
+import { normalizePageSize } from './pagination';
 
 export type MovieSortOption = 'newest' | 'toprated' | 'title' | 'director';
 export type MovieViewMode = 'table' | 'grid';
+
+export const MOVIE_PAGE_SIZE_OPTIONS = [12, 24, 48, 96];
 
 export interface MovieQueryState {
   search: string;
@@ -11,6 +14,8 @@ export interface MovieQueryState {
   watched: boolean;
   favorite: boolean;
   view: MovieViewMode;
+  page: number;
+  pageSize: number;
 }
 
 export const DEFAULT_MOVIE_QUERY_STATE: MovieQueryState = {
@@ -19,7 +24,9 @@ export const DEFAULT_MOVIE_QUERY_STATE: MovieQueryState = {
   sort: 'newest',
   watched: false,
   favorite: false,
-  view: 'table'
+  view: 'table',
+  page: 1,
+  pageSize: MOVIE_PAGE_SIZE_OPTIONS[0]
 };
 
 export const MOVIE_SORT_OPTIONS: Array<{ value: MovieSortOption; label: string }> = [
@@ -44,6 +51,8 @@ export function parseMovieQueryState(queryParamMap: ParamMap, genres: string[]):
   const sort = queryParamMap.get('sort') as MovieSortOption | null;
   const view = queryParamMap.get('view') as MovieViewMode | null;
   const genre = queryParamMap.get('genre')?.trim() ?? '';
+  const page = Number(queryParamMap.get('page'));
+  const pageSize = Number(queryParamMap.get('pageSize'));
 
   return {
     search: queryParamMap.get('search')?.trim() ?? DEFAULT_MOVIE_QUERY_STATE.search,
@@ -55,7 +64,9 @@ export function parseMovieQueryState(queryParamMap: ParamMap, genres: string[]):
     favorite: queryParamMap.get('favorite') === 'true',
     view: view && MOVIE_VIEW_OPTIONS.some(option => option.value === view)
       ? view
-      : DEFAULT_MOVIE_QUERY_STATE.view
+      : DEFAULT_MOVIE_QUERY_STATE.view,
+    page: Number.isFinite(page) && page >= 1 ? Math.floor(page) : DEFAULT_MOVIE_QUERY_STATE.page,
+    pageSize: normalizePageSize(pageSize, DEFAULT_MOVIE_QUERY_STATE.pageSize, MOVIE_PAGE_SIZE_OPTIONS)
   };
 }
 
@@ -66,7 +77,9 @@ export function toMovieQueryParams(state: MovieQueryState): Params {
     sort: state.sort !== DEFAULT_MOVIE_QUERY_STATE.sort ? state.sort : null,
     watched: state.watched ? 'true' : null,
     favorite: state.favorite ? 'true' : null,
-    view: state.view !== DEFAULT_MOVIE_QUERY_STATE.view ? state.view : null
+    view: state.view !== DEFAULT_MOVIE_QUERY_STATE.view ? state.view : null,
+    page: state.page > 1 ? state.page : null,
+    pageSize: state.pageSize !== DEFAULT_MOVIE_QUERY_STATE.pageSize ? state.pageSize : null
   };
 }
 

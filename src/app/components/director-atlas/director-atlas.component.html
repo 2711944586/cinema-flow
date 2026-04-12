@@ -1,0 +1,107 @@
+<section class="director-atlas">
+  <div class="atlas-header">
+    <div class="header-copy">
+      <span class="header-kicker">Director Atlas</span>
+      <h1>用导演视角重新梳理你的片库</h1>
+      <p>把作品量、均分、收藏度和已看进度放进同一个视图，快速看清哪些导演已经形成稳定偏好，哪些导演还值得继续深挖。</p>
+    </div>
+
+    <div class="header-stats">
+      <article class="stat-card">
+        <span>导演总数</span>
+        <strong>{{ totalDirectors }}</strong>
+        <p>当前片库中已覆盖的导演数量</p>
+      </article>
+      <article class="stat-card" *ngIf="topDirector as director">
+        <span>作品量最高</span>
+        <strong>{{ director.name }}</strong>
+        <p>{{ director.count }} 部作品 · 均分 {{ director.avgRating }}</p>
+      </article>
+      <article class="stat-card">
+        <span>导演均分</span>
+        <strong>{{ averageDirectorRating }}</strong>
+        <p>按导演维度计算的平均评分</p>
+      </article>
+      <article class="stat-card">
+        <span>已开看比例</span>
+        <strong>{{ watchedDirectorRate }}</strong>
+        <p>至少看过一部作品的导演占比</p>
+      </article>
+    </div>
+  </div>
+
+  <div class="atlas-layout">
+    <section class="directory-panel">
+      <div class="panel-head">
+        <div>
+          <span class="panel-kicker">Directory</span>
+          <h2>导演目录</h2>
+        </div>
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>搜索导演或作品</mat-label>
+          <input matInput [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()" placeholder="例如：Christopher Nolan / 盗梦空间">
+        </mat-form-field>
+      </div>
+
+      <div class="director-list" *ngIf="filteredDirectors.length > 0; else emptyState">
+        <button
+          type="button"
+          class="director-card"
+          *ngFor="let director of filteredDirectors; trackBy: trackByDirectorName"
+          [class.is-active]="selectedDirector?.name === director.name"
+          (click)="selectDirector(director)">
+          <div class="director-card-top">
+            <strong>{{ director.name }}</strong>
+            <span>{{ director.count }} 部</span>
+          </div>
+          <p>{{ director.highlightMovie?.title }} · 均分 {{ director.avgRating }}</p>
+          <div class="card-meta">
+            <span>已看 {{ director.watchedCount }}</span>
+            <span>收藏 {{ director.favoriteCount }}</span>
+            <span>{{ director.latestYear }}</span>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <section class="spotlight-panel" *ngIf="selectedDirector as director">
+      <div class="panel-head spotlight-head">
+        <div>
+          <span class="panel-kicker">Spotlight</span>
+          <h2>{{ director.name }}</h2>
+          <p>{{ director.count }} 部作品 · {{ director.totalHours }} 小时片长储备 · 收藏 {{ director.favoriteCount }} 部</p>
+        </div>
+        <div class="spotlight-chips">
+          <span>均分 {{ director.avgRating }}</span>
+          <span>已看 {{ director.watchedCount }}</span>
+          <span>最近作品 {{ director.latestYear }}</span>
+        </div>
+      </div>
+
+      <div class="filmography-grid">
+        <article class="film-card" *ngFor="let movie of director.filmography.slice(0, 12); trackBy: trackByMovieId">
+          <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" decoding="async" referrerpolicy="no-referrer" (error)="onImageError($event, movie)">
+          <div class="film-copy">
+            <a [routerLink]="['/movies', movie.id, 'info']">{{ movie.title }}</a>
+            <p>{{ movie.releaseDate | date:'yyyy' }} · {{ movie.duration }} 分钟 · {{ movie.rating }}/10</p>
+            <div class="film-meta">
+              <span *ngFor="let genre of movie.genres.slice(0, 3)">{{ genre }}</span>
+            </div>
+            <div class="film-flags">
+              <span *ngIf="movie.isWatched">已观影</span>
+              <span *ngIf="movie.isFavorite">已收藏</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+</section>
+
+<ng-template #emptyState>
+  <section class="empty-panel">
+    <mat-icon>manage_search</mat-icon>
+    <h2>没有匹配到导演</h2>
+    <p>换个导演名、作品标题或清空搜索词再试一次。</p>
+  </section>
+</ng-template>

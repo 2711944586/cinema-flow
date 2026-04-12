@@ -2,7 +2,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MessageService } from '../../services/message.service';
+import { AppMessage, MessageLevel, MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-message-panel',
@@ -14,6 +14,12 @@ import { MessageService } from '../../services/message.service';
 export class MessagePanelComponent {
   readonly messages$ = this.messageService.messages$;
   collapsed = false;
+  private readonly levelLabels: Record<MessageLevel, string> = {
+    info: '动态',
+    success: '完成',
+    warning: '提醒',
+    error: '异常'
+  };
 
   constructor(private messageService: MessageService) {}
 
@@ -27,5 +33,13 @@ export class MessagePanelComponent {
 
   dismiss(messageId: number): void {
     this.messageService.remove(messageId);
+  }
+
+  getLevelLabel(level: MessageLevel): string {
+    return this.levelLabels[level] ?? '动态';
+  }
+
+  trackByMessageId(_: number, message: AppMessage): number {
+    return message.id;
   }
 }

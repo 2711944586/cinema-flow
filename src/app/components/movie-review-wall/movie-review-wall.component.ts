@@ -8,11 +8,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { ListPagerComponent } from '../list-pager/list-pager.component';
 import { Movie } from '../../models/movie';
 import { ReviewEntry } from '../../models/review';
 import { MovieService } from '../../services/movie.service';
 import { ReviewStoreService } from '../../services/review-store.service';
 import { applyMovieImageFallback } from '../../utils/movie-media';
+import { paginateItems } from '../../utils/pagination';
 
 @Component({
   selector: 'app-movie-review-wall',
@@ -25,7 +27,8 @@ import { applyMovieImageFallback } from '../../utils/movie-media';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    FormsModule
+    FormsModule,
+    ListPagerComponent
   ],
   templateUrl: './movie-review-wall.component.html',
   styleUrls: ['./movie-review-wall.component.scss']
@@ -33,6 +36,7 @@ import { applyMovieImageFallback } from '../../utils/movie-media';
 export class MovieReviewWallComponent implements OnInit {
   reviews: ReviewEntry[] = [];
   filteredReviews: ReviewEntry[] = [];
+  visibleReviews: ReviewEntry[] = [];
   movies: Movie[] = [];
 
   selectedMovieId: number | null = null;
@@ -43,6 +47,10 @@ export class MovieReviewWallComponent implements OnInit {
   newReviewRating = 5;
   newReviewContent = '';
   newReviewAuthor = '匿名观众';
+  currentPage = 1;
+  pageSize = 8;
+  totalPages = 1;
+  readonly pageSizeOptions = [8, 16, 32];
 
   private readonly destroyRef = inject(DestroyRef);
 
@@ -94,11 +102,7 @@ export class MovieReviewWallComponent implements OnInit {
       ?? this.movies[0];
   }
 
-  get visibleReviews(): ReviewEntry[] {
-    return this.filteredReviews.slice(0, 8);
-  }
-
-  filterReviews(): void {
+  filterReviews(resetPage = false): void {
     let filtered = [...this.reviews];
 
     if (this.selectedMovieId !== null) {
@@ -119,14 +123,20 @@ export class MovieReviewWallComponent implements OnInit {
     }
 
     this.filteredReviews = filtered;
+
+    if (resetPage) {
+      this.currentPage = 1;
+    }
+
+    this.updatePagination();
   }
 
   onMovieSelect(): void {
-    this.filterReviews();
+    this.filterReviews(true);
   }
 
   onSortChange(): void {
-    this.filterReviews();
+    this.filterReviews(true);
   }
 
   toggleLike(review: ReviewEntry): void {
@@ -151,6 +161,7 @@ export class MovieReviewWallComponent implements OnInit {
       return;
     }
 
+    this.currentPage = 1;
     this.reviewStoreService.addReview(movie, {
       rating: this.newReviewRating,
       content: this.newReviewContent,
@@ -190,7 +201,25 @@ export class MovieReviewWallComponent implements OnInit {
     applyMovieImageFallback(event, movie);
   }
 
+  setPage(page: number): void {
+    this.currentPage = page;
+    this.updatePagination();
+  }
+
+  setPageSize(pageSize: number): void {
+    this.pageSize = pageSize;
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
   private loadMovies(): void {
     this.movies = this.movieService.getMovies();
+  }
+
+  private updatePagination(): void {
+    const pagination = paginateItems(this.filteredReviews, this.currentPage, this.pageSize);
+    this.currentPage = pagination.page;
+    this.totalPages = pagination.totalPages;
+    this.visibleReviews = pagination.items;
   }
 }

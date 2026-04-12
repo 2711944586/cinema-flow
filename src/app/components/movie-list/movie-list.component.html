@@ -118,7 +118,7 @@
         <p>抱歉，没有找到匹配的电影。</p>
       </div>
 
-      <mat-card *ngFor="let movie of filteredMovies"
+      <mat-card *ngFor="let movie of visibleMovies"
                 class="movie-card glass-card"
                 [class.active]="movie.id === selectedMovie?.id"
                 (click)="onSelect(movie)">
@@ -167,6 +167,18 @@
         </div>
       </mat-card>
     </div>
+
+    <app-list-pager
+      *ngIf="filteredMovies.length > 0"
+      class="grid-pager"
+      label="Explore 片库"
+      [totalItems]="filteredMovies.length"
+      [currentPage]="currentPage"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      (pageChange)="setPage($event)"
+      (pageSizeChange)="setPageSize($event)">
+    </app-list-pager>
 
   </div>
 </div>

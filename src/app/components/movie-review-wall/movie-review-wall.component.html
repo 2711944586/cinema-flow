@@ -155,6 +155,18 @@
         </article>
       </div>
 
+      <app-list-pager
+        *ngIf="filteredReviews.length > 0"
+        class="review-pager"
+        label="影评墙"
+        [totalItems]="filteredReviews.length"
+        [currentPage]="currentPage"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions"
+        (pageChange)="setPage($event)"
+        (pageSizeChange)="setPageSize($event)">
+      </app-list-pager>
+
       <ng-template #emptyState>
         <div class="empty-state">
           <mat-icon>forum</mat-icon>

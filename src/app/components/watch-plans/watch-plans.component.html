@@ -133,6 +133,18 @@
         </div>
       </article>
     </div>
+
+    <app-list-pager
+      *ngIf="vm.totalVisiblePlans > 0"
+      class="plans-pager"
+      label="待看片单"
+      [totalItems]="vm.totalVisiblePlans"
+      [currentPage]="vm.page"
+      [pageSize]="vm.pageSize"
+      [pageSizeOptions]="vm.pageSizeOptions"
+      (pageChange)="setPage($event)"
+      (pageSizeChange)="setPageSize($event)">
+    </app-list-pager>
   </section>
 </section>
 

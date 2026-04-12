@@ -1,8 +1,8 @@
 <aside class="message-panel" [class.is-collapsed]="collapsed">
   <header class="panel-head">
     <div>
-      <span class="panel-kicker">Service Console</span>
-      <h3>服务消息面板</h3>
+      <span class="panel-kicker">最近动态</span>
+      <h3>最近动态</h3>
     </div>
 
     <div class="panel-actions">
@@ -26,12 +26,12 @@
   <div class="panel-body" *ngIf="!collapsed">
     <ng-container *ngIf="messages$ | async as messages">
       <p class="empty-state" *ngIf="messages.length === 0">
-        当前还没有新的服务消息。后续的导入、删除、推荐和计划操作都会在这里留下痕迹。
+        这里会记录你刚刚完成的导入、收藏、删除、推荐和观影计划更新，方便随时回看最近的操作。
       </p>
 
-      <article class="message-card" *ngFor="let message of messages">
+      <article class="message-card" *ngFor="let message of messages; trackBy: trackByMessageId">
         <div class="message-meta">
-          <span class="message-level" [class]="'level-' + message.level">{{ message.level }}</span>
+          <span class="message-level" [class]="'level-' + message.level">{{ getLevelLabel(message.level) }}</span>
           <span class="message-source">{{ message.source }}</span>
           <span class="message-time">{{ message.createdAt | date:'HH:mm:ss' }}</span>
           <button

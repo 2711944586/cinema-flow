@@ -181,7 +181,27 @@
 
 .app-content {
   flex: 1;
-  padding: 22px 0 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px 0 32px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+  gap: 18px;
+  align-items: start;
+}
+
+.content-column,
+.sidebar-column {
+  min-width: 0;
+}
+
+.sidebar-column {
+  position: sticky;
+  top: 136px;
 }
 
 @keyframes headerGlow {
@@ -224,7 +244,11 @@
     width: min(100%, calc(100vw - 24px));
   }
 
-  .app-content {
-    padding-bottom: 148px;
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar-column {
+    position: static;
   }
 }

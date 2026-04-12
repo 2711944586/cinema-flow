@@ -1,0 +1,53 @@
+<section class="list-pager" *ngIf="totalItems > 0">
+  <div class="pager-summary">
+    <span class="pager-label">{{ label }}</span>
+    <strong>{{ summaryText }}</strong>
+  </div>
+
+  <div class="pager-actions">
+    <div class="pager-nav">
+      <button type="button" mat-stroked-button class="nav-btn" [disabled]="currentPage === 1" (click)="goToPage(1)">
+        <mat-icon>first_page</mat-icon>
+      </button>
+      <button type="button" mat-stroked-button class="nav-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+
+      <button
+        type="button"
+        *ngFor="let pageNumber of pageNumbers"
+        mat-stroked-button
+        class="page-btn"
+        [class.is-active]="pageNumber === currentPage"
+        (click)="goToPage(pageNumber)">
+        {{ pageNumber }}
+      </button>
+
+      <button type="button" mat-stroked-button class="nav-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+      <button type="button" mat-stroked-button class="nav-btn" [disabled]="currentPage === totalPages" (click)="goToPage(totalPages)">
+        <mat-icon>last_page</mat-icon>
+      </button>
+    </div>
+
+    <div class="pager-config">
+      <mat-form-field appearance="outline" class="size-field" *ngIf="showPageSize">
+        <mat-label>每页</mat-label>
+        <mat-select [ngModel]="pageSize" (ngModelChange)="changePageSize($event)" panelClass="cf-select-panel">
+          <mat-option *ngFor="let option of pageSizeOptions" [value]="option">
+            {{ option }} 条
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <form class="jump-form" (ngSubmit)="submitJump()">
+        <mat-form-field appearance="outline" class="jump-field">
+          <mat-label>跳到</mat-label>
+          <input matInput type="number" min="1" [max]="totalPages" [(ngModel)]="jumpTarget" name="jumpTarget">
+        </mat-form-field>
+        <button type="submit" mat-stroked-button class="jump-btn">跳转</button>
+      </form>
+    </div>
+  </div>
+</section>

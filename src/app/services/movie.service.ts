@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { fetchExpandedMovieSeeds, type RemoteMovieSeed } from '../data/expanded-movie-catalog';
 import { MOCK_MOVIES } from '../data/mock-movies';
 import { Movie } from '../models/movie';
 import {
@@ -13,8 +14,11 @@ import { LoggerService } from './logger.service';
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
-  private readonly storageKey = 'cinemaflow.movies.v2';
+  private readonly storageKey = 'cinemaflow.movies.v3';
+  private readonly legacyStorageKeys = ['cinemaflow.movies.v2'];
+  private readonly minimumCatalogSize = MOCK_MOVIES.length * 20;
   private readonly moviesSubject: BehaviorSubject<Movie[]>;
+  private expansionInFlight = false;
 
   readonly movies$: Observable<Movie[]>;
 
@@ -24,6 +28,7 @@ export class MovieService {
     this.movies$ = this.moviesSubject.asObservable();
 
     this.logger.log(`MovieService initialized with ${initialMovies.length} movies`);
+    void this.prefetchExpandedCatalogIfNeeded();
   }
 
   getMovies(): Movie[] {
@@ -355,7 +360,7 @@ export class MovieService {
     }
 
     try {
-      const rawValue = localStorage.getItem(this.storageKey);
+      const rawValue = this.readPersistedMovies();
       if (!rawValue) {
         return fallbackMovies;
       }
@@ -387,7 +392,113 @@ export class MovieService {
       return;
     }
 
-    localStorage.setItem(this.storageKey, JSON.stringify(movies));
+    try {
+      const persistableMovies = movies.map(movie => this.toPersistableMovie(movie));
+      localStorage.setItem(this.storageKey, JSON.stringify(persistableMovies));
+      this.legacyStorageKeys.forEach(key => localStorage.removeItem(key));
+    } catch (error) {
+      this.logger.warn(`Failed to persist movie library: ${error instanceof Error ? error.message : 'unknown error'}`);
+    }
+  }
+
+  private readPersistedMovies(): string | null {
+    const storageKeys = [this.storageKey, ...this.legacyStorageKeys];
+
+    for (const key of storageKeys) {
+      const rawValue = localStorage.getItem(key);
+      if (rawValue) {
+        return rawValue;
+      }
+    }
+
+    return null;
+  }
+
+  private async prefetchExpandedCatalogIfNeeded(): Promise<void> {
+    if (this.expansionInFlight || this.moviesSubject.value.length >= this.minimumCatalogSize || typeof fetch !== 'function') {
+      return;
+    }
+
+    this.expansionInFlight = true;
+
+    try {
+      const remoteMovies = await fetchExpandedMovieSeeds(fetch);
+      if (remoteMovies.length === 0) {
+        this.logger.warn('Expanded catalog fetch returned no movies');
+        return;
+      }
+
+      const expandedMovies = this.mergeExpandedCatalog(remoteMovies);
+      if (expandedMovies.length <= this.moviesSubject.value.length) {
+        return;
+      }
+
+      this.commitMovies(
+        expandedMovies,
+        `Expanded movie catalog from ${this.moviesSubject.value.length} to ${expandedMovies.length} entries`
+      );
+    } catch (error) {
+      this.logger.warn(`Expanded catalog fetch failed: ${error instanceof Error ? error.message : 'unknown error'}`);
+    } finally {
+      this.expansionInFlight = false;
+    }
+  }
+
+  private mergeExpandedCatalog(remoteMovies: RemoteMovieSeed[]): Movie[] {
+    const catalogMap = new Map<string, Movie>();
+    let nextId = this.moviesSubject.value.length > 0
+      ? Math.max(...this.moviesSubject.value.map(movie => movie.id)) + 1
+      : 1;
+
+    this.moviesSubject.value.forEach(movie => {
+      catalogMap.set(this.buildMovieIdentityKey(movie), this.cloneMovie(movie));
+    });
+
+    remoteMovies.forEach(remoteMovie => {
+      const normalizedMovie = this.normalizeMovie({ ...remoteMovie, id: nextId });
+      const identityKey = this.buildMovieIdentityKey(normalizedMovie);
+      const currentMovie = catalogMap.get(identityKey);
+
+      if (currentMovie) {
+        catalogMap.set(identityKey, this.mergeCatalogEntry(currentMovie, normalizedMovie));
+        return;
+      }
+
+      catalogMap.set(identityKey, normalizedMovie);
+      nextId += 1;
+    });
+
+    return Array.from(catalogMap.values()).sort((first, second) => first.id - second.id);
+  }
+
+  private mergeCatalogEntry(currentMovie: Movie, incomingMovie: Movie): Movie {
+    const shouldUseIncomingPoster = !this.hasVerifiedPoster(currentMovie.posterUrl) && this.hasVerifiedPoster(incomingMovie.posterUrl);
+    const shouldUseIncomingBackdrop = !this.hasVerifiedBackdrop(currentMovie.backdropUrl) && this.hasVerifiedBackdrop(incomingMovie.backdropUrl);
+
+    return this.normalizeMovie({
+      ...currentMovie,
+      posterUrl: shouldUseIncomingPoster ? incomingMovie.posterUrl : currentMovie.posterUrl,
+      backdropUrl: shouldUseIncomingBackdrop
+        ? incomingMovie.backdropUrl
+        : shouldUseIncomingPoster
+          ? incomingMovie.posterUrl
+          : currentMovie.backdropUrl,
+      cast: currentMovie.cast && currentMovie.cast.length > 0 ? currentMovie.cast : incomingMovie.cast,
+      description: currentMovie.description?.trim() ? currentMovie.description : incomingMovie.description,
+      boxOffice: currentMovie.boxOffice ?? incomingMovie.boxOffice,
+      language: currentMovie.language ?? incomingMovie.language
+    });
+  }
+
+  private toPersistableMovie(movie: Movie): Movie {
+    return {
+      ...movie,
+      posterUrl: isGeneratedMovieArt(movie.posterUrl) ? '' : movie.posterUrl,
+      backdropUrl: isGeneratedMovieArt(movie.backdropUrl) ? '' : movie.backdropUrl,
+      cast: movie.cast ? [...movie.cast] : [],
+      genres: [...movie.genres],
+      userNotes: movie.userNotes ?? ''
+    };
   }
 
   private cloneMovie(movie: Movie): Movie {
@@ -424,7 +535,7 @@ export class MovieService {
   }
 
   private buildMovieIdentityKey(movie: Pick<Movie, 'title' | 'releaseDate'>): string {
-    const normalizedTitle = movie.title
+    const normalizedTitle = this.extractCanonicalTitle(movie.title)
       .normalize('NFKD')
       .toLowerCase()
       .replace(/[^\p{L}\p{N}\u3400-\u9fff]+/gu, '');
@@ -432,11 +543,36 @@ export class MovieService {
     return `${normalizedTitle}-${coerceMovieDate(movie.releaseDate).getFullYear()}`;
   }
 
+  private extractCanonicalTitle(title: string): string {
+    const normalizedTitle = title
+      .replace(/[（(][^（）()]+[)）]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (/[A-Za-z]/.test(normalizedTitle)) {
+      return normalizedTitle;
+    }
+
+    const aliasMatches = Array.from(title.matchAll(/[（(]([^（）()]+)[)）]/g));
+    const englishAlias = aliasMatches
+      .map(match => match[1]?.trim() ?? '')
+      .find(alias => /[A-Za-z]/.test(alias));
+
+    return englishAlias || normalizedTitle || title.trim();
+  }
+
   private hasVerifiedPoster(url: string | undefined): boolean {
     const posterUrl = url?.trim() ?? '';
     return !!posterUrl
       && !isGeneratedMovieArt(posterUrl)
       && optimizeMovieImageUrl(posterUrl, 'poster') !== null;
+  }
+
+  private hasVerifiedBackdrop(url: string | undefined): boolean {
+    const backdropUrl = url?.trim() ?? '';
+    return !!backdropUrl
+      && !isGeneratedMovieArt(backdropUrl)
+      && optimizeMovieImageUrl(backdropUrl, 'backdrop') !== null;
   }
 
   private scoreMovieMatch(movie: Movie, query: string): number {

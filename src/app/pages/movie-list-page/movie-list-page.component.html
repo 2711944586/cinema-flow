@@ -79,6 +79,7 @@
 
     <div class="state-row">
       <span class="state-chip">{{ vm.summaryLabel }}</span>
+      <span class="state-chip" *ngIf="vm.filteredMovies.length > 0">第 {{ vm.page }} / {{ vm.totalPages }} 页 · {{ vm.startItem }}-{{ vm.endItem }}</span>
       <span class="state-chip" *ngIf="vm.queryState.search">search={{ vm.queryState.search }}</span>
       <span class="state-chip" *ngIf="vm.queryState.genre !== 'all'">{{ vm.queryState.genre }}</span>
       <span class="state-chip" *ngIf="vm.queryState.favorite">favorite=true</span>
@@ -96,7 +97,7 @@
       <span>操作</span>
     </div>
 
-    <article class="movie-row" *ngFor="let movie of vm.filteredMovies; trackBy: trackByMovieId">
+    <article class="movie-row" *ngFor="let movie of vm.visibleMovies; trackBy: trackByMovieId">
       <div class="movie-main">
         <img [src]="movie.posterUrl" [alt]="movie.title">
         <div class="movie-copy">
@@ -130,7 +131,7 @@
 
   <ng-template #gridOrEmpty>
     <section class="grid-card" *ngIf="vm.filteredMovies.length > 0; else emptyState">
-      <article class="grid-item" *ngFor="let movie of vm.filteredMovies; trackBy: trackByMovieId">
+      <article class="grid-item" *ngFor="let movie of vm.visibleMovies; trackBy: trackByMovieId">
         <img [src]="movie.posterUrl" [alt]="movie.title">
         <div class="grid-copy">
           <a class="movie-title" [routerLink]="['/movies', movie.id, 'info']">{{ movie.title }}</a>
@@ -148,6 +149,18 @@
       </article>
     </section>
   </ng-template>
+
+  <app-list-pager
+    *ngIf="vm.filteredMovies.length > 0"
+    class="list-pager-wrap"
+    label="Movies 列表"
+    [totalItems]="vm.filteredMovies.length"
+    [currentPage]="vm.page"
+    [pageSize]="vm.pageSize"
+    [pageSizeOptions]="pageSizeOptions"
+    (pageChange)="changePage(vm.queryState, $event)"
+    (pageSizeChange)="changePageSize(vm.queryState, $event)">
+  </app-list-pager>
 
   <ng-template #emptyState>
     <section class="empty-card">

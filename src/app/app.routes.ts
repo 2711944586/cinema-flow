@@ -113,5 +113,23 @@ export const routes: Routes = [
     data: { breadcrumb: '智能选片' },
     loadComponent: () => import('./components/smart-picks/smart-picks.component').then(m => m.SmartPicksComponent)
   },
+  {
+    path: 'director-atlas',
+    title: '导演图谱 | CinemaFlow',
+    data: { breadcrumb: '导演图谱' },
+    loadComponent: () => import('./components/director-atlas/director-atlas.component').then(m => m.DirectorAtlasComponent)
+  },
+  {
+    path: 'mood-atlas',
+    title: '情绪图谱 | CinemaFlow',
+    data: { breadcrumb: '情绪图谱' },
+    loadComponent: () => import('./components/mood-atlas/mood-atlas.component').then(m => m.MoodAtlasComponent)
+  },
+  {
+    path: 'marathon',
+    title: '马拉松规划器 | CinemaFlow',
+    data: { breadcrumb: '马拉松规划器' },
+    loadComponent: () => import('./components/marathon-planner/marathon-planner.component').then(m => m.MarathonPlannerComponent)
+  },
   { path: '**', redirectTo: '/dashboard' }
 ];
