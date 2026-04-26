@@ -1,6 +1,7 @@
 .scene-page {
   display: grid;
   gap: 18px;
+  min-width: 0;
 }
 
 .scene-hero,
@@ -13,7 +14,7 @@
 
 .scene-hero {
   position: relative;
-  min-height: 360px;
+  min-height: clamp(260px, 38vw, 360px);
   overflow: hidden;
   border-radius: 30px;
 
@@ -38,12 +39,15 @@
   position: relative;
   z-index: 1;
   max-width: 760px;
-  padding: 34px;
+  min-width: 0;
+  padding: clamp(22px, 4vw, 34px);
 
   h1 {
     margin: 10px 0 12px;
     font-family: var(--cf-font-display);
-    font-size: clamp(2.4rem, 6vw, 5.4rem);
+    font-size: clamp(1.9rem, 4.8vw, 4.4rem);
+    line-height: 1.05;
+    overflow-wrap: anywhere;
   }
 
   p {
@@ -88,8 +92,22 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    min-width: 0;
     padding: 0 14px;
     cursor: pointer;
+
+    mat-icon {
+      flex: 0 0 auto;
+    }
+
+    span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    strong {
+      flex: 0 0 auto;
+    }
 
     &.is-active {
       border-color: rgba(231, 185, 93, 0.32);
@@ -113,11 +131,11 @@
 
 .scene-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   gap: 16px;
 
   &.is-compact {
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
 
     .scene-backdrop {
       height: 150px;
@@ -132,7 +150,8 @@
 
 .scene-card {
   position: relative;
-  min-height: 300px;
+  min-width: 0;
+  min-height: 292px;
   overflow: hidden;
   border-radius: 24px;
   color: var(--cf-text-primary);
@@ -141,8 +160,9 @@
 
 .scene-backdrop {
   width: 100%;
-  height: 210px;
+  height: clamp(164px, 24vw, 210px);
   object-fit: cover;
+  display: block;
   filter: saturate(0.86);
 }
 
@@ -160,6 +180,7 @@
 
 .scene-copy {
   padding: 42px 16px 16px 108px;
+  min-width: 0;
 
   span {
     color: var(--cf-gold);
@@ -169,18 +190,49 @@
   h2 {
     margin: 6px 0;
     font-size: 1.1rem;
+    line-height: 1.28;
+    overflow-wrap: anywhere;
   }
 
   p {
     margin: 0;
     color: var(--cf-text-muted);
     font-size: 0.84rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 1180px) {
+  .scene-grid:not(.is-compact) {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   }
 }
 
 @media (max-width: 640px) {
+  .scene-hero {
+    min-height: auto;
+    border-radius: 22px;
+  }
+
   .density-toggle {
     width: 100%;
     margin-left: 0;
+  }
+
+  .lane-switcher button,
+  .density-toggle {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .scene-copy {
+    padding-left: 96px;
+  }
+
+  .scene-poster {
+    left: 14px;
+    width: 64px;
+    height: 96px;
   }
 }

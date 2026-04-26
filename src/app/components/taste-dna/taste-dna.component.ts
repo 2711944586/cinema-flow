@@ -138,7 +138,7 @@ export class TasteDnaComponent implements OnInit {
   }
 
   private buildEraBuckets(signalMovies: Movie[]): TasteBucket[] {
-    const labels = signalMovies.map(movie => `${Math.floor(movie.releaseDate.getFullYear() / 10) * 10}s`);
+    const labels = signalMovies.map(movie => `${Math.floor(movie.releaseDate.getFullYear() / 10) * 10}年代`);
     return this.buildBuckets(labels, signalMovies);
   }
 
