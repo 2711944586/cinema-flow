@@ -132,7 +132,7 @@ export class MovieStateService {
     },
     {
       name: 'LoggerService',
-      summary: '结构化日志流，供 About 页面展示运行记录。',
+      summary: '结构化日志流，供关于页面展示运行记录。',
       storageKey: 'memory',
       reactiveSignal: 'logs$'
     }
@@ -183,16 +183,16 @@ export class MovieStateService {
       return {
         summaryCards: [
           { label: '公开页面', value: String(publicRouteCount), hint: '当前主导航与增强导航中的页面入口总数' },
-          { label: '根级服务', value: String(this.serviceSummaries.length), hint: 'About 页面展示的服务数量' },
+          { label: '根级服务', value: String(this.serviceSummaries.length), hint: '关于页面展示的服务数量' },
           { label: '用户消息', value: String(messages.length), hint: '消息面板当前保留的最近提示条数' },
           { label: '日志记录', value: String(logEntries.length), hint: 'LoggerService 当前缓存的结构化日志数量' }
         ],
         highlights: [
           '导演实体、跨实体导航、分类路由与添加页路由守卫已接入主路由。',
           'Flask REST API、HttpClient、错误降级与防抖搜索已补齐。',
-          'Movies、Dashboard、Movie Detail、Directors 与 About 共享响应式状态链路。',
-          'Watch Plans、Watch Logs 与 Smart Picks 串联计划、观影与推荐。',
-          'Taste DNA、Scene Board、Archive Health 覆盖偏好画像、氛围策展与片库质量审计。',
+          '电影库、仪表盘、电影详情、导演库与关于页共享响应式状态链路。',
+          '待看片单、观影日志与智能选片串联计划、观影与推荐。',
+          '偏好画像、氛围策展、片库审计覆盖偏好分析、主题编排与资料质量检查。',
           '导入导出保留片库、最近浏览、影评、待看片单、观影日志与智能选片预设。'
         ],
         techStack: [

@@ -5,13 +5,13 @@ export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   {
     path: 'dashboard',
-    title: 'Dashboard | CinemaFlow',
+    title: '仪表盘 | CinemaFlow',
     data: { breadcrumb: '仪表盘' },
     loadComponent: () => import('./pages/dashboard-page/dashboard-page.component').then(m => m.DashboardPageComponent)
   },
   {
     path: 'movies',
-    title: 'Movies | CinemaFlow',
+    title: '电影库 | CinemaFlow',
     data: { breadcrumb: '电影列表' },
     loadComponent: () => import('./pages/movie-list-page/movie-list-page.component').then(m => m.MovieListPageComponent)
   },
@@ -147,8 +147,8 @@ export const routes: Routes = [
   },
   {
     path: 'marathon',
-    title: '马拉松规划器 | CinemaFlow',
-    data: { breadcrumb: '马拉松规划器' },
+    title: '连看规划 | CinemaFlow',
+    data: { breadcrumb: '连看规划' },
     loadComponent: () => import('./components/marathon-planner/marathon-planner.component').then(m => m.MarathonPlannerComponent)
   },
   {
@@ -159,14 +159,14 @@ export const routes: Routes = [
   },
   {
     path: 'scene-board',
-    title: '氛围策展板 | CinemaFlow',
-    data: { breadcrumb: '氛围策展板' },
+    title: '氛围策展 | CinemaFlow',
+    data: { breadcrumb: '氛围策展' },
     loadComponent: () => import('./components/scene-board/scene-board.component').then(m => m.SceneBoardComponent)
   },
   {
     path: 'archive-health',
-    title: '片库质量审计 | CinemaFlow',
-    data: { breadcrumb: '片库质量审计' },
+    title: '片库审计 | CinemaFlow',
+    data: { breadcrumb: '片库审计' },
     loadComponent: () => import('./components/archive-health/archive-health.component').then(m => m.ArchiveHealthComponent)
   },
   { path: '**', redirectTo: '/dashboard' }

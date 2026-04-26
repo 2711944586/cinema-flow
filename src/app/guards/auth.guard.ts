@@ -12,6 +12,6 @@ export const authGuard: CanActivateFn = () => {
     return true;
   }
 
-  messageService.warning('添加电影需要先登录。演示账号已固定为 admin / admin，可点击顶部按钮进入编辑模式。', 'Auth Guard');
+  messageService.warning('添加电影需要先登录。演示账号已固定为 admin / admin，可点击顶部按钮进入编辑模式。', '路由守卫');
   return router.createUrlTree(['/dashboard']);
 };

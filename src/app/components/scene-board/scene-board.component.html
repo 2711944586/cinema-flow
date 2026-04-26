@@ -2,7 +2,7 @@
   <div class="scene-hero" *ngIf="heroMovie as movie">
     <img [src]="getBackdrop(movie)" alt="" aria-hidden="true" (error)="onBackdropError($event, movie)">
     <div class="hero-copy">
-      <span class="page-kicker">Scene Board</span>
+      <span class="page-kicker">氛围策展</span>
       <h1>{{ lane.name }}</h1>
       <p>{{ lane.description }}</p>
       <a [routerLink]="['/movies', movie.id, 'info']">当前画面锚点：{{ movie.title }}</a>

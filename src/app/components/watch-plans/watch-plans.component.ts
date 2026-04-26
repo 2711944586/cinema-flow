@@ -199,7 +199,7 @@ export class WatchPlansComponent {
 
   savePlan(): void {
     if (!this.draft.movieId) {
-      this.messageService.warning('请先选择要加入待看片单的电影。', 'Watch Plans');
+      this.messageService.warning('请先选择要加入待看片单的电影。', '待看片单');
       return;
     }
 
@@ -214,7 +214,7 @@ export class WatchPlansComponent {
     });
 
     if (!result.ok) {
-      this.messageService.error(result.error, 'Watch Plans');
+      this.messageService.error(result.error, '待看片单');
       return;
     }
 
@@ -224,7 +224,7 @@ export class WatchPlansComponent {
       result.created
         ? `已把《${targetTitle}》加入待看片单。`
         : `已更新《${targetTitle}》的观影计划。`,
-      'Watch Plans'
+      '待看片单'
     );
     this.currentPageSubject.next(1);
     this.resetDraft();
@@ -240,7 +240,7 @@ export class WatchPlansComponent {
       contextTag: item.entry.contextTag,
       note: item.entry.note
     };
-    this.messageService.info(`已载入《${item.movie.title}》的计划，可直接修改后保存。`, 'Watch Plans');
+    this.messageService.info(`已载入《${item.movie.title}》的计划，可直接修改后保存。`, '待看片单');
   }
 
   updatePlanStatus(entry: WatchPlanEntry, status: WatchPlanStatus): void {
@@ -250,21 +250,21 @@ export class WatchPlansComponent {
     });
 
     if (!updated) {
-      this.messageService.error('更新待看片单状态失败，请刷新后重试。', 'Watch Plans');
+      this.messageService.error('更新待看片单状态失败，请刷新后重试。', '待看片单');
       return;
     }
 
     const movie = this.movieService.getMovieById(entry.movieId);
     this.messageService.info(
       `《${movie?.title ?? `#${entry.movieId}` }》已切换为“${STATUS_LABELS[status]}”。`,
-      'Watch Plans'
+      '待看片单'
     );
   }
 
   removePlan(entry: WatchPlanEntry): void {
     const removed = this.watchPlanService.removePlan(entry.id);
     if (!removed) {
-      this.messageService.error('删除待看片单失败：该条目不存在。', 'Watch Plans');
+      this.messageService.error('删除待看片单失败：该条目不存在。', '待看片单');
       return;
     }
 
@@ -273,7 +273,7 @@ export class WatchPlansComponent {
     }
 
     const movie = this.movieService.getMovieById(entry.movieId);
-    this.messageService.warning(`已将《${movie?.title ?? `#${entry.movieId}` }》移出待看片单。`, 'Watch Plans');
+    this.messageService.warning(`已将《${movie?.title ?? `#${entry.movieId}` }》移出待看片单。`, '待看片单');
   }
 
   resetDraft(): void {

@@ -113,7 +113,7 @@ export class MarathonPlannerComponent implements OnInit {
 
   saveLineup(): void {
     if (this.lineup.length === 0) {
-      this.messageService.warning('当前还没有可加入待看片单的马拉松片单。', 'Marathon');
+      this.messageService.warning('当前还没有可加入待看片单的连看片单。', '连看规划');
       return;
     }
 
@@ -133,8 +133,8 @@ export class MarathonPlannerComponent implements OnInit {
         status: 'queued',
         priority: index < 2 ? 'high' : 'medium',
         plannedFor: null,
-        contextTag: this.selectedGenre === '全部' ? '观影马拉松' : `${this.selectedGenre} 主题马拉松`,
-        note: `由 Marathon Planner 自动生成，时长预算 ${this.budgetHours} 小时。`
+        contextTag: this.selectedGenre === '全部' ? '连看片单' : `${this.selectedGenre} 主题连看`,
+        note: `由连看规划自动生成，时长预算 ${this.budgetHours} 小时。`
       });
 
       if (result.ok) {
@@ -148,7 +148,7 @@ export class MarathonPlannerComponent implements OnInit {
 
     this.messageService.success(
       `已处理 ${this.lineup.length} 部电影：新增 ${createdCount}，更新 ${updatedCount}，跳过 ${skippedCount} 条已有进行中计划。`,
-      'Marathon'
+      '连看规划'
     );
   }
 

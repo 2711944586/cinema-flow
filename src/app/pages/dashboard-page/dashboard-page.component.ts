@@ -27,7 +27,7 @@ export class DashboardPageComponent {
   readonly vm$ = this.movieStateService.dashboardVm$;
 
   readonly quickLinks = [
-    { label: '进入 Movies', route: '/movies', icon: 'movie', hint: '完整片库视图' },
+    { label: '进入电影库', route: '/movies', icon: 'movie', hint: '完整片库视图' },
     { label: '导演库', route: '/directors', icon: 'movie_creation', hint: '跨实体查看导演作品' },
     { label: '偏好画像', route: '/taste-dna', icon: 'psychology', hint: '查看个人观影信号' },
     { label: '片库审计', route: '/archive-health', icon: 'verified', hint: '检查海报与资料完整度' },

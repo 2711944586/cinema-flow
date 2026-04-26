@@ -160,13 +160,13 @@ export class SmartPicksComponent {
       preferredLanguages: preset.preferredLanguages
     });
     this.criteriaSubject.next(this.cloneDraft(this.draft));
-    this.messageService.info(`已套用智能选片预设：${preset.name}。`, 'Smart Picks');
+    this.messageService.info(`已套用智能选片预设：${preset.name}。`, '智能选片');
   }
 
   savePreset(): void {
     const result = this.smartPicksService.savePreset(this.cloneDraft(this.draft));
     if (!result.ok) {
-      this.messageService.error(result.error, 'Smart Picks');
+      this.messageService.error(result.error, '智能选片');
       return;
     }
 
@@ -185,14 +185,14 @@ export class SmartPicksComponent {
     this.criteriaSubject.next(this.cloneDraft(this.draft));
     this.messageService.success(
       result.created ? `已保存新的智能选片预设：${result.preset.name}。` : `已更新智能选片预设：${result.preset.name}。`,
-      'Smart Picks'
+      '智能选片'
     );
   }
 
   deletePreset(preset: ViewingPreset): void {
     const removed = this.smartPicksService.deletePreset(preset.id);
     if (!removed) {
-      this.messageService.error('删除智能选片预设失败，请刷新后重试。', 'Smart Picks');
+      this.messageService.error('删除智能选片预设失败，请刷新后重试。', '智能选片');
       return;
     }
 
@@ -200,7 +200,7 @@ export class SmartPicksComponent {
       this.resetDraft();
     }
 
-    this.messageService.warning(`已删除智能选片预设：${preset.name}。`, 'Smart Picks');
+    this.messageService.warning(`已删除智能选片预设：${preset.name}。`, '智能选片');
   }
 
   addToWatchPlan(result: RecommendationViewItem): void {
@@ -208,12 +208,12 @@ export class SmartPicksComponent {
       movieId: result.movie.id,
       status: 'queued',
       priority: 'high',
-      contextTag: `Smart Picks · ${this.draft.name.trim() || '未命名预设'}`,
+      contextTag: `智能选片 · ${this.draft.name.trim() || '未命名预设'}`,
       note: `由智能选片推荐，综合得分 ${result.score}。`
     });
 
     if (!planResult.ok) {
-      this.messageService.error(planResult.error, 'Smart Picks');
+      this.messageService.error(planResult.error, '智能选片');
       return;
     }
 
@@ -221,7 +221,7 @@ export class SmartPicksComponent {
       planResult.created
         ? `已把《${result.movie.title}》加入待看片单。`
         : `已更新《${result.movie.title}》在待看片单中的安排。`,
-      'Smart Picks'
+      '智能选片'
     );
   }
 

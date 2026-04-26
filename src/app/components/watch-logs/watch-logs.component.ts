@@ -143,7 +143,7 @@ export class WatchLogsComponent {
 
   saveLog(): void {
     if (!this.draft.movieId) {
-      this.messageService.warning('请先选择一部电影，再记录观影日志。', 'Watch Logs');
+      this.messageService.warning('请先选择一部电影，再记录观影日志。', '观影日志');
       return;
     }
 
@@ -159,12 +159,12 @@ export class WatchLogsComponent {
     });
 
     if (!result.ok) {
-      this.messageService.error(result.error, 'Watch Logs');
+      this.messageService.error(result.error, '观影日志');
       return;
     }
 
     const movie = this.movieService.getMovieById(result.entry.movieId);
-    this.messageService.success(`已记录《${movie?.title ?? `#${result.entry.movieId}` }》的观影日志。`, 'Watch Logs');
+    this.messageService.success(`已记录《${movie?.title ?? `#${result.entry.movieId}` }》的观影日志。`, '观影日志');
     this.currentPageSubject.next(1);
     this.resetDraft();
   }
@@ -172,12 +172,12 @@ export class WatchLogsComponent {
   removeLog(entry: WatchLogEntry): void {
     const removed = this.watchLogService.removeLog(entry.id);
     if (!removed) {
-      this.messageService.error('删除观影日志失败：记录不存在。', 'Watch Logs');
+      this.messageService.error('删除观影日志失败：记录不存在。', '观影日志');
       return;
     }
 
     const movie = this.movieService.getMovieById(entry.movieId);
-    this.messageService.warning(`已删除《${movie?.title ?? `#${entry.movieId}` }》的一条观影日志，并按剩余日志重新同步影片状态。`, 'Watch Logs');
+    this.messageService.warning(`已删除《${movie?.title ?? `#${entry.movieId}` }》的一条观影日志，并按剩余日志重新同步影片状态。`, '观影日志');
   }
 
   resetDraft(): void {

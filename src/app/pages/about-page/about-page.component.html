@@ -1,7 +1,7 @@
 <section class="about-page" *ngIf="vm$ | async as vm">
   <div class="about-hero">
     <div class="hero-copy">
-      <span class="hero-kicker">About CinemaFlow</span>
+      <span class="hero-kicker">关于 CinemaFlow</span>
       <h1>CinemaFlow 片库控制台</h1>
       <p>电影、导演、计划、日志、推荐与备份集中管理。</p>
     </div>
@@ -17,7 +17,7 @@
 
   <div class="content-grid">
     <section class="content-card">
-      <span class="section-kicker">Highlights</span>
+      <span class="section-kicker">能力概览</span>
       <h2>产品能力</h2>
       <ul>
         <li *ngFor="let item of vm.highlights">{{ item }}</li>
@@ -25,7 +25,7 @@
     </section>
 
     <section class="content-card">
-      <span class="section-kicker">Tech Stack</span>
+      <span class="section-kicker">技术栈</span>
       <h2>技术栈</h2>
       <ul>
         <li *ngFor="let item of vm.techStack">{{ item }}</li>
@@ -33,7 +33,7 @@
     </section>
 
     <section class="content-card">
-      <span class="section-kicker">Core</span>
+      <span class="section-kicker">核心页面</span>
       <h2>核心页面</h2>
       <div class="route-list">
         <div class="route-item" *ngFor="let item of vm.coreModules">
@@ -44,7 +44,7 @@
     </section>
 
     <section class="content-card">
-      <span class="section-kicker">Enhancements</span>
+      <span class="section-kicker">扩展功能</span>
       <h2>增强页面</h2>
       <div class="route-list">
         <div class="route-item" *ngFor="let item of vm.enhancementModules">
@@ -56,7 +56,7 @@
   </div>
 
   <section class="content-card wide-card">
-    <span class="section-kicker">Service Registry</span>
+    <span class="section-kicker">服务目录</span>
     <h2>服务与状态</h2>
     <div class="service-grid">
       <article class="service-item" *ngFor="let service of vm.serviceSummaries">
@@ -71,7 +71,7 @@
   </section>
 
   <section class="content-card wide-card">
-    <span class="section-kicker">Signals</span>
+    <span class="section-kicker">运行信号</span>
     <h2>最近消息与服务日志</h2>
     <div class="signal-grid">
       <article class="signal-card">
@@ -107,7 +107,7 @@
   </section>
 
   <section class="content-card wide-card">
-    <span class="section-kicker">Rules</span>
+    <span class="section-kicker">数据规则</span>
     <h2>数据规则</h2>
     <div class="rule-grid">
       <article>
@@ -115,7 +115,7 @@
         <p>新增和编辑电影时按片名、导演和上映日期匹配真实海报。未通过校验的条目不会写入片库。</p>
       </article>
       <article>
-        <h3>Movies 与 Explore 的区别</h3>
+        <h3>电影库与探索影库的区别</h3>
         <p>`/movies` 面向片库管理；`/explore` 面向沉浸浏览。两者共享同一份电影数据。</p>
       </article>
       <article>

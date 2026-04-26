@@ -11,14 +11,14 @@
       <div class="hero-overlay">
         <button mat-stroked-button class="back-btn" (click)="goBack()">
           <mat-icon>arrow_back</mat-icon>
-          返回 Movies
+          返回电影库
         </button>
 
         <div class="hero-main">
           <img class="hero-poster" [src]="currentMovie.posterUrl" [alt]="currentMovie.title" (error)="onPosterError($event, currentMovie)">
 
           <div class="hero-copy">
-            <span class="hero-kicker">Feature Presentation</span>
+            <span class="hero-kicker">正在放映</span>
             <h1>{{ currentMovie.title }}</h1>
             <p>{{ currentMovie.director }} · {{ currentMovie.releaseDate | date:'yyyy-MM-dd' }} · {{ currentMovie.duration }} 分钟</p>
 
@@ -72,7 +72,7 @@
 
         <section class="recommendation-panel" *ngIf="vm.recommendations.length > 0">
           <div class="section-head">
-            <span class="section-kicker">Recommendations</span>
+            <span class="section-kicker">相似推荐</span>
             <h2>相似推荐</h2>
           </div>
           <div class="recommendation-grid">
@@ -114,6 +114,6 @@
     <mat-icon>movie_off</mat-icon>
     <h2>没有找到这部电影</h2>
     <p>当前路由参数对应的电影不存在，可能已经被删除，或者链接中的 id 无效。</p>
-    <button mat-flat-button class="primary-btn" (click)="goBack()">返回 Movies</button>
+    <button mat-flat-button class="primary-btn" (click)="goBack()">返回电影库</button>
   </section>
 </ng-template>

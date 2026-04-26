@@ -42,14 +42,14 @@ export class MovieAddPageComponent {
       })
     ).subscribe(success => {
       if (success) {
-        this.messageService.success(`已把《${movieData.title}》写入片库，Movies 页面会立即同步。`, 'Movie Add');
+        this.messageService.success(`已把《${movieData.title}》写入片库，电影库页面会立即同步。`, '添加电影');
         this.snackBar.open(`已添加：${movieData.title}`, '关闭', { duration: 3200 });
         void this.router.navigate(['/movies']);
         return;
       }
 
       this.saveError = `未添加《${movieData.title}》。片库中已存在同名同年份条目，或当前海报校验未通过。`;
-      this.messageService.error(this.saveError, 'Movie Add');
+      this.messageService.error(this.saveError, '添加电影');
       this.snackBar.open(this.saveError, '关闭', { duration: 3600 });
     });
   }

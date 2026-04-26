@@ -27,15 +27,15 @@ export class DirectorService {
   getDirectors(): Observable<Director[]> {
     if (!this.http) {
       return of(this.buildLocalDirectors()).pipe(
-        tap(list => this.messageService.info(`已从本地片库聚合 ${list.length} 位导演。`, 'DirectorService'))
+        tap(list => this.messageService.info(`已从本地片库聚合 ${list.length} 位导演。`, '导演服务'))
       );
     }
 
     return this.http.get<Director[]>(this.apiUrl).pipe(
       map(directors => this.mergeWithLocalDirectors(directors)),
-      tap(list => this.messageService.info(`已通过 HTTP 加载 ${list.length} 位导演。`, 'DirectorService')),
+      tap(list => this.messageService.info(`已通过 HTTP 加载 ${list.length} 位导演。`, '导演服务')),
       catchError(error => {
-        this.logger.warn(`Director API unavailable, using local directors: ${this.describeHttpError(error)}`, 'DirectorService');
+        this.logger.warn(`导演 API 暂不可用，已改用本地导演聚合：${this.describeHttpError(error)}`, '导演服务');
         return of(this.buildLocalDirectors());
       })
     );
@@ -48,9 +48,9 @@ export class DirectorService {
 
     return this.http.get<Director>(`${this.apiUrl}/${id}`).pipe(
       map(director => this.normalizeDirector(director)),
-      tap(director => this.messageService.info(`已载入导演 ${director.name}。`, 'DirectorService')),
+      tap(director => this.messageService.info(`已载入导演 ${director.name}。`, '导演服务')),
       catchError(error => {
-        this.logger.warn(`Director detail API unavailable, using local lookup: ${this.describeHttpError(error)}`, 'DirectorService');
+        this.logger.warn(`导演详情 API 暂不可用，已改用本地查询：${this.describeHttpError(error)}`, '导演服务');
         return this.getDirectors().pipe(map(directors => directors.find(director => director.id === id)));
       })
     );
@@ -63,9 +63,9 @@ export class DirectorService {
 
     return this.http.get<Movie[]>(`${this.apiUrl}/${directorId}/movies`).pipe(
       map(movies => movies.length > 0 ? movies : this.getLocalDirectorMovies(directorId)),
-      tap(movies => this.logger.log(`Loaded ${movies.length} director movies via HTTP`, 'DirectorService')),
+      tap(movies => this.logger.log(`已通过 HTTP 加载 ${movies.length} 部导演作品。`, '导演服务')),
       catchError(error => {
-        this.logger.warn(`Director movies API unavailable, using local movies: ${this.describeHttpError(error)}`, 'DirectorService');
+        this.logger.warn(`导演作品 API 暂不可用，已改用本地作品：${this.describeHttpError(error)}`, '导演服务');
         return of(this.getLocalDirectorMovies(directorId));
       })
     );
@@ -78,9 +78,9 @@ export class DirectorService {
 
     return this.http.post<Director>(this.apiUrl, draft, httpOptions).pipe(
       map(director => this.normalizeDirector(director)),
-      tap(director => this.messageService.success(`已通过 API 新增导演 ${director.name}。`, 'DirectorService')),
+      tap(director => this.messageService.success(`已通过 API 新增导演 ${director.name}。`, '导演服务')),
       catchError(error => {
-        this.messageService.error(`新增导演失败：${this.describeHttpError(error)}`, 'DirectorService');
+        this.messageService.error(`新增导演失败：${this.describeHttpError(error)}`, '导演服务');
         return of(null);
       })
     );
@@ -93,9 +93,9 @@ export class DirectorService {
 
     return this.http.delete<{ success: boolean }>(`${this.apiUrl}/${id}`).pipe(
       map(result => !!result.success),
-      tap(() => this.messageService.success(`已通过 API 删除导演 ${id}。`, 'DirectorService')),
+      tap(() => this.messageService.success(`已通过 API 删除导演 ${id}。`, '导演服务')),
       catchError(error => {
-        this.messageService.error(`删除导演失败：${this.describeHttpError(error)}`, 'DirectorService');
+        this.messageService.error(`删除导演失败：${this.describeHttpError(error)}`, '导演服务');
         return of(false);
       })
     );

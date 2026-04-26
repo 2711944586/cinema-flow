@@ -7,7 +7,7 @@
   <div class="selectors">
     <!-- 电影 A 选择 -->
     <div class="selector-a selector-box" [class.open]="dropdownAOpen">
-      <label>电影 A</label>
+      <label>电影一</label>
       <div class="dropdown-trigger" (click)="toggleDropdownA()">
         <span class="trigger-text">{{ movieA?.title || '选择电影...' }}</span>
         <mat-icon class="arrow-icon">expand_more</mat-icon>
@@ -30,11 +30,11 @@
     <button mat-icon-button class="swap-btn" (click)="swapMovies()" *ngIf="movieA && movieB">
       <mat-icon>swap_horiz</mat-icon>
     </button>
-    <div class="vs-badge" *ngIf="!movieA || !movieB">VS</div>
+    <div class="vs-badge" *ngIf="!movieA || !movieB">对比</div>
 
     <!-- 电影 B 选择 -->
     <div class="selector-b selector-box" [class.open]="dropdownBOpen">
-      <label>电影 B</label>
+      <label>电影二</label>
       <div class="dropdown-trigger" (click)="toggleDropdownB()">
         <span class="trigger-text">{{ movieB?.title || '选择电影...' }}</span>
         <mat-icon class="arrow-icon">expand_more</mat-icon>

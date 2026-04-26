@@ -1,8 +1,8 @@
 <section class="movie-list-page" *ngIf="vm$ | async as vm; else loadingState">
   <div class="page-head">
     <div>
-      <span class="page-kicker">Collection</span>
-      <h1>Movies</h1>
+      <span class="page-kicker">馆藏管理</span>
+      <h1>电影库</h1>
       <p>按标题、导演、类型和观看状态筛选片库。</p>
     </div>
     <a mat-flat-button routerLink="/add" class="primary-btn">
@@ -19,7 +19,7 @@
           matInput
           [ngModel]="vm.queryState.search"
           (ngModelChange)="updateQueryState(vm.queryState, { search: $event })"
-          placeholder="例如：Inception / 诺兰">
+          placeholder="例如：盗梦空间 / 诺兰">
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="cf-select-field">
@@ -80,11 +80,11 @@
     <div class="state-row">
       <span class="state-chip">{{ vm.summaryLabel }}</span>
       <span class="state-chip" *ngIf="vm.filteredMovies.length > 0">第 {{ vm.page }} / {{ vm.totalPages }} 页 · {{ vm.startItem }}-{{ vm.endItem }}</span>
-      <span class="state-chip" *ngIf="vm.queryState.search">search={{ vm.queryState.search }}</span>
+      <span class="state-chip" *ngIf="vm.queryState.search">搜索：{{ vm.queryState.search }}</span>
       <span class="state-chip" *ngIf="vm.queryState.genre !== 'all'">{{ vm.queryState.genre }}</span>
-      <span class="state-chip" *ngIf="vm.queryState.favorite">favorite=true</span>
-      <span class="state-chip" *ngIf="vm.queryState.watched">watched=true</span>
-      <span class="state-chip accent-chip">view={{ vm.queryState.view }}</span>
+      <span class="state-chip" *ngIf="vm.queryState.favorite">仅收藏</span>
+      <span class="state-chip" *ngIf="vm.queryState.watched">仅已观影</span>
+      <span class="state-chip accent-chip">视图：{{ vm.queryState.view === 'table' ? '列表' : '卡片' }}</span>
     </div>
   </section>
 
@@ -153,7 +153,7 @@
   <app-list-pager
     *ngIf="vm.filteredMovies.length > 0"
     class="list-pager-wrap"
-    label="Movies 列表"
+    label="电影库列表"
     [totalItems]="vm.filteredMovies.length"
     [currentPage]="vm.page"
     [pageSize]="vm.pageSize"
@@ -178,7 +178,7 @@
 <ng-template #loadingState>
   <section class="loading-card">
     <mat-icon>hourglass_top</mat-icon>
-    <h2>正在载入 Movies</h2>
+    <h2>正在载入电影库</h2>
     <p>整理片库视图。</p>
   </section>
 </ng-template>

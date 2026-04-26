@@ -1,7 +1,7 @@
 <section class="watch-plans-page" *ngIf="vm$ | async as vm">
   <div class="page-head">
     <div>
-      <span class="page-kicker">Watch Plans</span>
+      <span class="page-kicker">待看片单</span>
       <h1>待看片单</h1>
       <p>为电影设置优先级、排期时间和观影场景。</p>
     </div>
@@ -23,7 +23,7 @@
     <section class="planner-card">
       <div class="section-head">
         <div>
-          <span class="section-kicker">Plan Builder</span>
+          <span class="section-kicker">计划编辑</span>
           <h2>{{ isEditing ? '编辑当前计划' : '新增 / 更新计划' }}</h2>
         </div>
       </div>
@@ -82,12 +82,12 @@
     </section>
 
     <section class="guide-card">
-      <span class="section-kicker">Workflow</span>
+      <span class="section-kicker">工作流</span>
       <h2>计划准则</h2>
       <ul>
         <li>高优先级电影先排到具体日期。</li>
         <li>情境标签区分夜场、周末、补片和连看。</li>
-        <li>`Watch Logs` 写入后，对应计划会标记完成。</li>
+        <li>观影日志写入后，对应计划会标记完成。</li>
       </ul>
     </section>
   </div>
@@ -95,7 +95,7 @@
   <section class="plans-card">
     <div class="card-head">
       <div>
-        <span class="section-kicker">Queue</span>
+        <span class="section-kicker">待看队列</span>
         <h2>当前待看片单</h2>
       </div>
       <div class="filter-row">

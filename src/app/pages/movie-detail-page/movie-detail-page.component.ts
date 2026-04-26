@@ -77,7 +77,7 @@ export class MovieDetailPageComponent {
     this.movieService.toggleFavorite(movie.id);
     this.messageService.info(
       movie.isFavorite ? `已取消收藏《${movie.title}》。` : `已把《${movie.title}》加入收藏中心。`,
-      'Movie Detail'
+      '电影详情'
     );
   }
 
@@ -85,7 +85,7 @@ export class MovieDetailPageComponent {
     this.movieService.toggleWatched(movie.id);
     this.messageService.info(
       movie.isWatched ? `已把《${movie.title}》恢复为未观影状态。` : `已把《${movie.title}》标记为已观影。`,
-      'Movie Detail'
+      '电影详情'
     );
   }
 
@@ -93,7 +93,7 @@ export class MovieDetailPageComponent {
     this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: '确认删除当前电影',
-        message: `删除《${movie.title}》后，Movies、Explore、Favorites 和其他增强模块中的对应条目都会消失。`,
+        message: `删除《${movie.title}》后，电影库、探索影库、收藏中心和其他扩展页面中的对应条目都会消失。`,
         confirmLabel: '删除电影',
         cancelLabel: '取消',
         tone: 'danger'
@@ -107,11 +107,11 @@ export class MovieDetailPageComponent {
       const deletedTitle = movie.title;
       const success = this.movieService.deleteMovie(movie.id);
       if (success) {
-        this.messageService.success(`已删除《${deletedTitle}》，详情上下文已返回 Movies。`, 'Movie Detail');
+        this.messageService.success(`已删除《${deletedTitle}》，详情上下文已返回电影库。`, '电影详情');
         this.snackBar.open(`已删除：${deletedTitle}`, '关闭', { duration: 3000 });
         void this.router.navigate(['/movies']);
       } else {
-        this.messageService.error(`删除《${deletedTitle}》失败：电影不存在。`, 'Movie Detail');
+        this.messageService.error(`删除《${deletedTitle}》失败：电影不存在。`, '电影详情');
         this.snackBar.open('删除失败：电影不存在', '关闭', { duration: 3000 });
       }
     });

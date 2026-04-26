@@ -63,13 +63,13 @@ export class AppComponent {
   toggleAuth(): void {
     if (this.authService.isAuthenticated) {
       this.authService.logout();
-      this.messageService.info('已退出编辑模式，添加电影页面将重新受路由守卫保护。', 'Auth');
+      this.messageService.info('已退出编辑模式，添加电影页面将重新受路由守卫保护。', '编辑权限');
       return;
     }
 
     const ok = this.authService.login('admin', 'admin');
     if (ok) {
-      this.messageService.success('已进入编辑模式，可以访问添加电影页面。', 'Auth');
+      this.messageService.success('已进入编辑模式，可以访问添加电影页面。', '编辑权限');
     }
   }
 }

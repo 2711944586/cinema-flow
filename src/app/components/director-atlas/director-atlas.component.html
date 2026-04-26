@@ -1,7 +1,7 @@
 <section class="director-atlas">
   <div class="atlas-header">
     <div class="header-copy">
-      <span class="header-kicker">Director Atlas</span>
+      <span class="header-kicker">导演图谱</span>
       <h1>用导演视角重新梳理你的片库</h1>
       <p>把作品量、均分、收藏度和已看进度放进同一个视图，快速看清哪些导演已经形成稳定偏好，哪些导演还值得继续深挖。</p>
     </div>
@@ -34,12 +34,12 @@
     <section class="directory-panel">
       <div class="panel-head">
         <div>
-          <span class="panel-kicker">Directory</span>
+          <span class="panel-kicker">导演目录</span>
           <h2>导演目录</h2>
         </div>
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>搜索导演或作品</mat-label>
-          <input matInput [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()" placeholder="例如：Christopher Nolan / 盗梦空间">
+          <input matInput [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()" placeholder="例如：克里斯托弗·诺兰 / 盗梦空间">
         </mat-form-field>
       </div>
 
@@ -67,7 +67,7 @@
     <section class="spotlight-panel" *ngIf="selectedDirector as director">
       <div class="panel-head spotlight-head">
         <div>
-          <span class="panel-kicker">Spotlight</span>
+          <span class="panel-kicker">当前导演</span>
           <h2>{{ director.name }}</h2>
           <p>{{ director.count }} 部作品 · {{ director.totalHours }} 小时片长储备 · 收藏 {{ director.favoriteCount }} 部</p>
         </div>

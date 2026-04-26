@@ -30,7 +30,7 @@ export class DataManagementComponent {
 
   exportJson(): void {
     this.dataPortService.downloadBackup();
-    this.messageService.success('已导出当前片库、影评、计划、日志与智能选片预设的 JSON 备份。', 'Data Management');
+    this.messageService.success('已导出当前片库、影评、计划、日志与智能选片预设的 JSON 备份。', '数据管理');
     this.snackBar.open('已导出当前片库与用户状态 JSON', '关闭', { duration: 2600 });
   }
 
@@ -51,7 +51,7 @@ export class DataManagementComponent {
       const result = this.dataPortService.parseBackup(content);
 
       if (!result.ok) {
-        this.messageService.error(result.error, 'Data Management');
+        this.messageService.error(result.error, '数据管理');
         this.snackBar.open(result.error, '关闭', { duration: 3200 });
         input.value = '';
         return;
@@ -71,11 +71,11 @@ export class DataManagementComponent {
 
       if (confirmed) {
         this.dataPortService.restoreBackup(result.payload);
-        this.messageService.success('数据恢复完成，片库、计划、日志与推荐预设都已同步刷新。', 'Data Management');
+        this.messageService.success('数据恢复完成，片库、计划、日志与推荐预设都已同步刷新。', '数据管理');
         this.snackBar.open('数据恢复完成，页面状态已更新', '关闭', { duration: 3200 });
       }
     } catch {
-      this.messageService.error('读取导入文件失败，请检查文件编码或 JSON 内容。', 'Data Management');
+      this.messageService.error('读取导入文件失败，请检查文件编码或 JSON 内容。', '数据管理');
       this.snackBar.open('读取导入文件失败，请重试。', '关闭', { duration: 3200 });
     } finally {
       input.value = '';

@@ -82,7 +82,7 @@
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>电影名称</mat-label>
-              <input matInput name="title" [(ngModel)]="formData.title" (ngModelChange)="onArtworkSeedChange()" required placeholder="例如：沙丘 2 / Dune: Part Two">
+              <input matInput name="title" [(ngModel)]="formData.title" (ngModelChange)="onArtworkSeedChange()" required placeholder="例如：沙丘 2">
             </mat-form-field>
 
             <div class="form-row">
@@ -170,7 +170,7 @@
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>预告片 URL</mat-label>
-              <input matInput name="trailerUrl" [(ngModel)]="formData.trailerUrl" placeholder="YouTube 或视频地址" type="url">
+              <input matInput name="trailerUrl" [(ngModel)]="formData.trailerUrl" placeholder="视频平台或文件地址" type="url">
             </mat-form-field>
           </div>
 

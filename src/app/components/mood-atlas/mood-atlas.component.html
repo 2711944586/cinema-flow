@@ -1,7 +1,7 @@
 <section class="mood-atlas">
   <div class="atlas-header">
     <div class="header-copy">
-      <span class="header-kicker">Mood Atlas</span>
+      <span class="header-kicker">情绪图谱</span>
       <h1>情绪偏好地图</h1>
       <p>按观影日志中的情绪标签聚合电影。</p>
     </div>
@@ -34,12 +34,12 @@
     <section class="cluster-panel">
       <div class="panel-head">
         <div>
-          <span class="panel-kicker">Cluster List</span>
+          <span class="panel-kicker">情绪列表</span>
           <h2>情绪簇</h2>
         </div>
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>搜索情绪或电影</mat-label>
-          <input matInput [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()" placeholder="例如：治愈 / 热血 / Interstellar">
+          <input matInput [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()" placeholder="例如：治愈 / 热血 / 星际穿越">
         </mat-form-field>
       </div>
 
@@ -74,7 +74,7 @@
     <section class="detail-panel" *ngIf="selectedCluster as cluster">
       <div class="panel-head detail-head">
         <div>
-          <span class="panel-kicker">Selected Mood</span>
+          <span class="panel-kicker">当前情绪</span>
           <h2>{{ cluster.tag }}</h2>
           <p>共 {{ cluster.count }} 条记录。</p>
         </div>
@@ -106,7 +106,7 @@
   <section class="empty-panel">
     <mat-icon>mood</mat-icon>
     <h2>还没有足够的情绪日志</h2>
-    <p>先在 `Watch Logs` 写几条带情绪标签的观影记录。</p>
+    <p>先在观影日志里写几条带情绪标签的观影记录。</p>
     <a mat-flat-button class="primary-btn" routerLink="/watch-logs">
       <mat-icon>history_edu</mat-icon>
       去写观影日志

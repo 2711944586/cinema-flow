@@ -1,7 +1,7 @@
 <section class="smart-picks-page" *ngIf="vm$ | async as vm">
   <div class="page-head">
     <div>
-      <span class="page-kicker">Smart Picks</span>
+      <span class="page-kicker">智能选片</span>
       <h1>按你的偏好，为今晚选出最合适的一部</h1>
       <p>设置时长、评分、类型、语言与待看片单偏好，CinemaFlow 会即时算出最匹配的候选电影。满意的话，一键就能把结果塞回待看片单。</p>
     </div>
@@ -21,7 +21,7 @@
 
   <div class="layout-grid">
     <section class="criteria-card">
-      <span class="section-kicker">Criteria</span>
+      <span class="section-kicker">筛选条件</span>
       <h2>智能选片条件</h2>
 
       <div class="form-grid">
@@ -86,7 +86,7 @@
     </section>
 
     <section class="preset-card">
-      <span class="section-kicker">Presets</span>
+      <span class="section-kicker">选片预设</span>
       <h2>已保存预设</h2>
       <div class="preset-list" *ngIf="vm.presets.length > 0; else emptyPresetState">
         <article class="preset-item" *ngFor="let preset of vm.presets; trackBy: trackByPresetId">
@@ -108,7 +108,7 @@
   <section class="results-card">
     <div class="card-head">
       <div>
-        <span class="section-kicker">Recommendations</span>
+        <span class="section-kicker">推荐结果</span>
         <h2>当前推荐结果</h2>
       </div>
     </div>
@@ -151,6 +151,6 @@
   <section class="empty-card">
     <mat-icon>auto_awesome</mat-icon>
     <h2>当前条件下没有推荐结果</h2>
-    <p>可以适当放宽时长、评分或待看片单限制，让 Smart Picks 有更多可挑选的电影。</p>
+    <p>可以适当放宽时长、评分或待看片单限制，让智能选片有更多可挑选的电影。</p>
   </section>
 </ng-template>
