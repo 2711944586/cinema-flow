@@ -38,7 +38,7 @@ export class MovieDetailPageComponent {
   readonly currentSection$: Observable<'info' | 'cast'> = this.router.events.pipe(
     filter(event => event instanceof NavigationEnd),
     startWith(null),
-    map(() => this.route.firstChild?.snapshot.url[0]?.path === 'cast' ? 'cast' : 'info'),
+    map(() => this.route.firstChild?.snapshot?.url?.[0]?.path === 'cast' ? 'cast' : 'info'),
     distinctUntilChanged(),
     shareReplay({ bufferSize: 1, refCount: true })
   );

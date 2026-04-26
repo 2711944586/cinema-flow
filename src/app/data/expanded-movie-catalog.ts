@@ -1,4 +1,5 @@
 import { Movie } from '../models/movie';
+import { buildMovieMediaOverrideKey, MOVIE_MEDIA_OVERRIDES } from './movie-media-overrides';
 
 export type RemoteMovieSeed = Omit<Movie, 'id'>;
 
@@ -164,7 +165,8 @@ function mapErikMovie(movie: ErikMoviePayload): RemoteMovieSeed | null {
     return null;
   }
 
-  const posterUrl = sanitizeImageUrl(movie.posterUrl);
+  const mediaOverride = MOVIE_MEDIA_OVERRIDES[buildMovieMediaOverrideKey(title, releaseYear)];
+  const posterUrl = mediaOverride?.posterUrl ?? sanitizeImageUrl(movie.posterUrl);
   return {
     title,
     releaseDate: new Date(releaseYear, 0, 1),
@@ -172,7 +174,7 @@ function mapErikMovie(movie: ErikMoviePayload): RemoteMovieSeed | null {
     rating: clampRating(undefined, 7.4),
     isWatched: false,
     posterUrl: posterUrl ?? '',
-    backdropUrl: posterUrl ?? '',
+    backdropUrl: mediaOverride?.backdropUrl ?? posterUrl ?? '',
     genres: buildGenres(undefined, movie.genres ?? []).length > 0 ? buildGenres(undefined, movie.genres ?? []) : ['剧情'],
     duration: parseDuration(movie.runtime),
     description: truncateText(

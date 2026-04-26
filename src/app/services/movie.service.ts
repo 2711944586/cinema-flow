@@ -11,6 +11,7 @@ import {
   coerceMovieDate,
   ensureMovieMedia,
   isGeneratedMovieArt,
+  isRemoteFallbackMovieArt,
   optimizeMovieImageUrl
 } from '../utils/movie-media';
 import { LoggerService } from './logger.service';
@@ -556,12 +557,12 @@ export class MovieService {
   }
 
   private mergeCatalogEntry(currentMovie: Movie, incomingMovie: Movie): Movie {
-    const shouldUseIncomingPoster = (!this.hasVerifiedPoster(currentMovie.posterUrl) || this.isRemoteFallbackArt(currentMovie.posterUrl))
+    const shouldUseIncomingPoster = (!this.hasVerifiedPoster(currentMovie.posterUrl) || isRemoteFallbackMovieArt(currentMovie.posterUrl))
       && this.hasVerifiedPoster(incomingMovie.posterUrl)
-      && !this.isRemoteFallbackArt(incomingMovie.posterUrl);
-    const shouldUseIncomingBackdrop = (!this.hasVerifiedBackdrop(currentMovie.backdropUrl) || this.isRemoteFallbackArt(currentMovie.backdropUrl))
+      && !isRemoteFallbackMovieArt(incomingMovie.posterUrl);
+    const shouldUseIncomingBackdrop = (!this.hasVerifiedBackdrop(currentMovie.backdropUrl) || isRemoteFallbackMovieArt(currentMovie.backdropUrl))
       && this.hasVerifiedBackdrop(incomingMovie.backdropUrl)
-      && !this.isRemoteFallbackArt(incomingMovie.backdropUrl);
+      && !isRemoteFallbackMovieArt(incomingMovie.backdropUrl);
 
     return this.normalizeMovie({
       ...currentMovie,
@@ -695,10 +696,6 @@ export class MovieService {
     return !!backdropUrl
       && !isGeneratedMovieArt(backdropUrl)
       && optimizeMovieImageUrl(backdropUrl, 'backdrop') !== null;
-  }
-
-  private isRemoteFallbackArt(url: string | undefined): boolean {
-    return !!url && /https:\/\/picsum\.photos\/seed\//i.test(url);
   }
 
   private syncCreateMovie(movie: Movie): void {
