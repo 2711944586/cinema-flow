@@ -55,7 +55,7 @@ export class MovieListComponent implements OnInit, OnDestroy {
 
   genres: string[] = [];
   selectedGenre = '全部';
-  sortOption = 'newest';
+  sortOption = 'toprated';
   searchQuery = '';
   showOnlyFavorites = false;
   showOnlyWatched = false;
@@ -71,13 +71,13 @@ export class MovieListComponent implements OnInit, OnDestroy {
   readonly pageSizeOptions = [12, 24, 48];
 
   readonly sortOptions = [
-    { value: 'newest', label: '最新上映' },
     { value: 'toprated', label: '最高评分' },
+    { value: 'newest', label: '最新上映' },
     { value: 'title', label: '名称排序' },
     { value: 'duration', label: '时长排序' }
   ];
   readonly sortLabels: Record<string, string> = {
-    newest: '最新上映', toprated: '最高评分', title: '名称排序', duration: '时长排序'
+    toprated: '最高评分', newest: '最新上映', title: '名称排序', duration: '时长排序'
   };
 
   private sub?: Subscription;
@@ -140,6 +140,7 @@ export class MovieListComponent implements OnInit, OnDestroy {
   selectSort(value: string): void {
     this.sortOption = value;
     this.sortDropdownOpen = false;
+    this.currentPage = 1;
     this.applyFilters();
   }
 
@@ -157,11 +158,13 @@ export class MovieListComponent implements OnInit, OnDestroy {
   selectGenreFromDropdown(genre: string): void {
     this.selectedGenre = genre;
     this.genreDropdownOpen = false;
+    this.currentPage = 1;
     this.applyFilters();
   }
 
   selectGenre(genre: string) {
     this.selectedGenre = genre;
+    this.currentPage = 1;
     this.applyFilters();
   }
 
@@ -273,11 +276,13 @@ export class MovieListComponent implements OnInit, OnDestroy {
 
   toggleFavoritesFilter() {
     this.showOnlyFavorites = !this.showOnlyFavorites;
+    this.currentPage = 1;
     this.applyFilters();
   }
 
   toggleWatchedFilter() {
     this.showOnlyWatched = !this.showOnlyWatched;
+    this.currentPage = 1;
     this.applyFilters();
   }
 
@@ -307,10 +312,10 @@ export class MovieListComponent implements OnInit, OnDestroy {
 
     switch (this.sortOption) {
       case 'newest':
-        result.sort((a, b) => b.releaseDate.getTime() - a.releaseDate.getTime());
+        result.sort((a, b) => b.releaseDate.getTime() - a.releaseDate.getTime() || b.rating - a.rating);
         break;
       case 'toprated':
-        result.sort((a, b) => b.rating - a.rating);
+        result.sort((a, b) => b.rating - a.rating || b.releaseDate.getTime() - a.releaseDate.getTime());
         break;
       case 'title':
         result.sort((a, b) => a.title.localeCompare(b.title));

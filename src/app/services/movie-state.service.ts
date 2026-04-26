@@ -85,7 +85,7 @@ export class MovieStateService {
     {
       name: 'MovieService',
       summary: '电影主库、收藏与已观看状态的单一事实来源。',
-      storageKey: 'cinemaflow.movies.v3',
+      storageKey: 'cinemaflow.movies.v4',
       reactiveSignal: 'movies$'
     },
     {

@@ -3,7 +3,7 @@ import { filter, firstValueFrom } from 'rxjs';
 import { LoggerService } from './logger.service';
 import { MovieService } from './movie.service';
 
-const STORAGE_KEYS = ['cinemaflow.movies.v3', 'cinemaflow.movies.v2'];
+const STORAGE_KEYS = ['cinemaflow.movies.v4', 'cinemaflow.movies.v3', 'cinemaflow.movies.v2'];
 
 describe('MovieService', () => {
   let movieService: MovieService;
@@ -13,30 +13,6 @@ describe('MovieService', () => {
 
     spyOn(window, 'fetch').and.callFake((input: RequestInfo | URL) => {
       const url = String(input);
-
-      if (url.includes('vega-datasets')) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ([
-            {
-              Title: 'Expansion Test',
-              Director: 'Jane Doe',
-              'Release Date': '2025-01-01',
-              'Running Time min': 120,
-              'Major Genre': 'Action',
-              'IMDB Rating': 8.8
-            },
-            {
-              Title: 'Quiet Orbit',
-              Director: 'Alex Ray',
-              'Release Date': '2024-04-05',
-              'Running Time min': 95,
-              'Major Genre': 'Science Fiction',
-              'IMDB Rating': 7.9
-            }
-          ])
-        } as Response);
-      }
 
       return Promise.resolve({
         ok: true,
@@ -51,6 +27,36 @@ describe('MovieService', () => {
               actors: 'Actor A, Actor B',
               plot: 'Poster merge target',
               posterUrl: 'https://example.com/expansion-test.jpg'
+            },
+            {
+              title: 'Quiet Orbit',
+              year: '2024',
+              runtime: '95',
+              genres: ['Science Fiction'],
+              director: 'Alex Ray',
+              actors: 'Actor C, Actor D',
+              plot: 'Valid catalog entry',
+              posterUrl: ''
+            },
+            {
+              title: 'Future Mirage',
+              year: '2046',
+              runtime: '95',
+              genres: ['Drama'],
+              director: 'Future Director',
+              actors: 'Actor E',
+              plot: 'Invalid future entry',
+              posterUrl: ''
+            },
+            {
+              title: 'Anonymous Drift',
+              year: '2024',
+              runtime: '90',
+              genres: ['Drama'],
+              director: '',
+              actors: 'Actor F',
+              plot: 'Missing director entry',
+              posterUrl: ''
             }
           ]
         })
@@ -68,7 +74,7 @@ describe('MovieService', () => {
     STORAGE_KEYS.forEach(key => localStorage.removeItem(key));
   });
 
-  it('merges expanded catalog results and strips generated placeholders before persisting', async () => {
+  it('merges vetted expanded catalog results and strips generated placeholders before persisting', async () => {
     const movies = await firstValueFrom(
       movieService.movies$.pipe(filter(items => items.some(movie => movie.title === 'Quiet Orbit')))
     );
@@ -76,13 +82,17 @@ describe('MovieService', () => {
     expect(movies.length).toBe(46);
 
     const mergedMovie = movies.find(movie => movie.title === 'Expansion Test');
-    const vegaOnlyMovie = movies.find(movie => movie.title === 'Quiet Orbit');
-    const persistedMovies = JSON.parse(localStorage.getItem('cinemaflow.movies.v3') ?? '[]') as Array<{ title: string; posterUrl: string; backdropUrl: string }>;
-    const persistedVegaOnlyMovie = persistedMovies.find(movie => movie.title === 'Quiet Orbit');
+    const quietOrbitMovie = movies.find(movie => movie.title === 'Quiet Orbit');
+    const futureMovie = movies.find(movie => movie.title === 'Future Mirage');
+    const anonymousMovie = movies.find(movie => movie.title === 'Anonymous Drift');
+    const persistedMovies = JSON.parse(localStorage.getItem('cinemaflow.movies.v4') ?? '[]') as Array<{ title: string; posterUrl: string; backdropUrl: string }>;
+    const persistedQuietOrbitMovie = persistedMovies.find(movie => movie.title === 'Quiet Orbit');
 
     expect(mergedMovie?.posterUrl).toBe('https://example.com/expansion-test.jpg');
-    expect(vegaOnlyMovie).toBeDefined();
-    expect(persistedVegaOnlyMovie?.posterUrl).toContain('https://picsum.photos/seed/');
-    expect(persistedVegaOnlyMovie?.backdropUrl).toContain('https://picsum.photos/seed/');
+    expect(quietOrbitMovie).toBeDefined();
+    expect(futureMovie).toBeUndefined();
+    expect(anonymousMovie).toBeUndefined();
+    expect(persistedQuietOrbitMovie?.posterUrl).toContain('https://picsum.photos/seed/');
+    expect(persistedQuietOrbitMovie?.backdropUrl).toContain('https://picsum.photos/seed/');
   });
 });

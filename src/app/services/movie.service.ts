@@ -22,9 +22,9 @@ export class MovieService {
   private readonly httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   };
-  private readonly storageKey = 'cinemaflow.movies.v3';
-  private readonly legacyStorageKeys = ['cinemaflow.movies.v2'];
-  private readonly minimumCatalogSize = MOCK_MOVIES.length * 20;
+  private readonly storageKey = 'cinemaflow.movies.v4';
+  private readonly deprecatedStorageKeys = ['cinemaflow.movies.v3', 'cinemaflow.movies.v2'];
+  private readonly minimumCatalogSize = 180;
   private readonly moviesSubject: BehaviorSubject<Movie[]>;
   private expansionInFlight = false;
 
@@ -401,14 +401,14 @@ export class MovieService {
   }
 
   private loadInitialMovies(): Movie[] {
-    const fallbackMovies = this.dedupeMovies(MOCK_MOVIES.map(movie => this.normalizeMovie(movie)));
+    const fallbackMovies = this.normalizeMovieList(MOCK_MOVIES);
 
     if (typeof localStorage === 'undefined') {
       return fallbackMovies;
     }
 
     try {
-      const rawValue = this.readPersistedMovies();
+      const rawValue = localStorage.getItem(this.storageKey);
       if (!rawValue) {
         return fallbackMovies;
       }
@@ -418,7 +418,7 @@ export class MovieService {
         return fallbackMovies;
       }
 
-      const persistedMovies = this.dedupeMovies(parsedValue.map(movie => this.normalizeMovie(movie)));
+      const persistedMovies = this.normalizeMovieList(parsedValue);
       return persistedMovies.length > 0 ? persistedMovies : fallbackMovies;
     } catch {
       return fallbackMovies;
@@ -426,7 +426,7 @@ export class MovieService {
   }
 
   private commitMovies(movies: Movie[], logMessage?: string): void {
-    const normalizedMovies = this.dedupeMovies(movies.map(movie => this.normalizeMovie(movie)));
+    const normalizedMovies = this.normalizeMovieList(movies);
     this.moviesSubject.next(normalizedMovies);
     this.persistMovies(normalizedMovies);
 
@@ -443,7 +443,7 @@ export class MovieService {
     try {
       const persistableMovies = movies.map(movie => this.toPersistableMovie(movie));
       localStorage.setItem(this.storageKey, JSON.stringify(persistableMovies));
-      this.legacyStorageKeys.forEach(key => localStorage.removeItem(key));
+      this.deprecatedStorageKeys.forEach(key => localStorage.removeItem(key));
     } catch (error) {
       this.logger.warn(`Failed to persist movie library: ${error instanceof Error ? error.message : 'unknown error'}`);
     }
@@ -471,19 +471,6 @@ export class MovieService {
         return of([]);
       })
     ).subscribe();
-  }
-
-  private readPersistedMovies(): string | null {
-    const storageKeys = [this.storageKey, ...this.legacyStorageKeys];
-
-    for (const key of storageKeys) {
-      const rawValue = localStorage.getItem(key);
-      if (rawValue) {
-        return rawValue;
-      }
-    }
-
-    return null;
   }
 
   private async prefetchExpandedCatalogIfNeeded(): Promise<void> {
@@ -528,6 +515,10 @@ export class MovieService {
 
     remoteMovies.forEach(remoteMovie => {
       const normalizedMovie = this.normalizeMovie({ ...remoteMovie, id: nextId });
+      if (!this.isCredibleLibraryMovie(normalizedMovie)) {
+        return;
+      }
+
       const identityKey = this.buildMovieIdentityKey(normalizedMovie);
       const currentMovie = catalogMap.get(identityKey);
 
@@ -552,6 +543,10 @@ export class MovieService {
 
     apiMovies.forEach(apiMovie => {
       const normalizedMovie = this.normalizeMovie(apiMovie);
+      if (!this.isCredibleLibraryMovie(normalizedMovie)) {
+        return;
+      }
+
       const identityKey = this.buildMovieIdentityKey(normalizedMovie);
       const currentMovie = catalogMap.get(identityKey);
       catalogMap.set(identityKey, currentMovie ? this.mergeCatalogEntry(currentMovie, normalizedMovie) : normalizedMovie);
@@ -617,6 +612,14 @@ export class MovieService {
     });
   }
 
+  private normalizeMovieList(movies: Movie[]): Movie[] {
+    return this.dedupeMovies(
+      movies
+        .map(movie => this.normalizeMovie(movie))
+        .filter(movie => this.isCredibleLibraryMovie(movie))
+    );
+  }
+
   private dedupeMovies(movies: Movie[]): Movie[] {
     const seenKeys = new Set<string>();
 
@@ -634,6 +637,23 @@ export class MovieService {
   private isDuplicateMovie(movie: Movie): boolean {
     const targetKey = this.buildMovieIdentityKey(movie);
     return this.moviesSubject.value.some(existing => this.buildMovieIdentityKey(existing) === targetKey);
+  }
+
+  private isCredibleLibraryMovie(movie: Movie): boolean {
+    const title = movie.title?.trim() ?? '';
+    const director = movie.director?.trim() ?? '';
+    const releaseYear = coerceMovieDate(movie.releaseDate).getFullYear();
+    const currentYear = new Date().getFullYear();
+    const hasValidRating = Number.isFinite(movie.rating) && movie.rating >= 0 && movie.rating <= 10;
+    const hasValidDuration = Number.isFinite(movie.duration) && movie.duration >= 1;
+
+    return title.length > 0
+      && director.length > 0
+      && director !== '佚名导演'
+      && releaseYear >= 1888
+      && releaseYear <= currentYear
+      && hasValidRating
+      && hasValidDuration;
   }
 
   private buildMovieIdentityKey(movie: Pick<Movie, 'title' | 'releaseDate'>): string {

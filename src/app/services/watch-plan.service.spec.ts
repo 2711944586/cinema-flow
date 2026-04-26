@@ -4,7 +4,7 @@ import { MovieService } from './movie.service';
 import { WatchPlanService } from './watch-plan.service';
 
 const STORAGE_KEYS = [
-  'cinemaflow.movies.v3',
+  'cinemaflow.movies.v4',
   'cinemaflow.watch-plans.v1'
 ];
 

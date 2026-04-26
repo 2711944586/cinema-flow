@@ -57,7 +57,7 @@
     <div class="toolbar">
       <div class="search-box">
         <mat-icon class="search-icon">search</mat-icon>
-        <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()" placeholder="搜索电影、导演或演员...">
+        <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="currentPage = 1; applyFilters()" placeholder="搜索电影、导演或演员...">
       </div>
 
       <div class="genre-dropdown" [class.open]="genreDropdownOpen">

@@ -10,7 +10,7 @@ import { WatchLogService } from './watch-log.service';
 import { WatchPlanService } from './watch-plan.service';
 
 const STORAGE_KEYS = [
-  'cinemaflow.movies.v3',
+  'cinemaflow.movies.v4',
   'cinemaflow.recent-history.v2',
   'cinemaflow.reviews.v2',
   'cinemaflow.watch-plans.v1',

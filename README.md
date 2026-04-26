@@ -50,7 +50,7 @@ npm run start -- --proxy-config .runtime-proxy.conf.json
 | Add Movie | `/add` | 新增电影，带编辑模式守卫和真实海报校验 |
 | Directors | `/directors` | 导演实体列表、搜索与作品入口 |
 | Director Detail | `/directors/:id` | 导演档案、作品列表、上一位/下一位导航 |
-| Explore | `/explore` | 沉浸式浏览、筛选、排序与分页 |
+| Explore | `/explore` | 高分优先的沉浸式浏览、筛选、排序与分页 |
 | Favorites | `/favorites` | 收藏与已观看影片回看 |
 | Timeline | `/timeline` | 按年代查看片库分布 |
 | Recommendations | `/recommendations` | 按导演和类型输出推荐 |
@@ -87,6 +87,7 @@ npm run start -- --proxy-config .runtime-proxy.conf.json
 
 - 电影种子数据位于 `src/app/data/`
 - Flask 持久化数据位于 `cinemaflow-api/cinemaflow-data.json`
+- 扩展片库只接收标题、导演、年份完整且年份不晚于当前年份的真实电影条目
 - 海报和背景优先使用真实远程图片 URL
 - 不稳定图片源会被过滤
 - 图片加载失败时才使用前端兜底图
