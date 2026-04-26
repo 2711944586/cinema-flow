@@ -82,7 +82,7 @@ describe('MovieService', () => {
 
     expect(mergedMovie?.posterUrl).toBe('https://example.com/expansion-test.jpg');
     expect(vegaOnlyMovie).toBeDefined();
-    expect(persistedVegaOnlyMovie?.posterUrl).toBe('');
-    expect(persistedVegaOnlyMovie?.backdropUrl).toBe('');
+    expect(persistedVegaOnlyMovie?.posterUrl).toContain('https://picsum.photos/seed/');
+    expect(persistedVegaOnlyMovie?.backdropUrl).toContain('https://picsum.photos/seed/');
   });
 });

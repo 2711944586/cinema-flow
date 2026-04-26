@@ -136,6 +136,10 @@ function optimizeBackdropDisplayUrl(url: string | undefined): string | null {
       return null;
     }
 
+    if (/(?:^|\.)ia\.media-imdb\.com$/i.test(parsedUrl.hostname)) {
+      return null;
+    }
+
     if (/(?:^|\.)themoviedb\.org$/i.test(parsedUrl.hostname)) {
       return `https://image.tmdb.org/t/p/original/${filename}`;
     }
@@ -153,7 +157,7 @@ function optimizeBackdropDisplayUrl(url: string | undefined): string | null {
 export function getBackdropDisplayUrl(seed: MovieVisualSeed): string {
   return optimizeBackdropDisplayUrl(seed.backdropUrl)
     ?? optimizeBackdropDisplayUrl(seed.posterUrl)
-    ?? buildBackdropFallback(seed);
+    ?? buildRemoteBackdropUrl(seed);
 }
 
 export function optimizeMovieImageUrl(
@@ -162,8 +166,12 @@ export function optimizeMovieImageUrl(
 ): string | null {
   const trimmedUrl = url?.trim();
 
-  if (!trimmedUrl || isGeneratedMovieArt(trimmedUrl)) {
-    return trimmedUrl ?? null;
+  if (!trimmedUrl) {
+    return null;
+  }
+
+  if (isGeneratedMovieArt(trimmedUrl)) {
+    return trimmedUrl;
   }
 
   try {
@@ -175,6 +183,10 @@ export function optimizeMovieImageUrl(
 
     const filename = getUrlFilename(parsedUrl);
     if (filename && isSuspiciousImageFilename(filename)) {
+      return null;
+    }
+
+    if (/(?:^|\.)ia\.media-imdb\.com$/i.test(parsedUrl.hostname)) {
       return null;
     }
 
@@ -197,7 +209,7 @@ export function normalizeMovieImageUrl(
   movie: MovieVisualSeed,
   kind: MovieImageKind = 'poster'
 ): string {
-  const fallback = kind === 'poster' ? buildPosterFallback(movie) : buildBackdropFallback(movie);
+  const fallback = kind === 'poster' ? buildRemotePosterUrl(movie) : buildRemoteBackdropUrl(movie);
   return optimizeMovieImageUrl(url, kind) ?? fallback;
 }
 
@@ -328,6 +340,16 @@ export function buildBackdropFallback(seed: MovieVisualSeed): string {
   return toDataUri(svg);
 }
 
+export function buildRemotePosterUrl(seed: MovieVisualSeed): string {
+  const normalizedSeed = encodeURIComponent(`${seed.title || 'untitled'}-${seed.director || 'director'}-poster`);
+  return `https://picsum.photos/seed/${normalizedSeed}/500/750`;
+}
+
+export function buildRemoteBackdropUrl(seed: MovieVisualSeed): string {
+  const normalizedSeed = encodeURIComponent(`${seed.title || 'untitled'}-${seed.director || 'director'}-backdrop`);
+  return `https://picsum.photos/seed/${normalizedSeed}/1280/720`;
+}
+
 export function ensureMovieMedia<T extends MovieVisualSeed>(movie: T): T & {
   posterUrl: string;
   backdropUrl: string;
@@ -335,7 +357,7 @@ export function ensureMovieMedia<T extends MovieVisualSeed>(movie: T): T & {
   const posterUrl = normalizeMovieImageUrl(movie.posterUrl, movie, 'poster');
   const optimizedBackdropUrl = optimizeMovieImageUrl(movie.backdropUrl, 'backdrop');
   const backdropUrl = optimizedBackdropUrl
-    ?? (!isGeneratedMovieArt(posterUrl) ? posterUrl : buildBackdropFallback(movie));
+    ?? buildRemoteBackdropUrl(movie);
 
   return {
     ...movie,
@@ -346,6 +368,7 @@ export function ensureMovieMedia<T extends MovieVisualSeed>(movie: T): T & {
 
 export function buildBackdropStyle(seed: MovieVisualSeed): MovieBackdropStyle {
   const generatedFallback = buildBackdropFallback(seed);
+  const remoteFallback = buildRemoteBackdropUrl(seed);
   const customBackdrop = optimizeBackdropDisplayUrl(seed.backdropUrl);
   const posterFallback = optimizeBackdropDisplayUrl(seed.posterUrl);
   if (customBackdrop && !isGeneratedMovieArt(customBackdrop)) {
@@ -367,10 +390,10 @@ export function buildBackdropStyle(seed: MovieVisualSeed): MovieBackdropStyle {
   }
 
   return {
-    'background-image': `linear-gradient(180deg, rgba(6, 8, 15, 0.14) 0%, rgba(6, 8, 15, 0.8) 66%, rgba(6, 8, 15, 0.96) 100%), url("${generatedFallback}")`,
-    'background-position': 'center, center',
-    'background-repeat': 'repeat, no-repeat',
-    'background-size': 'auto, cover'
+    'background-image': `linear-gradient(180deg, rgba(6, 8, 15, 0.14) 0%, rgba(6, 8, 15, 0.8) 66%, rgba(6, 8, 15, 0.96) 100%), url("${remoteFallback}"), url("${generatedFallback}")`,
+    'background-position': 'center, center, center',
+    'background-repeat': 'repeat, no-repeat, no-repeat',
+    'background-size': 'auto, cover, cover'
   };
 }
 

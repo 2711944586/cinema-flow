@@ -1,0 +1,121 @@
+<section class="director-detail-page" *ngIf="vm$ | async as vm; else loadingState">
+  <ng-container *ngIf="vm.director as director; else notFoundState">
+    <div class="director-profile">
+      <img class="profile-photo" [src]="director.portraitUrl" [alt]="director.name">
+
+      <div class="profile-copy">
+        <a mat-stroked-button routerLink="/directors" class="back-link">
+          <mat-icon>arrow_back</mat-icon>
+          返回导演库
+        </a>
+
+        <span class="page-kicker">Director Detail</span>
+        <h1>{{ director.name }}</h1>
+        <p>{{ director.bio }}</p>
+
+        <div class="profile-tags">
+          <span>{{ director.nationality }}</span>
+          <span>{{ director.birthYear }} 年生</span>
+          <span>{{ director.activeYears }}</span>
+          <span>{{ director.signatureStyle }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="metric-grid">
+      <article>
+        <span>收录作品</span>
+        <strong>{{ vm.movies.length }}</strong>
+      </article>
+      <article>
+        <span>平均评分</span>
+        <strong>{{ vm.avgRating }}</strong>
+      </article>
+      <article>
+        <span>总片长</span>
+        <strong>{{ vm.totalHours }}h</strong>
+      </article>
+      <article>
+        <span>已看 / 收藏</span>
+        <strong>{{ vm.watchedCount }} / {{ vm.favoriteCount }}</strong>
+      </article>
+    </div>
+
+    <div class="detail-grid">
+      <section class="content-panel">
+        <div class="section-head">
+          <span class="page-kicker">Filmography</span>
+          <h2>执导电影</h2>
+        </div>
+
+        <div class="filmography-grid" *ngIf="vm.movies.length > 0; else emptyFilmography">
+          <a
+            class="film-card"
+            *ngFor="let movie of vm.movies; trackBy: trackByMovieId"
+            [routerLink]="['/movies', movie.id, 'info']">
+            <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" decoding="async" (error)="onImageError($event, movie)">
+            <div>
+              <span>{{ movie.releaseDate | date:'yyyy' }} · {{ movie.rating }}/10</span>
+              <h3>{{ movie.title }}</h3>
+              <p>{{ movie.genres.slice(0, 3).join(' / ') }}</p>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <aside class="content-panel side-panel">
+        <div class="section-head">
+          <span class="page-kicker">Archive Notes</span>
+          <h2>档案补充</h2>
+        </div>
+
+        <div class="award-list">
+          <span *ngFor="let award of director.awards">{{ award }}</span>
+        </div>
+
+        <div class="known-list">
+          <h3>代表作</h3>
+          <a *ngFor="let movie of vm.movies.slice(0, 5)" [routerLink]="['/movies', movie.id, 'info']">
+            {{ movie.title }}
+          </a>
+        </div>
+
+        <div class="director-nav">
+          <a *ngIf="vm.previousDirector" [routerLink]="['/directors', vm.previousDirector.id]">
+            <span>上一位导演</span>
+            <strong>{{ vm.previousDirector.name }}</strong>
+          </a>
+          <a *ngIf="vm.nextDirector" [routerLink]="['/directors', vm.nextDirector.id]">
+            <span>下一位导演</span>
+            <strong>{{ vm.nextDirector.name }}</strong>
+          </a>
+        </div>
+      </aside>
+    </div>
+  </ng-container>
+</section>
+
+<ng-template #emptyFilmography>
+  <section class="empty-state">
+    <mat-icon>movie_filter</mat-icon>
+    <h2>暂无作品关联</h2>
+    <p>当前导演实体存在，但还没有电影通过 directorId 与其关联。</p>
+  </section>
+</ng-template>
+
+<ng-template #loadingState>
+  <section class="loading-card">
+    <mat-icon>hourglass_top</mat-icon>
+    <h2>正在载入导演详情</h2>
+    <p>路由参数、导演 API 与作品列表正在合并。</p>
+  </section>
+</ng-template>
+
+<ng-template #notFoundState>
+  <section class="loading-card">
+    <mat-icon>person_off</mat-icon>
+    <h2>没有找到这位导演</h2>
+    <p>当前导演 ID 不存在，或者 Flask API 暂时没有返回对应资源。</p>
+    <a mat-flat-button routerLink="/directors">返回导演库</a>
+  </section>
+</ng-template>

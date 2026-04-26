@@ -12,11 +12,18 @@
         </div>
       </a>
 
-      <button mat-stroked-button class="command-button" (click)="openCommandPalette()">
-        <mat-icon>search</mat-icon>
-        <span>快速跳转</span>
-        <span class="shortcut">Ctrl / Cmd + K</span>
-      </button>
+      <div class="header-actions">
+        <button mat-stroked-button class="command-button" (click)="openCommandPalette()">
+          <mat-icon>search</mat-icon>
+          <span>快速跳转</span>
+          <span class="shortcut">Ctrl / Cmd + K</span>
+        </button>
+
+        <button mat-stroked-button class="auth-button" (click)="toggleAuth()">
+          <mat-icon>{{ (isAuthenticated$ | async) ? 'lock_open' : 'login' }}</mat-icon>
+          <span>{{ (isAuthenticated$ | async) ? '退出编辑' : '进入编辑' }}</span>
+        </button>
+      </div>
     </div>
 
     <div class="nav-shell">

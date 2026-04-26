@@ -28,8 +28,10 @@ export class DashboardPageComponent {
 
   readonly quickLinks = [
     { label: '进入 Movies', route: '/movies', icon: 'movie', hint: '完整片库视图' },
+    { label: '导演库', route: '/directors', icon: 'movie_creation', hint: '跨实体查看导演作品' },
+    { label: '偏好画像', route: '/taste-dna', icon: 'psychology', hint: '查看个人观影信号' },
+    { label: '片库审计', route: '/archive-health', icon: 'verified', hint: '检查海报与资料完整度' },
     { label: '添加电影', route: '/add', icon: 'add_circle', hint: '进入独立新增页面' },
-    { label: '收藏中心', route: '/favorites', icon: 'favorite', hint: '查看已收藏影片' },
     { label: '随机选片', route: '/random', icon: 'casino', hint: '快速决定今晚看什么' }
   ];
 

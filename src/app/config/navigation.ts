@@ -22,6 +22,13 @@ export const CORE_NAV_ITEMS: AppNavItem[] = [
     exact: false
   },
   {
+    label: 'Directors',
+    route: '/directors',
+    icon: 'movie_creation',
+    description: '导演实体库、作品关联与跨实体导航',
+    exact: false
+  },
+  {
     label: 'Explore',
     route: '/explore',
     icon: 'explore',
@@ -116,6 +123,24 @@ export const ENHANCEMENT_NAV_ITEMS: AppNavItem[] = [
     route: '/marathon',
     icon: 'playlist_play',
     description: '按时长预算自动生成连看片单并推入待看片单'
+  },
+  {
+    label: 'Taste DNA',
+    route: '/taste-dna',
+    icon: 'psychology',
+    description: '合并已看、收藏、评分、影评与日志生成偏好画像'
+  },
+  {
+    label: 'Scene Board',
+    route: '/scene-board',
+    icon: 'auto_awesome',
+    description: '按视觉气质重新编排片库，形成主题策展板'
+  },
+  {
+    label: 'Archive Health',
+    route: '/archive-health',
+    icon: 'verified',
+    description: '审计片库资料完整度、海报 URL 与背景图状态'
   }
 ];
 
@@ -135,9 +160,14 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   'watch-plans': '待看片单',
   'watch-logs': '观影日志',
   'smart-picks': '智能选片',
+  directors: '导演库',
+  genre: '分类浏览',
   'director-atlas': '导演图谱',
   'mood-atlas': '情绪图谱',
   marathon: '马拉松规划器',
+  'taste-dna': '偏好画像',
+  'scene-board': '氛围策展板',
+  'archive-health': '片库质量审计',
   info: '基本信息',
   cast: '演员表'
 };

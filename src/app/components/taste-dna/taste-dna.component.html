@@ -1,0 +1,108 @@
+<section class="taste-page">
+  <div class="taste-hero">
+    <div>
+      <span class="page-kicker">Taste DNA</span>
+      <h1>{{ profileTitle }}</h1>
+      <p>{{ tasteSummary }}</p>
+    </div>
+
+    <div class="hero-stats">
+      <article>
+        <span>已看</span>
+        <strong>{{ watchedCount }}</strong>
+      </article>
+      <article>
+        <span>收藏</span>
+        <strong>{{ favoriteCount }}</strong>
+      </article>
+      <article>
+        <span>日志</span>
+        <strong>{{ logCount }}</strong>
+      </article>
+      <article>
+        <span>影评</span>
+        <strong>{{ reviewCount }}</strong>
+      </article>
+    </div>
+  </div>
+
+  <div class="axis-grid">
+    <article class="axis-card" *ngFor="let axis of axes">
+      <div class="axis-head">
+        <span>{{ axis.label }}</span>
+        <strong>{{ axis.value }}%</strong>
+      </div>
+      <div class="axis-track">
+        <span [style.width.%]="axis.value"></span>
+      </div>
+      <p>{{ axis.hint }}</p>
+    </article>
+  </div>
+
+  <div class="analysis-grid">
+    <section class="content-card">
+      <div class="section-head">
+        <span class="page-kicker">Genre Bias</span>
+        <h2>类型偏好</h2>
+      </div>
+      <div class="bucket-list">
+        <div class="bucket-row" *ngFor="let bucket of genreBuckets">
+          <strong>{{ bucket.name }}</strong>
+          <span>{{ bucket.count }} 次信号 · {{ bucket.score }}/10</span>
+          <div><i [style.width.%]="bucket.percent"></i></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card">
+      <div class="section-head">
+        <span class="page-kicker">Director Pull</span>
+        <h2>导演牵引</h2>
+      </div>
+      <div class="bucket-list">
+        <a class="bucket-row link-row" *ngFor="let bucket of directorBuckets" [routerLink]="['/directors', bucket.routeId]">
+          <strong>{{ bucket.name }}</strong>
+          <span>{{ bucket.count }} 次信号 · {{ bucket.score }}/10</span>
+          <div><i [style.width.%]="bucket.percent"></i></div>
+        </a>
+      </div>
+    </section>
+
+    <section class="content-card compact-card">
+      <div class="section-head">
+        <span class="page-kicker">Language</span>
+        <h2>语言分布</h2>
+      </div>
+      <div class="pill-cloud">
+        <span *ngFor="let bucket of languageBuckets">{{ bucket.name }} · {{ bucket.count }}</span>
+      </div>
+    </section>
+
+    <section class="content-card compact-card">
+      <div class="section-head">
+        <span class="page-kicker">Era</span>
+        <h2>年代偏好</h2>
+      </div>
+      <div class="pill-cloud">
+        <span *ngFor="let bucket of eraBuckets">{{ bucket.name }} · {{ bucket.count }}</span>
+      </div>
+    </section>
+  </div>
+
+  <section class="content-card">
+    <div class="section-head">
+      <span class="page-kicker">Blind Spots</span>
+      <h2>下一批值得补完</h2>
+    </div>
+
+    <div class="movie-strip">
+      <a class="movie-card" *ngFor="let movie of blindSpotMovies; trackBy: trackByMovieId" [routerLink]="['/movies', movie.id, 'info']">
+        <img [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" decoding="async" (error)="onImageError($event, movie)">
+        <div>
+          <strong>{{ movie.title }}</strong>
+          <span>{{ movie.director }} · {{ movie.rating }}/10</span>
+        </div>
+      </a>
+    </div>
+  </section>
+</section>

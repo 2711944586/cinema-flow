@@ -59,7 +59,7 @@ export class MovieListPageComponent {
     private snackBar: MatSnackBar,
     private messageService: MessageService
   ) {
-    this.vm$ = this.movieStateService.movieListVm$(this.route.queryParamMap);
+    this.vm$ = this.movieStateService.movieListVm$(this.route.queryParamMap, this.route.paramMap);
   }
 
   updateQueryState(currentState: MovieQueryState, patch: Partial<MovieQueryState>): void {
@@ -80,6 +80,22 @@ export class MovieListPageComponent {
       page: shouldResetPage ? 1 : patch.page ?? currentState.page
     };
 
+    if (Object.prototype.hasOwnProperty.call(patch, 'genre')) {
+      const queryParams = toMovieQueryParams({
+        ...nextState,
+        genre: 'all'
+      });
+
+      void this.router.navigate(
+        nextState.genre === 'all' ? ['/movies'] : ['/movies', 'genre', nextState.genre],
+        {
+          queryParams,
+          replaceUrl: true
+        }
+      );
+      return;
+    }
+
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: toMovieQueryParams(nextState),
@@ -89,8 +105,7 @@ export class MovieListPageComponent {
   }
 
   clearFilters(): void {
-    void this.router.navigate([], {
-      relativeTo: this.route,
+    void this.router.navigate(['/movies'], {
       queryParams: toMovieQueryParams({ ...DEFAULT_MOVIE_QUERY_STATE }),
       replaceUrl: true
     });

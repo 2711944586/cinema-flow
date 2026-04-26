@@ -1,0 +1,64 @@
+<section class="health-page">
+  <div class="health-hero">
+    <div>
+      <span class="page-kicker">Archive Health</span>
+      <h1>片库质量审计</h1>
+      <p>这个页面专门检查数据完整度、真实海报 URL、背景图 URL 和关键字段缺口，用于发现“能展示但不够完整”的内容问题。</p>
+    </div>
+    <div class="health-score">
+      <strong>{{ completeness }}</strong>
+      <span>资料完整度</span>
+    </div>
+  </div>
+
+  <div class="metric-grid">
+    <article *ngFor="let metric of metrics">
+      <span>{{ metric.label }}</span>
+      <strong>{{ metric.value }}</strong>
+      <p>{{ metric.hint }}</p>
+    </article>
+  </div>
+
+  <div class="health-grid">
+    <section class="content-panel">
+      <div class="section-head">
+        <span class="page-kicker">Repair Queue</span>
+        <h2>优先修复清单</h2>
+      </div>
+
+      <div class="issue-list" *ngIf="issueRows.length > 0; else cleanState">
+        <a class="issue-row" *ngFor="let row of issueRows; trackBy: trackByMovieId" [routerLink]="['/movies', row.movie.id, 'info']">
+          <div>
+            <strong>{{ row.movie.title }}</strong>
+            <span>{{ row.movie.director }} · {{ row.movie.releaseDate | date:'yyyy' }}</span>
+          </div>
+          <div class="issue-tags">
+            <em *ngFor="let issue of row.issues">{{ issue }}</em>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <aside class="content-panel">
+      <div class="section-head">
+        <span class="page-kicker">Ready Shelf</span>
+        <h2>高质量样本</h2>
+      </div>
+
+      <div class="ready-list">
+        <a *ngFor="let movie of topReadyMovies" [routerLink]="['/movies', movie.id, 'info']">
+          <strong>{{ movie.title }}</strong>
+          <span>{{ movie.rating }}/10 · {{ movie.genres.slice(0, 2).join(' / ') }}</span>
+        </a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<ng-template #cleanState>
+  <section class="clean-state">
+    <mat-icon>verified</mat-icon>
+    <h2>当前没有明显缺口</h2>
+    <p>片库条目的媒体、简介、演员表和基础字段都达到了展示要求。</p>
+  </section>
+</ng-template>

@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
+import { Subject, Subscription, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { CORE_NAV_ITEMS, ENHANCEMENT_NAV_ITEMS } from '../../config/navigation';
 import { MovieService } from '../../services/movie.service';
 import { RecentHistoryService } from '../../services/recent-history.service';
@@ -24,11 +26,14 @@ interface CommandItem {
   templateUrl: './command-palette.component.html',
   styleUrl: './command-palette.component.scss'
 })
-export class CommandPaletteComponent implements AfterViewInit {
+export class CommandPaletteComponent implements AfterViewInit, OnDestroy {
   @ViewChild('paletteInput') private paletteInput?: ElementRef<HTMLInputElement>;
 
   query = '';
   selectedIndex = 0;
+  private readonly queryInput$ = new Subject<string>();
+  private readonly subscriptions = new Subscription();
+  private movieItemsSnapshot: CommandItem[] = [];
 
   constructor(
     private router: Router,
@@ -60,25 +65,7 @@ export class CommandPaletteComponent implements AfterViewInit {
   }
 
   get movieItems(): CommandItem[] {
-    if (!this.query.trim()) {
-      return this.recentHistoryService.getEntries(6).map(entry => ({
-        id: `movie-${entry.movieId}`,
-        group: 'Movies' as const,
-        title: entry.title,
-        subtitle: `${entry.director} · 最近访问 ${entry.section === 'cast' ? '演员表' : '基本信息'}`,
-        icon: 'movie',
-        route: `/movies/${entry.movieId}/${entry.section}`
-      }));
-    }
-
-    return this.movieService.searchMovies(this.query, 8).map(movie => ({
-      id: `movie-${movie.id}`,
-      group: 'Movies' as const,
-      title: movie.title,
-      subtitle: `${movie.director} · ${movie.releaseDate.getFullYear()} · ${movie.rating}/10`,
-      icon: 'local_movies',
-      route: `/movies/${movie.id}/info`
-    }));
+    return this.movieItemsSnapshot;
   }
 
   get visibleItems(): CommandItem[] {
@@ -86,11 +73,43 @@ export class CommandPaletteComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this.movieItemsSnapshot = this.buildRecentMovieItems();
+    this.subscriptions.add(
+      this.queryInput$.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap(query => {
+          const normalizedQuery = query.trim();
+          if (!normalizedQuery) {
+            return of(this.buildRecentMovieItems());
+          }
+
+          return this.movieService.searchMoviesRemote(normalizedQuery, 8).pipe(
+            switchMap(movies => of(movies.map(movie => ({
+              id: `movie-${movie.id}`,
+              group: 'Movies' as const,
+              title: movie.title,
+              subtitle: `${movie.director} · ${movie.releaseDate.getFullYear()} · ${movie.rating}/10`,
+              icon: 'local_movies',
+              route: `/movies/${movie.id}/info`
+            }))))
+          );
+        })
+      ).subscribe(items => {
+        this.movieItemsSnapshot = items;
+        this.selectedIndex = Math.min(this.selectedIndex, Math.max(0, this.visibleItems.length - 1));
+      })
+    );
     queueMicrotask(() => this.paletteInput?.nativeElement.focus());
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   onInputChange(): void {
     this.selectedIndex = 0;
+    this.queryInput$.next(this.query);
   }
 
   onKeydown(event: KeyboardEvent): void {
@@ -128,5 +147,16 @@ export class CommandPaletteComponent implements AfterViewInit {
 
   isSelected(item: CommandItem): boolean {
     return this.visibleItems[this.selectedIndex]?.id === item.id;
+  }
+
+  private buildRecentMovieItems(): CommandItem[] {
+    return this.recentHistoryService.getEntries(6).map(entry => ({
+      id: `movie-${entry.movieId}`,
+      group: 'Movies' as const,
+      title: entry.title,
+      subtitle: `${entry.director} · 最近访问 ${entry.section === 'cast' ? '演员表' : '基本信息'}`,
+      icon: 'movie',
+      route: `/movies/${entry.movieId}/${entry.section}`
+    }));
   }
 }

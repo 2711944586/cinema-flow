@@ -89,6 +89,12 @@ export class MovieStateService {
       reactiveSignal: 'movies$'
     },
     {
+      name: 'DirectorService',
+      summary: '导演实体、导演详情、导演作品集与 Flask 导演 API 的统一访问层。',
+      storageKey: 'Flask / local aggregate',
+      reactiveSignal: 'getDirectors()'
+    },
+    {
       name: 'RecentHistoryService',
       summary: '记录详情页最近浏览轨迹，支持跨页面恢复浏览上下文。',
       storageKey: 'cinemaflow.recent-history.v2',
@@ -182,13 +188,18 @@ export class MovieStateService {
           { label: '日志记录', value: String(logEntries.length), hint: 'LoggerService 当前缓存的结构化日志数量' }
         ],
         highlights: [
-          '第四次上机课要求的服务化重构、日志面板与响应式数据链路已经汇总到统一状态层。',
-          'Movies、Dashboard、Movie Detail 与 About 均可通过 async 管道消费页面视图模型。',
+          '第五次上机课要求的导演实体、跨实体导航、分类路由与添加页路由守卫已经接入主路由。',
+          '第六次上机课要求的 Flask REST API、HttpClient、错误降级与防抖搜索已经补齐。',
+          'Movies、Dashboard、Movie Detail、Directors 与 About 均可通过响应式数据链路消费状态。',
           'Watch Plans、Watch Logs 与 Smart Picks 让计划、观影与推荐形成了完整闭环。',
+          '新增 Taste DNA、Scene Board、Archive Health 三个不重复功能页，用于偏好画像、氛围策展与片库质量审计。',
           '导入导出会保留片库、最近浏览、影评、待看片单、观影日志与智能选片预设。'
         ],
         techStack: [
           'Angular 17 Standalone Components + Angular Material',
+          'Flask Blueprint + flask-cors 提供电影与导演 RESTful API',
+          'Angular provideHttpClient + tap/catchError 实现 HTTP 化服务与本地降级',
+          'debounceTime + distinctUntilChanged + switchMap 驱动命令面板防抖搜索',
           'BehaviorSubject + combineLatest + shareReplay 组成页面 façade',
           'Router 参数、queryParam 与页面状态联动',
           'LoggerService / MessageService 提供可观测反馈链路',
@@ -219,20 +230,28 @@ export class MovieStateService {
     private loggerService: LoggerService
   ) {}
 
-  movieListVm$(queryParamMap$: Observable<ParamMap>): Observable<MovieListViewModel> {
-    return combineLatest([this.movieService.movies$, queryParamMap$]).pipe(
-      map(([movies, queryParamMap]) => {
+  movieListVm$(queryParamMap$: Observable<ParamMap>, routeParamMap$?: Observable<ParamMap>): Observable<MovieListViewModel> {
+    return combineLatest([
+      this.movieService.movies$,
+      queryParamMap$,
+      routeParamMap$ ?? queryParamMap$
+    ]).pipe(
+      map(([movies, queryParamMap, routeParamMap]) => {
         const genres = collectMovieGenres(movies);
+        const routeGenre = routeParamMap.get('genre')?.trim() ?? '';
         const queryState = parseMovieQueryState(queryParamMap, genres);
-        const filteredMovies = filterMoviesByQueryState(movies, queryState);
-        const pagination = paginateItems(filteredMovies, queryState.page, queryState.pageSize);
+        const nextQueryState = routeGenre && genres.includes(routeGenre)
+          ? { ...queryState, genre: routeGenre }
+          : queryState;
+        const filteredMovies = filterMoviesByQueryState(movies, nextQueryState);
+        const pagination = paginateItems(filteredMovies, nextQueryState.page, nextQueryState.pageSize);
 
         return {
           movies,
           filteredMovies,
           visibleMovies: pagination.items,
           genres,
-          queryState,
+          queryState: nextQueryState,
           summaryLabel: `${filteredMovies.length} / ${movies.length} 部`,
           page: pagination.page,
           pageSize: pagination.pageSize,

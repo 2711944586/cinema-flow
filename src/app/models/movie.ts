@@ -10,6 +10,14 @@ export interface Movie {
   releaseDate: Date;
   /** 导演 */
   director: string;
+  /** 关联导演实体 ID */
+  directorId?: number;
+  /** 电影主类型，兼容后端 REST 示例中的单类型字段 */
+  genre?: string;
+  /** 上映年份，兼容后端 REST 示例中的年份字段 */
+  releaseYear?: number;
+  /** 后端示例状态字段 */
+  status?: 'showing' | 'archived';
   /** 评分 (0-10) */
   rating: number;
   /** 是否已观影 */

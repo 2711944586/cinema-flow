@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { combineLatest, Observable, shareReplay } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Movie } from '../../models/movie';
@@ -11,7 +12,7 @@ import { MovieService } from '../../services/movie.service';
 @Component({
   selector: 'app-movie-detail-info',
   standalone: true,
-  imports: [CommonModule, FormsModule, RatingLevelPipe],
+  imports: [CommonModule, FormsModule, RouterModule, RatingLevelPipe],
   templateUrl: './movie-detail-info.component.html',
   styleUrl: './movie-detail-info.component.scss'
 })

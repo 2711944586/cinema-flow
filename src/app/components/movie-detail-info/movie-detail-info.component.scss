@@ -38,9 +38,15 @@
     color: var(--cf-text-muted);
   }
 
-  strong {
+  strong,
+  a {
     color: var(--cf-text-primary);
     text-align: right;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--cf-gold);
   }
 }
 
@@ -50,13 +56,15 @@
   flex-wrap: wrap;
   gap: 8px;
 
-  span {
+  span,
+  a {
     padding: 0.35rem 0.7rem;
     border-radius: 999px;
     background: rgba(231, 185, 93, 0.12);
     border: 1px solid rgba(231, 185, 93, 0.22);
     color: var(--cf-gold);
     font-size: 0.82rem;
+    text-decoration: none;
   }
 }
 

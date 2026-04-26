@@ -212,18 +212,28 @@
   flex-wrap: wrap;
   gap: 8px;
 
-  span {
+  span,
+  a {
     padding: 0.24rem 0.55rem;
     border-radius: 999px;
     background: rgba(231, 185, 93, 0.1);
     color: var(--cf-gold);
     font-size: 0.74rem;
+    text-decoration: none;
   }
 }
 
 .text-cell,
 .rating-cell {
   color: var(--cf-text-secondary);
+}
+
+.director-link {
+  text-decoration: none;
+
+  &:hover {
+    color: var(--cf-gold);
+  }
 }
 
 .rating-cell {

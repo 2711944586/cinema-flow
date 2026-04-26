@@ -29,6 +29,12 @@
   gap: 16px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -99,6 +105,17 @@
     color: var(--cf-text-muted);
     font-size: 0.72rem;
   }
+}
+
+.auth-button {
+  height: 46px;
+  padding: 0 14px !important;
+  border-radius: 999px;
+  border-color: rgba(231, 185, 93, 0.22) !important;
+  color: var(--cf-gold) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .nav-shell {
@@ -228,7 +245,13 @@
     align-items: stretch;
   }
 
-  .command-button {
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .command-button,
+  .auth-button {
     width: 100%;
     justify-content: space-between;
   }

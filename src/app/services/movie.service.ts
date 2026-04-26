@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { fetchExpandedMovieSeeds, type RemoteMovieSeed } from '../data/expanded-movie-catalog';
 import { MOCK_MOVIES } from '../data/mock-movies';
 import { Movie } from '../models/movie';
+import { buildDirectorId } from '../utils/director-identity';
 import {
   coerceMovieDate,
   ensureMovieMedia,
@@ -14,6 +17,11 @@ import { LoggerService } from './logger.service';
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
+  private readonly http = inject(HttpClient, { optional: true });
+  private readonly apiUrl = 'http://localhost:5000/api/movies';
+  private readonly httpOptions = {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  };
   private readonly storageKey = 'cinemaflow.movies.v3';
   private readonly legacyStorageKeys = ['cinemaflow.movies.v2'];
   private readonly minimumCatalogSize = MOCK_MOVIES.length * 20;
@@ -28,6 +36,7 @@ export class MovieService {
     this.movies$ = this.moviesSubject.asObservable();
 
     this.logger.log(`MovieService initialized with ${initialMovies.length} movies`);
+    void this.prefetchFromApiIfAvailable();
     void this.prefetchExpandedCatalogIfNeeded();
   }
 
@@ -86,6 +95,34 @@ export class MovieService {
       .map(result => this.cloneMovie(result.movie));
   }
 
+  searchMoviesRemote(query: string, limit = 8): Observable<Movie[]> {
+    const normalizedQuery = query.trim();
+    if (!this.http) {
+      return of(this.searchMovies(normalizedQuery, limit));
+    }
+
+    const params = new URLSearchParams();
+    if (normalizedQuery) {
+      params.set('title', normalizedQuery);
+    }
+
+    const url = params.toString() ? `${this.apiUrl}?${params.toString()}` : this.apiUrl;
+    return this.http.get<Movie[]>(url).pipe(
+      map(movies => movies.map(movie => this.normalizeMovie(movie)).slice(0, limit)),
+      tap(movies => this.logger.log(`HTTP movie search returned ${movies.length} items`, 'MovieService')),
+      catchError(error => {
+        this.logger.warn(`HTTP movie search failed, falling back locally: ${this.describeHttpError(error)}`);
+        return of(this.searchMovies(normalizedQuery, limit));
+      })
+    );
+  }
+
+  getMoviesByGenreRoute(genre: string): Movie[] {
+    return this.moviesSubject.value
+      .filter(movie => movie.genres.includes(genre) || movie.genre === genre)
+      .map(movie => this.cloneMovie(movie));
+  }
+
   getMovieNeighbors(id: number): { previous?: Movie; next?: Movie } {
     const orderedMovies = [...this.moviesSubject.value].sort((first, second) => first.id - second.id);
     const currentIndex = orderedMovies.findIndex(movie => movie.id === id);
@@ -114,6 +151,8 @@ export class MovieService {
       ),
       `${movie.title} favorite status toggled to ${!movie.isFavorite}`
     );
+
+    this.syncUpdateMovie({ ...movie, isFavorite: !movie.isFavorite });
   }
 
   toggleWatched(id: number): void {
@@ -130,6 +169,8 @@ export class MovieService {
       ),
       `${movie.title} watched status toggled to ${!movie.isWatched}`
     );
+
+    this.syncUpdateMovie({ ...movie, isWatched: !movie.isWatched });
   }
 
   setUserRating(id: number, rating: number): void {
@@ -146,6 +187,8 @@ export class MovieService {
       ),
       `${movie.title} rated ${rating}/10`
     );
+
+    this.syncUpdateMovie({ ...movie, userRating: rating });
   }
 
   updateMovie(id: number, changes: Partial<Movie>): void {
@@ -168,6 +211,8 @@ export class MovieService {
       ),
       `Updated movie ${movie.title}: ${JSON.stringify(changes)}`
     );
+
+    this.syncUpdateMovie(this.normalizeMovie({ ...movie, ...changes }));
   }
 
   setNotes(id: number, notes: string): void {
@@ -197,6 +242,7 @@ export class MovieService {
       `Added new movie: ${movie.title} (ID: ${nextId})`
     );
 
+    this.syncCreateMovie(newMovie);
     return true;
   }
 
@@ -214,6 +260,7 @@ export class MovieService {
       `Deleted movie: ${movie.title} (ID: ${id})`
     );
 
+    this.syncDeleteMovie(id);
     return true;
   }
 
@@ -237,6 +284,7 @@ export class MovieService {
       `Fully updated movie: ${updatedMovie.title} (ID: ${updatedMovie.id})`
     );
 
+    this.syncUpdateMovie(updatedMovie);
     return true;
   }
 
@@ -401,6 +449,30 @@ export class MovieService {
     }
   }
 
+  private async prefetchFromApiIfAvailable(): Promise<void> {
+    if (!this.http) {
+      return;
+    }
+
+    this.http.get<Movie[]>(this.apiUrl).pipe(
+      map(movies => Array.isArray(movies) ? movies.map(movie => this.normalizeMovie(movie)) : []),
+      tap(movies => {
+        if (movies.length === 0) {
+          return;
+        }
+
+        this.commitMovies(
+          this.mergeApiMovies(movies),
+          `Synced ${movies.length} movies from Flask API`
+        );
+      }),
+      catchError(error => {
+        this.logger.warn(`Flask movie API unavailable, using local catalog: ${this.describeHttpError(error)}`);
+        return of([]);
+      })
+    ).subscribe();
+  }
+
   private readPersistedMovies(): string | null {
     const storageKeys = [this.storageKey, ...this.legacyStorageKeys];
 
@@ -471,9 +543,30 @@ export class MovieService {
     return Array.from(catalogMap.values()).sort((first, second) => first.id - second.id);
   }
 
+  private mergeApiMovies(apiMovies: Movie[]): Movie[] {
+    const catalogMap = new Map<string, Movie>();
+
+    this.moviesSubject.value.forEach(movie => {
+      catalogMap.set(this.buildMovieIdentityKey(movie), this.cloneMovie(movie));
+    });
+
+    apiMovies.forEach(apiMovie => {
+      const normalizedMovie = this.normalizeMovie(apiMovie);
+      const identityKey = this.buildMovieIdentityKey(normalizedMovie);
+      const currentMovie = catalogMap.get(identityKey);
+      catalogMap.set(identityKey, currentMovie ? this.mergeCatalogEntry(currentMovie, normalizedMovie) : normalizedMovie);
+    });
+
+    return Array.from(catalogMap.values()).sort((first, second) => first.id - second.id);
+  }
+
   private mergeCatalogEntry(currentMovie: Movie, incomingMovie: Movie): Movie {
-    const shouldUseIncomingPoster = !this.hasVerifiedPoster(currentMovie.posterUrl) && this.hasVerifiedPoster(incomingMovie.posterUrl);
-    const shouldUseIncomingBackdrop = !this.hasVerifiedBackdrop(currentMovie.backdropUrl) && this.hasVerifiedBackdrop(incomingMovie.backdropUrl);
+    const shouldUseIncomingPoster = (!this.hasVerifiedPoster(currentMovie.posterUrl) || this.isRemoteFallbackArt(currentMovie.posterUrl))
+      && this.hasVerifiedPoster(incomingMovie.posterUrl)
+      && !this.isRemoteFallbackArt(incomingMovie.posterUrl);
+    const shouldUseIncomingBackdrop = (!this.hasVerifiedBackdrop(currentMovie.backdropUrl) || this.isRemoteFallbackArt(currentMovie.backdropUrl))
+      && this.hasVerifiedBackdrop(incomingMovie.backdropUrl)
+      && !this.isRemoteFallbackArt(incomingMovie.backdropUrl);
 
     return this.normalizeMovie({
       ...currentMovie,
@@ -506,10 +599,19 @@ export class MovieService {
   }
 
   private normalizeMovie(movie: Movie): Movie {
+    const releaseDate = coerceMovieDate(movie.releaseDate);
+    const genres = [...(movie.genres || [])].filter(Boolean);
+    const primaryGenre = movie.genre?.trim() || genres[0] || '剧情';
+    const normalizedGenres = genres.length > 0 ? genres : [primaryGenre];
+
     return ensureMovieMedia({
       ...movie,
-      releaseDate: coerceMovieDate(movie.releaseDate),
-      genres: [...(movie.genres || [])],
+      releaseDate,
+      directorId: movie.directorId ?? buildDirectorId(movie.director),
+      genre: primaryGenre,
+      releaseYear: movie.releaseYear ?? releaseDate.getFullYear(),
+      status: movie.status ?? (movie.isWatched ? 'archived' : 'showing'),
+      genres: normalizedGenres,
       cast: movie.cast ? [...movie.cast] : [],
       userNotes: movie.userNotes ?? ''
     });
@@ -573,6 +675,73 @@ export class MovieService {
     return !!backdropUrl
       && !isGeneratedMovieArt(backdropUrl)
       && optimizeMovieImageUrl(backdropUrl, 'backdrop') !== null;
+  }
+
+  private isRemoteFallbackArt(url: string | undefined): boolean {
+    return !!url && /https:\/\/picsum\.photos\/seed\//i.test(url);
+  }
+
+  private syncCreateMovie(movie: Movie): void {
+    if (!this.http) {
+      return;
+    }
+
+    this.http.post<Movie>(this.apiUrl, this.toApiMovie(movie), this.httpOptions).pipe(
+      tap(createdMovie => this.logger.log(`HTTP created movie ${createdMovie.title}`, 'MovieService')),
+      catchError(error => {
+        this.logger.warn(`HTTP create movie failed: ${this.describeHttpError(error)}`);
+        return of(null);
+      })
+    ).subscribe();
+  }
+
+  private syncUpdateMovie(movie: Movie): void {
+    if (!this.http) {
+      return;
+    }
+
+    this.http.put<Movie>(`${this.apiUrl}/${movie.id}`, this.toApiMovie(movie), this.httpOptions).pipe(
+      tap(updatedMovie => this.logger.log(`HTTP updated movie ${updatedMovie.title}`, 'MovieService')),
+      catchError(error => {
+        this.logger.warn(`HTTP update movie failed: ${this.describeHttpError(error)}`);
+        return of(null);
+      })
+    ).subscribe();
+  }
+
+  private syncDeleteMovie(id: number): void {
+    if (!this.http) {
+      return;
+    }
+
+    this.http.delete<{ success: boolean }>(`${this.apiUrl}/${id}`).pipe(
+      tap(() => this.logger.log(`HTTP deleted movie ${id}`, 'MovieService')),
+      catchError(error => {
+        this.logger.warn(`HTTP delete movie failed: ${this.describeHttpError(error)}`);
+        return of(null);
+      })
+    ).subscribe();
+  }
+
+  private toApiMovie(movie: Movie): Movie {
+    const normalizedMovie = this.normalizeMovie(movie);
+    return {
+      ...normalizedMovie,
+      releaseYear: normalizedMovie.releaseDate.getFullYear(),
+      genre: normalizedMovie.genres[0] ?? normalizedMovie.genre ?? '剧情'
+    };
+  }
+
+  private describeHttpError(error: unknown): string {
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    if (typeof error === 'object' && error && 'status' in error) {
+      return `status ${(error as { status: number }).status}`;
+    }
+
+    return 'unknown error';
   }
 
   private scoreMovieMatch(movie: Movie, query: string): number {

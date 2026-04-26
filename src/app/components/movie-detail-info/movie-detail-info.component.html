@@ -9,7 +9,7 @@
         </div>
         <div class="spec-row">
           <span>导演</span>
-          <strong>{{ currentMovie.director }}</strong>
+          <a [routerLink]="['/directors', currentMovie.directorId]">{{ currentMovie.director }}</a>
         </div>
         <div class="spec-row">
           <span>上映日期</span>
@@ -38,7 +38,7 @@
       </div>
 
       <div class="genre-row">
-        <span *ngFor="let genre of currentMovie.genres">{{ genre }}</span>
+        <a *ngFor="let genre of currentMovie.genres" [routerLink]="['/movies', 'genre', genre]">{{ genre }}</a>
       </div>
     </article>
 

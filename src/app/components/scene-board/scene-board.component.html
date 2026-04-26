@@ -1,0 +1,43 @@
+<section class="scene-page" *ngIf="selectedLane as lane">
+  <div class="scene-hero" *ngIf="heroMovie as movie">
+    <img [src]="getBackdrop(movie)" alt="" aria-hidden="true" (error)="onBackdropError($event, movie)">
+    <div class="hero-copy">
+      <span class="page-kicker">Scene Board</span>
+      <h1>{{ lane.name }}</h1>
+      <p>{{ lane.description }} 这个页面把电影按视觉和叙事气质重新编排，用于做海报墙、主题夜和选片灵感，而不是按传统字段检索。</p>
+      <a [routerLink]="['/movies', movie.id, 'info']">当前画面锚点：{{ movie.title }}</a>
+    </div>
+  </div>
+
+  <div class="lane-switcher">
+    <button
+      type="button"
+      *ngFor="let item of lanes; trackBy: trackByLaneId"
+      [class.is-active]="item.id === selectedLaneId"
+      (click)="selectedLaneId = item.id">
+      <mat-icon>{{ item.icon }}</mat-icon>
+      <span>{{ item.name }}</span>
+      <strong>{{ item.movies.length }}</strong>
+    </button>
+
+    <label class="density-toggle">
+      <input type="checkbox" [checked]="density === 'compact'" (change)="density = density === 'gallery' ? 'compact' : 'gallery'">
+      <span>紧凑视图</span>
+    </label>
+  </div>
+
+  <div class="scene-grid" [class.is-compact]="density === 'compact'">
+    <a
+      class="scene-card"
+      *ngFor="let movie of lane.movies; trackBy: trackByMovieId"
+      [routerLink]="['/movies', movie.id, 'info']">
+      <img class="scene-backdrop" [src]="getBackdrop(movie)" [alt]="movie.title" loading="lazy" decoding="async" (error)="onBackdropError($event, movie)">
+      <img class="scene-poster" [src]="movie.posterUrl" [alt]="movie.title" loading="lazy" decoding="async" (error)="onPosterError($event, movie)">
+      <div class="scene-copy">
+        <span>{{ movie.releaseDate | date:'yyyy' }} · {{ movie.rating }}/10</span>
+        <h2>{{ movie.title }}</h2>
+        <p>{{ movie.director }} · {{ movie.genres.slice(0, 3).join(' / ') }}</p>
+      </div>
+    </a>
+  </div>
+</section>

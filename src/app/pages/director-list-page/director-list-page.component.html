@@ -1,0 +1,70 @@
+<section class="director-list-page" *ngIf="vm$ | async as vm; else loadingState">
+  <div class="director-hero">
+    <div>
+      <span class="page-kicker">Director Network</span>
+      <h1>导演库</h1>
+      <p>第五次上机课新增的独立 Director 实体。这里不再只是电影字段聚合，而是可以进入导演详情、查看作品列表，并从导演维度反向导航到电影。</p>
+    </div>
+
+    <div class="hero-metrics">
+      <article>
+        <span>导演实体</span>
+        <strong>{{ vm.directors.length }}</strong>
+      </article>
+      <article>
+        <span>地域标签</span>
+        <strong>{{ vm.nationalities }}</strong>
+      </article>
+      <article>
+        <span>平均出生年</span>
+        <strong>{{ vm.avgBirthYear || '-' }}</strong>
+      </article>
+    </div>
+  </div>
+
+  <div class="director-toolbar">
+    <label>
+      <mat-icon>search</mat-icon>
+      <input
+        type="search"
+        [(ngModel)]="searchQuery"
+        placeholder="搜索导演、代表作品或风格关键词">
+    </label>
+
+    <a mat-stroked-button routerLink="/movies">
+      <mat-icon>movie</mat-icon>
+      回到 Movies
+    </a>
+  </div>
+
+  <div class="director-grid" *ngIf="filterDirectors(vm.directors) as visibleDirectors">
+    <a
+      class="director-card"
+      *ngFor="let director of visibleDirectors; trackBy: trackByDirectorId"
+      [routerLink]="['/directors', director.id]">
+      <img [src]="director.portraitUrl" [alt]="director.name" loading="lazy" decoding="async">
+      <div class="director-card-copy">
+        <span>{{ director.nationality }} · {{ director.birthYear }}</span>
+        <h2>{{ director.name }}</h2>
+        <p>{{ director.signatureStyle }}</p>
+        <div class="known-for">
+          <strong *ngFor="let title of director.knownFor.slice(0, 3)">{{ title }}</strong>
+        </div>
+      </div>
+    </a>
+
+    <section class="empty-state" *ngIf="visibleDirectors.length === 0">
+      <mat-icon>person_search</mat-icon>
+      <h2>没有匹配导演</h2>
+      <p>尝试换一个导演名、作品名或风格词。</p>
+    </section>
+  </div>
+</section>
+
+<ng-template #loadingState>
+  <section class="loading-card">
+    <mat-icon>hourglass_top</mat-icon>
+    <h2>正在载入导演库</h2>
+    <p>DirectorService 正在通过 HTTP API 或本地片库聚合导演实体。</p>
+  </section>
+</ng-template>

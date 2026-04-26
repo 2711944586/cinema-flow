@@ -104,11 +104,11 @@
           <a class="movie-title" [routerLink]="['/movies', movie.id, 'info']">{{ movie.title }}</a>
           <p>{{ movie.releaseDate | date:'yyyy-MM-dd' }}</p>
           <div class="genre-row">
-            <span *ngFor="let genre of movie.genres.slice(0, 3)">{{ genre }}</span>
+            <a *ngFor="let genre of movie.genres.slice(0, 3)" [routerLink]="['/movies', 'genre', genre]">{{ genre }}</a>
           </div>
         </div>
       </div>
-      <span class="text-cell">{{ movie.director }}</span>
+      <a class="text-cell director-link" [routerLink]="['/directors', movie.directorId]">{{ movie.director }}</a>
       <span class="rating-cell">{{ movie.rating | number:'1.0-1' }}</span>
       <div class="status-cell">
         <span class="status-pill" [class.is-active]="movie.isWatched">{{ movie.isWatched ? '已观影' : '未观影' }}</span>

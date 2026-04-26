@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -12,6 +13,12 @@ export const routes: Routes = [
     path: 'movies',
     title: 'Movies | CinemaFlow',
     data: { breadcrumb: '电影列表' },
+    loadComponent: () => import('./pages/movie-list-page/movie-list-page.component').then(m => m.MovieListPageComponent)
+  },
+  {
+    path: 'movies/genre/:genre',
+    title: '分类浏览 | CinemaFlow',
+    data: { breadcrumb: '分类浏览' },
     loadComponent: () => import('./pages/movie-list-page/movie-list-page.component').then(m => m.MovieListPageComponent)
   },
   {
@@ -39,7 +46,20 @@ export const routes: Routes = [
     path: 'add',
     title: '添加电影 | CinemaFlow',
     data: { breadcrumb: '添加电影' },
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/movie-add-page/movie-add-page.component').then(m => m.MovieAddPageComponent)
+  },
+  {
+    path: 'directors',
+    title: '导演库 | CinemaFlow',
+    data: { breadcrumb: '导演库' },
+    loadComponent: () => import('./pages/director-list-page/director-list-page.component').then(m => m.DirectorListPageComponent)
+  },
+  {
+    path: 'directors/:id',
+    title: '导演详情 | CinemaFlow',
+    data: { breadcrumb: '导演详情' },
+    loadComponent: () => import('./pages/director-detail-page/director-detail-page.component').then(m => m.DirectorDetailPageComponent)
   },
   {
     path: 'about',
@@ -130,6 +150,24 @@ export const routes: Routes = [
     title: '马拉松规划器 | CinemaFlow',
     data: { breadcrumb: '马拉松规划器' },
     loadComponent: () => import('./components/marathon-planner/marathon-planner.component').then(m => m.MarathonPlannerComponent)
+  },
+  {
+    path: 'taste-dna',
+    title: '偏好画像 | CinemaFlow',
+    data: { breadcrumb: '偏好画像' },
+    loadComponent: () => import('./components/taste-dna/taste-dna.component').then(m => m.TasteDnaComponent)
+  },
+  {
+    path: 'scene-board',
+    title: '氛围策展板 | CinemaFlow',
+    data: { breadcrumb: '氛围策展板' },
+    loadComponent: () => import('./components/scene-board/scene-board.component').then(m => m.SceneBoardComponent)
+  },
+  {
+    path: 'archive-health',
+    title: '片库质量审计 | CinemaFlow',
+    data: { breadcrumb: '片库质量审计' },
+    loadComponent: () => import('./components/archive-health/archive-health.component').then(m => m.ArchiveHealthComponent)
   },
   { path: '**', redirectTo: '/dashboard' }
 ];
