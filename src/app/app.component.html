@@ -26,54 +26,61 @@
       </div>
     </div>
 
-    <div class="nav-shell">
-      <div class="nav-group">
-        <span class="nav-group-label">Core</span>
-        <nav class="nav-track">
-          <a
-            *ngFor="let item of coreNav"
-            class="nav-link"
-            [routerLink]="item.route"
-            routerLinkActive="is-active"
-            [routerLinkActiveOptions]="{ exact: item.exact ?? false }">
-            <mat-icon>{{ item.icon }}</mat-icon>
-            <span>{{ item.label }}</span>
-          </a>
-        </nav>
-      </div>
-
-      <div class="nav-group nav-group-secondary">
-        <span class="nav-group-label">Enhancements</span>
-        <nav class="nav-track">
-          <a
-            *ngFor="let item of enhancementNav"
-            class="nav-link secondary-link"
-            [routerLink]="item.route"
-            routerLinkActive="is-active"
-            [routerLinkActiveOptions]="{ exact: item.exact ?? false }">
-            <mat-icon>{{ item.icon }}</mat-icon>
-            <span>{{ item.label }}</span>
-          </a>
-        </nav>
-      </div>
-    </div>
   </header>
 
-  <div class="breadcrumb-wrap">
-    <app-breadcrumb></app-breadcrumb>
-  </div>
+  <div class="app-body">
+    <aside class="app-sidebar" aria-label="Primary navigation">
+      <div class="nav-shell">
+        <div class="nav-group">
+          <span class="nav-group-label">Core</span>
+          <nav class="nav-track">
+            <a
+              *ngFor="let item of coreNav"
+              class="nav-link"
+              [routerLink]="item.route"
+              routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{ exact: item.exact ?? false }">
+              <mat-icon>{{ item.icon }}</mat-icon>
+              <span>{{ item.label }}</span>
+            </a>
+          </nav>
+        </div>
 
-  <main class="app-content">
-    <app-page-jump-bar></app-page-jump-bar>
+        <div class="nav-group nav-group-secondary">
+          <span class="nav-group-label">Enhancements</span>
+          <nav class="nav-track">
+            <a
+              *ngFor="let item of enhancementNav"
+              class="nav-link secondary-link"
+              [routerLink]="item.route"
+              routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{ exact: item.exact ?? false }">
+              <mat-icon>{{ item.icon }}</mat-icon>
+              <span>{{ item.label }}</span>
+            </a>
+          </nav>
+        </div>
+      </div>
+    </aside>
 
-    <div class="content-grid">
-      <section class="content-column">
-        <router-outlet></router-outlet>
-      </section>
+    <div class="app-main">
+      <div class="breadcrumb-wrap">
+        <app-breadcrumb></app-breadcrumb>
+      </div>
 
-      <aside class="sidebar-column">
-        <app-message-panel></app-message-panel>
-      </aside>
+      <main class="app-content">
+        <app-page-jump-bar></app-page-jump-bar>
+
+        <div class="content-grid">
+          <section class="content-column">
+            <router-outlet></router-outlet>
+          </section>
+
+          <aside class="sidebar-column">
+            <app-message-panel></app-message-panel>
+          </aside>
+        </div>
+      </main>
     </div>
-  </main>
+  </div>
 </div>

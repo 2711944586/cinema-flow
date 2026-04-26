@@ -2,8 +2,8 @@
   <div class="page-head">
     <div>
       <span class="page-kicker">Watch Logs</span>
-      <h1>把每次观影都记成有温度的记录</h1>
-      <p>除了“看没看过”，你还可以在这里记录观影时间、地点、陪伴对象、临场评分与心情标签。CinemaFlow 会把计划与日志自动串起来，形成完整的看片轨迹。</p>
+      <h1>观影日志</h1>
+      <p>记录观影日期、地点、陪伴对象、会话评分与情绪标签。</p>
     </div>
     <button mat-stroked-button class="secondary-btn" (click)="resetDraft()">
       <mat-icon>restart_alt</mat-icon>
@@ -91,9 +91,9 @@
       </mat-form-field>
 
       <ul>
-        <li>记录日志后，对应电影会自动标记为已观影。</li>
-        <li>如果该电影已存在待看片单，记录后会自动完成计划。</li>
-        <li>会话评分会在电影还没有个人评分时自动作为第一次主观评分信号。</li>
+        <li>记录日志后，对应电影标记为已观影。</li>
+        <li>已有待看计划会同步完成。</li>
+        <li>会话评分可作为个人评分信号。</li>
       </ul>
     </section>
   </div>
@@ -151,6 +151,6 @@
   <section class="empty-card">
     <mat-icon>history_toggle_off</mat-icon>
     <h2>还没有观影日志</h2>
-    <p>先记录一次最近看完的电影，CinemaFlow 就会开始形成你的观看轨迹与偏好数据。</p>
+    <p>先记录一次最近看完的电影。</p>
   </section>
 </ng-template>

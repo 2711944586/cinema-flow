@@ -126,13 +126,13 @@ export class MovieStateService {
     },
     {
       name: 'MessageService',
-      summary: '统一用户可见消息、实验过程提示与状态反馈。',
+      summary: '统一用户可见消息与状态反馈。',
       storageKey: 'memory',
       reactiveSignal: 'messages$'
     },
     {
       name: 'LoggerService',
-      summary: '结构化日志流，供 About 页面与调试过程复盘使用。',
+      summary: '结构化日志流，供 About 页面展示运行记录。',
       storageKey: 'memory',
       reactiveSignal: 'logs$'
     }
@@ -183,17 +183,17 @@ export class MovieStateService {
       return {
         summaryCards: [
           { label: '公开页面', value: String(publicRouteCount), hint: '当前主导航与增强导航中的页面入口总数' },
-          { label: '根级服务', value: String(this.serviceSummaries.length), hint: '本轮实验纳入 About 展示的服务数量' },
+          { label: '根级服务', value: String(this.serviceSummaries.length), hint: 'About 页面展示的服务数量' },
           { label: '用户消息', value: String(messages.length), hint: '消息面板当前保留的最近提示条数' },
           { label: '日志记录', value: String(logEntries.length), hint: 'LoggerService 当前缓存的结构化日志数量' }
         ],
         highlights: [
-          '第五次上机课要求的导演实体、跨实体导航、分类路由与添加页路由守卫已经接入主路由。',
-          '第六次上机课要求的 Flask REST API、HttpClient、错误降级与防抖搜索已经补齐。',
-          'Movies、Dashboard、Movie Detail、Directors 与 About 均可通过响应式数据链路消费状态。',
-          'Watch Plans、Watch Logs 与 Smart Picks 让计划、观影与推荐形成了完整闭环。',
-          '新增 Taste DNA、Scene Board、Archive Health 三个不重复功能页，用于偏好画像、氛围策展与片库质量审计。',
-          '导入导出会保留片库、最近浏览、影评、待看片单、观影日志与智能选片预设。'
+          '导演实体、跨实体导航、分类路由与添加页路由守卫已接入主路由。',
+          'Flask REST API、HttpClient、错误降级与防抖搜索已补齐。',
+          'Movies、Dashboard、Movie Detail、Directors 与 About 共享响应式状态链路。',
+          'Watch Plans、Watch Logs 与 Smart Picks 串联计划、观影与推荐。',
+          'Taste DNA、Scene Board、Archive Health 覆盖偏好画像、氛围策展与片库质量审计。',
+          '导入导出保留片库、最近浏览、影评、待看片单、观影日志与智能选片预设。'
         ],
         techStack: [
           'Angular 17 Standalone Components + Angular Material',

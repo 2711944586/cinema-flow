@@ -46,7 +46,7 @@ export const CORE_NAV_ITEMS: AppNavItem[] = [
     label: 'About',
     route: '/about',
     icon: 'info',
-    description: '项目说明、技术栈与数据管理',
+    description: '系统状态、技术栈与数据管理',
     exact: true
   }
 ];
@@ -59,7 +59,7 @@ export const ENHANCEMENT_NAV_ITEMS: AppNavItem[] = [
     description: '时间线浏览电影年代'
   },
   {
-    label: 'Recommendations',
+    label: 'Recommend',
     route: '/recommendations',
     icon: 'auto_awesome',
     description: '按导演与类型查看推荐'
@@ -122,13 +122,13 @@ export const ENHANCEMENT_NAV_ITEMS: AppNavItem[] = [
     label: 'Marathon',
     route: '/marathon',
     icon: 'playlist_play',
-    description: '按时长预算自动生成连看片单并推入待看片单'
+    description: '按时长预算组合连看片单'
   },
   {
     label: 'Taste DNA',
     route: '/taste-dna',
     icon: 'psychology',
-    description: '合并已看、收藏、评分、影评与日志生成偏好画像'
+    description: '已看、收藏、评分、影评与日志画像'
   },
   {
     label: 'Scene Board',

@@ -3,24 +3,24 @@
     <div class="header-copy">
       <span class="header-kicker">观影日历</span>
       <h1>{{ data.year }} 年 {{ data.monthName }}</h1>
-      <p>这里完全按照真实观影日志整理时间线。年份范围会自动覆盖到当前年份；如果某个月还没写日志，就明确展示为空状态，方便你后续补记。</p>
+      <p>按观影日志整理月度时间线。</p>
     </div>
 
     <div class="header-stats">
       <div class="stat-card">
         <span class="stat-label">当月记录</span>
         <strong>{{ monthMovieCount }}</strong>
-        <span class="stat-meta">观影会话与补录条目总数</span>
+        <span class="stat-meta">观影会话总数</span>
       </div>
       <div class="stat-card">
         <span class="stat-label">平均观感</span>
         <strong>{{ monthAverageRating }}</strong>
-        <span class="stat-meta">优先采用会话评分，没有时回退到影片评分</span>
+        <span class="stat-meta">会话评分优先</span>
       </div>
       <div class="stat-card">
         <span class="stat-label">总片长</span>
         <strong>{{ monthWatchHours }}h</strong>
-        <span class="stat-meta">按片长累计的沉浸时间</span>
+        <span class="stat-meta">按片长累计</span>
       </div>
     </div>
   </section>
@@ -136,7 +136,7 @@
         <mat-card class="selected-day-panel empty-panel">
           <mat-icon>event_busy</mat-icon>
           <h2>这个月还没有观影记录</h2>
-          <p>年份范围已经会自动覆盖到当前年份。切到最近月份后，如果还没写日志，也会明确展示空状态，方便你随时补记。</p>
+          <p>切换月份或在 Watch Logs 中补记。</p>
         </mat-card>
       </ng-template>
 

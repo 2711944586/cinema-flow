@@ -18,7 +18,7 @@ import { LoggerService } from './logger.service';
 @Injectable({ providedIn: 'root' })
 export class MovieService {
   private readonly http = inject(HttpClient, { optional: true });
-  private readonly apiUrl = 'http://localhost:5000/api/movies';
+  private readonly apiUrl = '/api/movies';
   private readonly httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   };

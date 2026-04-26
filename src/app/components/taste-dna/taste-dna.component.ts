@@ -182,6 +182,6 @@ export class TasteDnaComponent implements OnInit {
     const director = this.directorBuckets[0]?.name ?? '多元导演';
     const language = this.languageBuckets[0]?.name ?? '多语言';
 
-    return `你的偏好信号集中在 ${genre}、${director} 与 ${language} 作品上。这里会把已看、收藏、评分、影评和观影日志合并成一张可行动的偏好画像。`;
+    return `偏好信号集中在 ${genre}、${director} 与 ${language} 作品上。`;
   }
 }

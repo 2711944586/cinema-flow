@@ -17,6 +17,6 @@ export class RecentHistoryComponent {
   @Input() title = '最近浏览';
   @Input() description = '继续回到你刚看过的电影页。';
   @Input() emptyTitle = '还没有最近浏览记录';
-  @Input() emptyDescription = '进入电影详情页后，这里会自动保留最近访问的影片。';
+  @Input() emptyDescription = '访问电影详情页后显示最近记录。';
   @Input() compact = false;
 }

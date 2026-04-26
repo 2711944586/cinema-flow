@@ -2,15 +2,15 @@
   <div class="atlas-header">
     <div class="header-copy">
       <span class="header-kicker">Mood Atlas</span>
-      <h1>把观影时的情绪，整理成可回看的偏好地图</h1>
-      <p>日志里的情绪标签不该只躺在表单里。这里会把它们聚成可浏览的 mood cluster，帮助你判断什么类型的电影最适合什么状态。</p>
+      <h1>情绪偏好地图</h1>
+      <p>按观影日志中的情绪标签聚合电影。</p>
     </div>
 
     <div class="header-stats">
       <article class="stat-card">
         <span>情绪标签</span>
         <strong>{{ totalClusters }}</strong>
-        <p>已经形成记录的 mood cluster 数量</p>
+        <p>已记录的情绪簇</p>
       </article>
       <article class="stat-card" *ngIf="hottestCluster as cluster">
         <span>最常出现</span>
@@ -20,12 +20,12 @@
       <article class="stat-card">
         <span>总记录数</span>
         <strong>{{ uniqueSessionCount }}</strong>
-        <p>被纳入情绪图谱的观影条目总数</p>
+        <p>观影条目总数</p>
       </article>
       <article class="stat-card">
         <span>最高均分</span>
         <strong>{{ strongestAverageScore }}</strong>
-        <p>当前表现最好的情绪片单均分</p>
+        <p>最高情绪片单均分</p>
       </article>
     </div>
   </div>
@@ -76,7 +76,7 @@
         <div>
           <span class="panel-kicker">Selected Mood</span>
           <h2>{{ cluster.tag }}</h2>
-          <p>共 {{ cluster.count }} 条记录，推荐从这些片子里继续延伸这个情绪方向。</p>
+          <p>共 {{ cluster.count }} 条记录。</p>
         </div>
         <div class="detail-chips">
           <span>均分 {{ cluster.averageScore }}</span>
@@ -106,7 +106,7 @@
   <section class="empty-panel">
     <mat-icon>mood</mat-icon>
     <h2>还没有足够的情绪日志</h2>
-    <p>先去 `Watch Logs` 写几条带情绪标签的观影记录，这里就会自动生成你的情绪图谱。</p>
+    <p>先在 `Watch Logs` 写几条带情绪标签的观影记录。</p>
     <a mat-flat-button class="primary-btn" routerLink="/watch-logs">
       <mat-icon>history_edu</mat-icon>
       去写观影日志

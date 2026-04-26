@@ -95,7 +95,7 @@ export class MovieFormComponent implements OnInit, OnChanges, OnDestroy {
       backdropUrl: this.formData.backdropUrl.trim(),
       genres: this.parseDelimitedList(this.formData.genres, ['剧情', '电影']),
       duration: Number(this.formData.duration) || 120,
-      description: this.formData.description.trim() || '在这里补充剧情梗概、叙事节奏与观影感受，让影片信息更完整。',
+      description: this.formData.description.trim() || '补充剧情梗概、叙事节奏与观影感受。',
       trailerUrl: this.formData.trailerUrl.trim(),
       language: this.formData.language.trim() || '待补充语言',
       cast: this.parseDelimitedList(this.formData.cast)
@@ -159,20 +159,20 @@ export class MovieFormComponent implements OnInit, OnChanges, OnDestroy {
 
   get artworkHintText(): string {
     if (this.artworkState === 'loading') {
-      return '正在根据片名、导演和上映日期校验真实电影海报。';
+      return '正在校验真实电影海报。';
     }
 
     if (this.autoPosterUrl) {
       return this.autoPosterSource
-        ? `已自动匹配真实海报，来源：${this.autoPosterSource}。`
-        : '已自动匹配真实电影海报。';
+        ? `已匹配真实海报，来源：${this.autoPosterSource}。`
+        : '已匹配真实电影海报。';
     }
 
     if (this.artworkState === 'fallback') {
-      return '未匹配到真实电影海报，当前条目不能保存，请检查片名、导演和上映日期。';
+      return '未匹配到真实电影海报，请检查片名、导演和上映日期。';
     }
 
-    return '系统会自动校验真实电影海报；未通过校验的条目不会写入片库。';
+    return '未通过真实海报校验的条目不会写入片库。';
   }
 
   async onSubmit(): Promise<void> {

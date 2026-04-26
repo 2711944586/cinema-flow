@@ -4,7 +4,7 @@
     <div class="hero-copy">
       <span class="page-kicker">Scene Board</span>
       <h1>{{ lane.name }}</h1>
-      <p>{{ lane.description }} 这个页面把电影按视觉和叙事气质重新编排，用于做海报墙、主题夜和选片灵感，而不是按传统字段检索。</p>
+      <p>{{ lane.description }}</p>
       <a [routerLink]="['/movies', movie.id, 'info']">当前画面锚点：{{ movie.title }}</a>
     </div>
   </div>

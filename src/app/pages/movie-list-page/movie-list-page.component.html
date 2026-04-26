@@ -3,7 +3,7 @@
     <div>
       <span class="page-kicker">Collection</span>
       <h1>Movies</h1>
-      <p>在这里按标题、导演、类型和观看状态管理整套片库。当前筛选会自动保留，刷新后也能延续你刚才的视图。</p>
+      <p>按标题、导演、类型和观看状态筛选片库。</p>
     </div>
     <a mat-flat-button routerLink="/add" class="primary-btn">
       <mat-icon>add</mat-icon>
@@ -166,7 +166,7 @@
     <section class="empty-card">
       <mat-icon>search_off</mat-icon>
       <h2>没有匹配结果</h2>
-      <p>当前筛选条件下没有电影。你可以重置查询参数，或者前往添加页面创建新的条目。</p>
+      <p>重置筛选，或添加新的电影条目。</p>
       <div class="empty-actions">
         <button mat-stroked-button class="secondary-btn" (click)="clearFilters()">重置筛选</button>
         <a mat-flat-button routerLink="/add" class="primary-btn">添加电影</a>
@@ -178,7 +178,7 @@
 <ng-template #loadingState>
   <section class="loading-card">
     <mat-icon>hourglass_top</mat-icon>
-    <h2>正在同步 Movies 视图</h2>
-    <p>查询参数与片库状态正在合并，请稍候片刻。</p>
+    <h2>正在载入 Movies</h2>
+    <p>整理片库视图。</p>
   </section>
 </ng-template>

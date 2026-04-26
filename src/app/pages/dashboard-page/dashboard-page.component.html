@@ -2,8 +2,8 @@
   <div class="dashboard-hero" [style.background-image]="getHeroBackdrop(vm.heroMovie) ? 'linear-gradient(180deg, rgba(6,8,15,.25), rgba(6,8,15,.88)), url(' + getHeroBackdrop(vm.heroMovie) + ')' : null">
     <div class="hero-copy">
       <span class="hero-kicker">CinemaFlow</span>
-      <h1>从这里进入你的私人影库中枢</h1>
-      <p>总览片库状态、回到最近浏览的电影、继续探索高分片单，也可以直接切换到收藏、随机选片和完整电影列表。</p>
+      <h1>私人影库中枢</h1>
+      <p>查看片库状态，回到最近浏览，继续选片。</p>
 
       <div class="hero-actions">
         <a mat-flat-button routerLink="/movies" class="primary-btn">
@@ -52,14 +52,14 @@
     <app-recent-history
       [entries]="vm.recentHistory"
       title="最近浏览"
-      description="你访问过的电影会保存在本地，重新进入项目后也能继续接着看。">
+      description="最近访问的电影。">
     </app-recent-history>
 
     <section class="recent-added">
       <div class="section-head">
         <span class="section-kicker">Library Updates</span>
         <h2>最近添加电影</h2>
-        <p>按片库录入顺序显示最近进入收藏馆的条目，新添加的电影会立刻出现在这里。</p>
+        <p>按录入顺序展示最新条目。</p>
       </div>
 
       <div class="recent-list" *ngIf="vm.recentAdded.length > 0">
@@ -80,6 +80,6 @@
   <section class="loading-card">
     <mat-icon>hourglass_top</mat-icon>
     <h2>正在加载 Dashboard</h2>
-    <p>服务状态中心正在拼装首页视图，请稍候片刻。</p>
+    <p>载入首页视图。</p>
   </section>
 </ng-template>

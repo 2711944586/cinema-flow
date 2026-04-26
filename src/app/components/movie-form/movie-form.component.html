@@ -29,7 +29,7 @@
             <div class="poster-placeholder">
               <mat-icon>verified</mat-icon>
               <strong>等待真实海报</strong>
-              <span>只有通过真实电影校验后才会写入片库</span>
+              <span>通过校验后写入片库</span>
             </div>
           </ng-template>
         </div>
@@ -62,10 +62,10 @@
       <mat-card-header>
         <mat-card-title>
           <mat-icon>{{ movie ? 'edit' : 'add_circle' }}</mat-icon>
-          {{ movie ? '统一风格编辑电影' : '添加电影到片库' }}
+          {{ movie ? '编辑电影' : '添加电影到片库' }}
         </mat-card-title>
         <mat-card-subtitle>
-          所有字段将同步到探索页、详情页、对比页与新功能模块，保证视觉和数据一致。
+          字段会同步到探索、详情、对比与扩展页面。
         </mat-card-subtitle>
       </mat-card-header>
 
@@ -76,7 +76,7 @@
               <span class="section-index">01</span>
               <div>
                 <h3>基本信息</h3>
-                <p>建立影片的核心身份与内容调性。</p>
+                <p>片名、导演、日期、类型与片长。</p>
               </div>
             </div>
 
@@ -120,7 +120,7 @@
               <span class="section-index">02</span>
               <div>
                 <h3>电影观感</h3>
-                <p>统一评分、状态与主演信息的展示口径。</p>
+                <p>评分、状态、主演与简介。</p>
               </div>
             </div>
 
@@ -145,7 +145,7 @@
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>电影简介</mat-label>
-              <textarea matInput name="description" [(ngModel)]="formData.description" rows="5" placeholder="写下剧情简介、风格特征或你希望在详情页中呈现的内容。"></textarea>
+              <textarea matInput name="description" [(ngModel)]="formData.description" rows="5" placeholder="剧情简介、风格特征或观影记录。"></textarea>
             </mat-form-field>
           </div>
 
@@ -154,7 +154,7 @@
               <span class="section-index">03</span>
               <div>
                 <h3>媒体资源</h3>
-                <p>海报仅允许使用系统校验到的真实电影海报；背景图仍可按需补充。</p>
+                <p>真实海报校验，背景图可补充。</p>
               </div>
             </div>
 

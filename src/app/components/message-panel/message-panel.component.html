@@ -26,7 +26,7 @@
   <div class="panel-body" *ngIf="!collapsed">
     <ng-container *ngIf="messages$ | async as messages">
       <p class="empty-state" *ngIf="messages.length === 0">
-        这里会记录你刚刚完成的导入、收藏、删除、推荐和观影计划更新，方便随时回看最近的操作。
+        暂无最近动态。
       </p>
 
       <article class="message-card" *ngFor="let message of messages; trackBy: trackByMessageId">

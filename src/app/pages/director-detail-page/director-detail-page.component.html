@@ -99,7 +99,7 @@
   <section class="empty-state">
     <mat-icon>movie_filter</mat-icon>
     <h2>暂无作品关联</h2>
-    <p>当前导演实体存在，但还没有电影通过 directorId 与其关联。</p>
+    <p>暂无关联电影。</p>
   </section>
 </ng-template>
 
@@ -107,7 +107,7 @@
   <section class="loading-card">
     <mat-icon>hourglass_top</mat-icon>
     <h2>正在载入导演详情</h2>
-    <p>路由参数、导演 API 与作品列表正在合并。</p>
+    <p>载入导演资料与作品列表。</p>
   </section>
 </ng-template>
 
@@ -115,7 +115,7 @@
   <section class="loading-card">
     <mat-icon>person_off</mat-icon>
     <h2>没有找到这位导演</h2>
-    <p>当前导演 ID 不存在，或者 Flask API 暂时没有返回对应资源。</p>
+    <p>当前导演 ID 不存在。</p>
     <a mat-flat-button routerLink="/directors">返回导演库</a>
   </section>
 </ng-template>

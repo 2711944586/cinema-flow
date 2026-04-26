@@ -2,8 +2,8 @@
   <div class="about-hero">
     <div class="hero-copy">
       <span class="hero-kicker">About CinemaFlow</span>
-      <h1>一套围绕电影浏览、收藏、计划与观影记录构建的响应式影库系统</h1>
-      <p>CinemaFlow 不再只是一个静态片库，而是把 MovieService、日志、消息、待看片单、观影日志与智能选片收束进统一的服务化结构里，让第四次上机课的服务中枢真正落地到页面体验。</p>
+      <h1>CinemaFlow 片库控制台</h1>
+      <p>电影、导演、计划、日志、推荐与备份集中管理。</p>
     </div>
 
     <div class="hero-summary">
@@ -18,7 +18,7 @@
   <div class="content-grid">
     <section class="content-card">
       <span class="section-kicker">Highlights</span>
-      <h2>本轮实验亮点</h2>
+      <h2>产品能力</h2>
       <ul>
         <li *ngFor="let item of vm.highlights">{{ item }}</li>
       </ul>
@@ -26,7 +26,7 @@
 
     <section class="content-card">
       <span class="section-kicker">Tech Stack</span>
-      <h2>技术栈与响应式手法</h2>
+      <h2>技术栈</h2>
       <ul>
         <li *ngFor="let item of vm.techStack">{{ item }}</li>
       </ul>
@@ -57,7 +57,7 @@
 
   <section class="content-card wide-card">
     <span class="section-kicker">Service Registry</span>
-    <h2>根级服务与状态信号</h2>
+    <h2>服务与状态</h2>
     <div class="service-grid">
       <article class="service-item" *ngFor="let service of vm.serviceSummaries">
         <h3>{{ service.name }}</h3>
@@ -108,15 +108,15 @@
 
   <section class="content-card wide-card">
     <span class="section-kicker">Rules</span>
-    <h2>真实海报规则与数据说明</h2>
+    <h2>数据规则</h2>
     <div class="rule-grid">
       <article>
         <h3>真实海报校验</h3>
-        <p>新增和编辑电影时，系统会根据片名、导演和上映日期尝试匹配真实电影海报。未通过校验的条目不会写入片库。</p>
+        <p>新增和编辑电影时按片名、导演和上映日期匹配真实海报。未通过校验的条目不会写入片库。</p>
       </article>
       <article>
         <h3>Movies 与 Explore 的区别</h3>
-        <p>`/movies` 更适合集中管理片库；`/explore` 更强调沉浸式浏览和主视觉探索，两者共享同一份电影数据。</p>
+        <p>`/movies` 面向片库管理；`/explore` 面向沉浸浏览。两者共享同一份电影数据。</p>
       </article>
       <article>
         <h3>最近浏览与备份</h3>

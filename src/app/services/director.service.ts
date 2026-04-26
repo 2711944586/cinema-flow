@@ -16,7 +16,7 @@ const httpOptions = {
 @Injectable({ providedIn: 'root' })
 export class DirectorService {
   private readonly http = inject(HttpClient, { optional: true });
-  private readonly apiUrl = 'http://localhost:5000/api/directors';
+  private readonly apiUrl = '/api/directors';
 
   constructor(
     private movieService: MovieService,
