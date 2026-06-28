@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "deploy:cloudbase": "powershell -ExecutionPolicy Bypass -File scripts/deploy-cloudbase.ps1",
+    "deploy:cloudbase:plan": "powershell -ExecutionPolicy Bypass -File scripts/deploy-cloudbase.ps1 -PlanOnly -NoLogin -SkipHealthCheck"
   },
   "private": true,
   "dependencies": {

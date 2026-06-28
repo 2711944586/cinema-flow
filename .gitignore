@@ -35,6 +35,9 @@ __pycache__/
 # Miscellaneous
 /.angular/cache
 .runtime-proxy.conf.json
+*.env.local
+deploy/*.local
+deploy/*.env.local
 .sass-cache/
 /connect.lock
 /coverage
