@@ -6,6 +6,7 @@ from models import movies, next_movie_id, save_store, snapshot_movies
 movie_bp = Blueprint("movies", __name__)
 
 
+@movie_bp.route("/movies", methods=["GET"])
 @movie_bp.route("/api/movies", methods=["GET"])
 def get_movies():
     title = request.args.get("title", "").strip().lower()
@@ -28,6 +29,7 @@ def get_movies():
     return jsonify(result)
 
 
+@movie_bp.route("/movies/<int:movie_id>", methods=["GET"])
 @movie_bp.route("/api/movies/<int:movie_id>", methods=["GET"])
 def get_movie(movie_id):
     movie = next((item for item in movies if item["id"] == movie_id), None)
@@ -36,6 +38,7 @@ def get_movie(movie_id):
     return jsonify(movie)
 
 
+@movie_bp.route("/movies", methods=["POST"])
 @movie_bp.route("/api/movies", methods=["POST"])
 def add_movie():
     data = request.get_json(silent=True) or {}
@@ -62,6 +65,7 @@ def add_movie():
     return jsonify(new_movie), 201
 
 
+@movie_bp.route("/movies/<int:movie_id>", methods=["PUT"])
 @movie_bp.route("/api/movies/<int:movie_id>", methods=["PUT"])
 def update_movie(movie_id):
     movie = next((item for item in movies if item["id"] == movie_id), None)
@@ -77,6 +81,7 @@ def update_movie(movie_id):
     return jsonify(movie)
 
 
+@movie_bp.route("/movies/<int:movie_id>", methods=["DELETE"])
 @movie_bp.route("/api/movies/<int:movie_id>", methods=["DELETE"])
 def delete_movie(movie_id):
     movie = next((item for item in movies if item["id"] == movie_id), None)

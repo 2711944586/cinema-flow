@@ -17,6 +17,8 @@ def create_app():
     app.register_blueprint(movie_bp)
     app.register_blueprint(director_bp)
 
+    @app.route("/", methods=["GET"])
+    @app.route("/health", methods=["GET"])
     @app.route("/api/health", methods=["GET"])
     def health():
         return {"status": "ok", "service": "CinemaFlow API"}

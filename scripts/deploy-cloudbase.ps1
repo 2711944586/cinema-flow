@@ -3,6 +3,7 @@ param(
   [string]$EnvId = "",
   [switch]$CreateEnvironment,
   [switch]$DeployDatabaseSchema,
+  [switch]$SkipFunctionDeploy,
   [switch]$SkipHealthCheck,
   [switch]$NoLogin,
   [switch]$PlanOnly
@@ -100,7 +101,13 @@ function Invoke-CloudBase {
     [string[]]$CliArgs
   )
 
-  & npx --yes --package "@cloudbase/cli@3.5.8" cloudbase @CliArgs
+  $npxCommand = Get-Command npx -ErrorAction Stop
+  if ($npxCommand.Source -and (Test-Path -LiteralPath $npxCommand.Source)) {
+    & $npxCommand.Source --yes --package "@cloudbase/cli@3.5.8" cloudbase @CliArgs
+  }
+  else {
+    & npx --yes --package "@cloudbase/cli@3.5.8" cloudbase @CliArgs
+  }
   if ($LASTEXITCODE -ne 0) {
     throw "CloudBase CLI command failed: cloudbase $($CliArgs -join ' ')"
   }
@@ -112,10 +119,81 @@ function Invoke-CloudBaseCapture {
     [string[]]$CliArgs
   )
 
-  $output = & npx --yes --package "@cloudbase/cli@3.5.8" cloudbase @CliArgs 2>&1
-  if ($LASTEXITCODE -ne 0) {
+  $npxCommand = Get-Command npx -ErrorAction Stop
+  $previousErrorActionPreference = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    if ($npxCommand.Source -and (Test-Path -LiteralPath $npxCommand.Source)) {
+      $output = & $npxCommand.Source --yes --package "@cloudbase/cli@3.5.8" cloudbase @CliArgs 2>&1
+    }
+    else {
+      $output = & npx --yes --package "@cloudbase/cli@3.5.8" cloudbase @CliArgs 2>&1
+    }
+    $exitCode = $LASTEXITCODE
+  }
+  finally {
+    $ErrorActionPreference = $previousErrorActionPreference
+  }
+  if ($exitCode -ne 0) {
     $output | ForEach-Object { Write-Host $_ }
     throw "CloudBase CLI command failed: cloudbase $($CliArgs -join ' ')"
+  }
+
+  return ($output -join "`n")
+}
+
+function Invoke-CloudBaseRouteCommand {
+  param(
+    [string]$EnvId,
+    [string]$Command,
+    [string]$RoutePayload
+  )
+
+  $previousErrorActionPreference = $ErrorActionPreference
+  $previousRouteEnvId = [Environment]::GetEnvironmentVariable("CLOUDBASE_ROUTE_ENV_ID", "Process")
+  $previousRouteCommand = [Environment]::GetEnvironmentVariable("CLOUDBASE_ROUTE_COMMAND", "Process")
+  $previousRoutePayload = [Environment]::GetEnvironmentVariable("CLOUDBASE_ROUTE_PAYLOAD", "Process")
+  $ErrorActionPreference = "Continue"
+  try {
+    [Environment]::SetEnvironmentVariable("CLOUDBASE_ROUTE_ENV_ID", $EnvId, "Process")
+    [Environment]::SetEnvironmentVariable("CLOUDBASE_ROUTE_COMMAND", $Command, "Process")
+    [Environment]::SetEnvironmentVariable("CLOUDBASE_ROUTE_PAYLOAD", $RoutePayload, "Process")
+
+    $pwshCommand = Get-Command pwsh -ErrorAction SilentlyContinue
+    if ($PSVersionTable.PSVersion.Major -lt 6 -and $pwshCommand) {
+      $routeScript = @'
+$npxCommand = Get-Command npx -ErrorAction Stop
+if ($npxCommand.Source -and (Test-Path -LiteralPath $npxCommand.Source)) {
+  & $npxCommand.Source --yes --package "@cloudbase/cli@3.5.8" cloudbase --yes -e $env:CLOUDBASE_ROUTE_ENV_ID routes $env:CLOUDBASE_ROUTE_COMMAND --data $env:CLOUDBASE_ROUTE_PAYLOAD --json
+}
+else {
+  & npx --yes --package "@cloudbase/cli@3.5.8" cloudbase --yes -e $env:CLOUDBASE_ROUTE_ENV_ID routes $env:CLOUDBASE_ROUTE_COMMAND --data $env:CLOUDBASE_ROUTE_PAYLOAD --json
+}
+exit $LASTEXITCODE
+'@
+      $encodedRouteScript = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($routeScript))
+      $output = & $pwshCommand.Source -NoProfile -EncodedCommand $encodedRouteScript 2>&1
+    }
+    else {
+      $npxCommand = Get-Command npx -ErrorAction Stop
+      if ($npxCommand.Source -and (Test-Path -LiteralPath $npxCommand.Source)) {
+        $output = & $npxCommand.Source --yes --package "@cloudbase/cli@3.5.8" cloudbase --yes -e $EnvId routes $Command --data $RoutePayload --json 2>&1
+      }
+      else {
+        $output = & npx --yes --package "@cloudbase/cli@3.5.8" cloudbase --yes -e $EnvId routes $Command --data $RoutePayload --json 2>&1
+      }
+    }
+    $exitCode = $LASTEXITCODE
+  }
+  finally {
+    [Environment]::SetEnvironmentVariable("CLOUDBASE_ROUTE_ENV_ID", $previousRouteEnvId, "Process")
+    [Environment]::SetEnvironmentVariable("CLOUDBASE_ROUTE_COMMAND", $previousRouteCommand, "Process")
+    [Environment]::SetEnvironmentVariable("CLOUDBASE_ROUTE_PAYLOAD", $previousRoutePayload, "Process")
+    $ErrorActionPreference = $previousErrorActionPreference
+  }
+  if ($exitCode -ne 0) {
+    $output | ForEach-Object { Write-Host $_ }
+    throw "CloudBase CLI route command failed: routes $Command --data <route-payload>"
   }
 
   return ($output -join "`n")
@@ -144,6 +222,46 @@ function ConvertTo-JsonFile {
   [System.IO.File]::WriteAllText($Path, $json, [System.Text.UTF8Encoding]::new($false))
 }
 
+function New-CloudBaseHttpRoutePayload {
+  param(
+    [string]$Path,
+    [string]$FunctionName
+  )
+
+  return ([ordered]@{
+    domain = "*"
+    routes = @(
+      [ordered]@{
+        path = $Path
+        upstreamResourceType = "WEB_SCF"
+        upstreamResourceName = $FunctionName
+        enable = $true
+        enableAuth = $false
+        enablePathTransmission = $true
+      }
+    )
+  } | ConvertTo-Json -Depth 10 -Compress)
+}
+
+function Ensure-CloudBaseHttpRoute {
+  param(
+    [string]$EnvId,
+    [string]$Path,
+    [string]$FunctionName
+  )
+
+  $routePayload = New-CloudBaseHttpRoutePayload -Path $Path -FunctionName $FunctionName
+  try {
+    Invoke-CloudBaseRouteCommand -EnvId $EnvId -Command "edit" -RoutePayload $routePayload | Write-Host
+    Write-Info "HTTP route updated: $Path -> WEB_SCF/$FunctionName"
+  }
+  catch {
+    Write-Info "HTTP route $Path was not editable yet; creating it now."
+    Invoke-CloudBaseRouteCommand -EnvId $EnvId -Command "add" -RoutePayload $routePayload | Write-Host
+    Write-Info "HTTP route created: $Path -> WEB_SCF/$FunctionName"
+  }
+}
+
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $settings = Read-EnvFile -Path (Join-Path $repoRoot $EnvFile)
 
@@ -167,6 +285,7 @@ $duration = Get-Setting -Settings $settings -Name "CLOUDBASE_DURATION" -Default 
 $functionName = Get-Setting -Settings $settings -Name "CLOUDBASE_FUNCTION_NAME" -Default "cinemaflow-api"
 $functionRuntime = Get-Setting -Settings $settings -Name "CLOUDBASE_FUNCTION_RUNTIME" -Default "Python3.10"
 $functionPath = Get-Setting -Settings $settings -Name "CLOUDBASE_FUNCTION_PATH" -Default "/api"
+$functionDeployMode = Get-Setting -Settings $settings -Name "CLOUDBASE_FUNCTION_DEPLOY_MODE" -Default "zip"
 $functionMemory = [int](Get-Setting -Settings $settings -Name "CLOUDBASE_FUNCTION_MEMORY" -Default "512")
 $functionTimeout = [int](Get-Setting -Settings $settings -Name "CLOUDBASE_FUNCTION_TIMEOUT" -Default "15")
 $corsOrigins = Get-Setting -Settings $settings -Name "CLOUDBASE_CORS_ORIGINS" -Default "*"
@@ -177,6 +296,7 @@ $token = Get-Setting -Settings $settings -Name "TENCENT_TOKEN" -Default ""
 
 $shouldCreateEnvironment = $CreateEnvironment.IsPresent -or (Get-BoolSetting -Settings $settings -Name "CLOUDBASE_CREATE_ENV" -Default $false)
 $shouldDeployDatabase = $DeployDatabaseSchema.IsPresent -or (Get-BoolSetting -Settings $settings -Name "CLOUDBASE_DEPLOY_DATABASE_SCHEMA" -Default $false)
+$shouldSkipFunctionDeploy = $SkipFunctionDeploy.IsPresent -or (Get-BoolSetting -Settings $settings -Name "CLOUDBASE_SKIP_FUNCTION_DEPLOY" -Default $false)
 $shouldSkipHealthCheck = $SkipHealthCheck.IsPresent -or (Get-BoolSetting -Settings $settings -Name "CLOUDBASE_SKIP_HEALTH_CHECK" -Default $false)
 
 Push-Location $repoRoot
@@ -188,7 +308,7 @@ try {
   Write-Info "Node: $(node -v)"
   Write-Info "npm: $(npm -v)"
   Write-Info "Python: $(python --version)"
-  Write-Info "CloudBase CLI: $(Invoke-CloudBaseCapture @('--version'))"
+  Write-Info "CloudBase CLI: $(Invoke-CloudBaseCapture -CliArgs @('--version'))"
 
   if (-not $NoLogin.IsPresent) {
     Write-Step "Logging in to Tencent Cloud"
@@ -197,12 +317,12 @@ try {
       if ($token) {
         $loginArgs += @("--token", $token)
       }
-      Invoke-CloudBase @loginArgs
+      Invoke-CloudBase -CliArgs $loginArgs
       Write-Info "Logged in with SecretId/SecretKey from $EnvFile or environment variables."
     }
     else {
       Write-Info "No TENCENT_SECRET_ID/TENCENT_SECRET_KEY found. Starting CloudBase browser/device login."
-      Invoke-CloudBase login
+      Invoke-CloudBase -CliArgs @("login")
     }
   }
 
@@ -229,14 +349,22 @@ try {
     Write-Info "Deploy database schema: $shouldDeployDatabase"
     Write-Info "Health check: $(-not $shouldSkipHealthCheck)"
     Write-Info "API base URL for frontend: $plannedApiBaseUrl"
-    Write-Info "Function deploy command: $(Format-CliCommand @('--yes', '--config-file', '<generated-cloudbaserc>', '-e', $plannedEnvId, 'fn', 'deploy', $functionName, '--dir', 'cinemaflow-api', '--httpFn', '--path', $functionPath, '--runtime', $functionRuntime, '--force', '--json'))"
+    Write-Info "Skip function deploy: $shouldSkipFunctionDeploy"
+    if (-not $shouldSkipFunctionDeploy) {
+      $plannedFunctionDeployArgs = @('--yes', '--config-file', '<generated-cloudbaserc>', '-e', $plannedEnvId, 'fn', 'deploy', $functionName, '--dir', 'cinemaflow-api', '--httpFn', '--runtime', $functionRuntime, '--force', '--json')
+      if ($functionDeployMode) {
+        $plannedFunctionDeployArgs += @('--deployMode', $functionDeployMode)
+      }
+      Write-Info "Function deploy command: $(Format-CliCommand $plannedFunctionDeployArgs)"
+    }
+    Write-Info "Route ensure command: $(Format-CliCommand @('--yes', '-e', $plannedEnvId, 'routes', 'edit/add', '--data', (New-CloudBaseHttpRoutePayload -Path $functionPath -FunctionName $functionName), '--json'))"
     Write-Info "Hosting deploy command: $(Format-CliCommand @('hosting', 'deploy', 'dist/cinema-flow/browser', '-e', $plannedEnvId, '--json'))"
     return
   }
 
   if ($shouldCreateEnvironment -and -not $EnvId) {
     Write-Step "Creating CloudBase environment"
-    $createOutput = Invoke-CloudBaseCapture @(
+    $createOutput = Invoke-CloudBaseCapture -CliArgs @(
       "--yes",
       "env", "create",
       "--alias", $envAlias,
@@ -273,13 +401,7 @@ try {
   Write-Info "Environment ID: $EnvId"
   Write-Info "Region: $region"
   Write-Info "API base URL for frontend: $apiBaseUrl"
-  Invoke-CloudBase @("-e", $EnvId, "env", "use", $EnvId)
-
-  Write-Step "Preparing Flask HTTP function package"
-  & powershell -ExecutionPolicy Bypass -File (Join-Path $repoRoot "scripts/prepare-cloudbase-function.ps1")
-  if ($LASTEXITCODE -ne 0) {
-    throw "Backend function package preparation failed."
-  }
+  Invoke-CloudBase -CliArgs @("-e", $EnvId, "env", "use", $EnvId)
 
   $deployDir = Join-Path $repoRoot "output/deploy"
   New-Item -ItemType Directory -Force -Path $deployDir | Out-Null
@@ -307,23 +429,40 @@ try {
   ConvertTo-JsonFile -Value $cloudbaseConfig -Path $cloudbaseConfigPath
   Write-Info "Generated CloudBase config: $cloudbaseConfigPath"
 
-  Write-Step "Deploying Flask HTTP function"
-  Invoke-CloudBase @(
-    "--yes",
-    "--config-file", $cloudbaseConfigPath,
-    "-e", $EnvId,
-    "fn", "deploy", $functionName,
-    "--dir", "cinemaflow-api",
-    "--httpFn",
-    "--path", $functionPath,
-    "--runtime", $functionRuntime,
-    "--force",
-    "--json"
-  )
+  if (-not $shouldSkipFunctionDeploy) {
+    Write-Step "Preparing Flask HTTP function package"
+    & powershell -ExecutionPolicy Bypass -File (Join-Path $repoRoot "scripts/prepare-cloudbase-function.ps1")
+    if ($LASTEXITCODE -ne 0) {
+      throw "Backend function package preparation failed."
+    }
+
+    Write-Step "Deploying Flask HTTP function"
+    $functionDeployArgs = @(
+      "--yes",
+      "--config-file", $cloudbaseConfigPath,
+      "-e", $EnvId,
+      "fn", "deploy", $functionName,
+      "--dir", "cinemaflow-api",
+      "--httpFn",
+      "--runtime", $functionRuntime,
+      "--force",
+      "--json"
+    )
+    if ($functionDeployMode) {
+      $functionDeployArgs += @("--deployMode", $functionDeployMode)
+    }
+    Invoke-CloudBase -CliArgs $functionDeployArgs
+  }
+  else {
+    Write-Info "Function deployment is skipped. Existing CloudBase function will be reused."
+  }
+
+  Write-Step "Ensuring HTTP route targets the HTTP function"
+  Ensure-CloudBaseHttpRoute -EnvId $EnvId -Path $functionPath -FunctionName $functionName
 
   if ($shouldDeployDatabase) {
     Write-Step "Deploying CloudBase MySQL schema"
-    $instanceOutput = Invoke-CloudBaseCapture @("-e", $EnvId, "db", "instance", "list", "--json")
+    $instanceOutput = Invoke-CloudBaseCapture -CliArgs @("-e", $EnvId, "db", "instance", "list", "--json")
     Write-Host $instanceOutput
     if ($instanceOutput -match "\[\s*\]" -or $instanceOutput -match '"data"\s*:\s*\[\s*\]') {
       Write-Warning "No CloudBase MySQL instance was found. Enable CloudBase MySQL in the console, then rerun with -DeployDatabaseSchema."
@@ -331,7 +470,7 @@ try {
     else {
       $schemaPath = Join-Path $repoRoot "docs/database/cloudbase-mysql-schema.sql"
       $schemaSql = [System.IO.File]::ReadAllText($schemaPath)
-      Invoke-CloudBase @("-e", $EnvId, "db", "execute", "--sql", $schemaSql, "--json")
+      Invoke-CloudBase -CliArgs @("-e", $EnvId, "db", "execute", "--sql", $schemaSql, "--json")
       Write-Info "Database schema executed from $schemaPath"
     }
   }
@@ -346,7 +485,19 @@ try {
   }
 
   Write-Step "Deploying frontend to CloudBase static hosting"
-  Invoke-CloudBase @("hosting", "deploy", "dist/cinema-flow/browser", "-e", $EnvId, "--json")
+  Invoke-CloudBase -CliArgs @("hosting", "deploy", "dist/cinema-flow/browser", "-e", $EnvId, "--json")
+
+  $hostingDomain = ""
+  try {
+    $hostingDetail = Invoke-CloudBaseCapture -CliArgs @("hosting", "detail", "-e", $EnvId, "--json")
+    $hostingJson = $hostingDetail | ConvertFrom-Json
+    if ($hostingJson.data -and $hostingJson.data.cdnDomain) {
+      $hostingDomain = $hostingJson.data.cdnDomain
+    }
+  }
+  catch {
+    Write-Info "Could not read static hosting detail. Check the CloudBase console for the default domain."
+  }
 
   if (-not $shouldSkipHealthCheck) {
     Write-Step "Checking API health endpoint"
@@ -377,7 +528,12 @@ try {
   Write-Info "Environment ID: $EnvId"
   Write-Info "Backend API: $apiBaseUrl"
   Write-Info "Frontend files: dist/cinema-flow/browser"
-  Write-Info "Static hosting default domain is usually: https://$EnvId.tcloudbaseapp.com"
+  if ($hostingDomain) {
+    Write-Info "Static hosting URL: https://$hostingDomain"
+  }
+  else {
+    Write-Info "Static hosting default domain is available in CloudBase static hosting console."
+  }
   Write-Info "If Angular child routes 404 on refresh, enable SPA fallback/rewrite to /index.html in CloudBase static hosting."
 }
 finally {

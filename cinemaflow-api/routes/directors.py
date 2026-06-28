@@ -6,11 +6,13 @@ from models import directors, movies, next_director_id, save_store, snapshot_dir
 director_bp = Blueprint("directors", __name__)
 
 
+@director_bp.route("/directors", methods=["GET"])
 @director_bp.route("/api/directors", methods=["GET"])
 def get_directors():
     return jsonify(snapshot_directors())
 
 
+@director_bp.route("/directors/<int:director_id>", methods=["GET"])
 @director_bp.route("/api/directors/<int:director_id>", methods=["GET"])
 def get_director(director_id):
     director = next((item for item in directors if item["id"] == director_id), None)
@@ -19,11 +21,13 @@ def get_director(director_id):
     return jsonify(director)
 
 
+@director_bp.route("/directors/<int:director_id>/movies", methods=["GET"])
 @director_bp.route("/api/directors/<int:director_id>/movies", methods=["GET"])
 def get_director_movies(director_id):
     return jsonify([movie for movie in movies if movie.get("directorId") == director_id])
 
 
+@director_bp.route("/directors", methods=["POST"])
 @director_bp.route("/api/directors", methods=["POST"])
 def add_director():
     data = request.get_json(silent=True) or {}
@@ -48,6 +52,7 @@ def add_director():
     return jsonify(new_director), 201
 
 
+@director_bp.route("/directors/<int:director_id>", methods=["DELETE"])
 @director_bp.route("/api/directors/<int:director_id>", methods=["DELETE"])
 def delete_director(director_id):
     director = next((item for item in directors if item["id"] == director_id), None)

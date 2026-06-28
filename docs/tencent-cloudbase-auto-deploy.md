@@ -34,6 +34,7 @@ Copy-Item deploy\cloudbase.env.example deploy\cloudbase.env.local
 CLOUDBASE_ENV_ID=constantine-d3gjhwmtz0336c36a
 CLOUDBASE_REGION=ap-shanghai
 CLOUDBASE_FUNCTION_RUNTIME=Python3.10
+CLOUDBASE_FUNCTION_DEPLOY_MODE=zip
 CLOUDBASE_API_BASE_URL=
 ```
 
@@ -65,7 +66,7 @@ powershell -ExecutionPolicy Bypass -File scripts\deploy-cloudbase.ps1
 2. 登录腾讯云。
 3. 使用 CloudBase 环境 `constantine-d3gjhwmtz0336c36a`。
 4. 打包 Flask 后端依赖。
-5. 部署 `cinemaflow-api` 为 HTTP 云函数，并绑定 `/api`。
+5. 以 ZIP 直传方式部署 `cinemaflow-api` 为 HTTP 云函数，并确保 `/api` 路由指向该函数。
 6. 将 API 地址写入 Angular 的 `runtime-config.js`。
 7. 构建 Angular 前端。
 8. 上传 `dist/cinema-flow/browser` 到 CloudBase 静态网站托管。

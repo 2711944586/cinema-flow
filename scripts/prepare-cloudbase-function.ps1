@@ -29,6 +29,47 @@ if (Test-Path $thirdParty) {
   -r (Join-Path $apiDir "requirements.txt") `
   -t $thirdParty
 
+$prunableDirectories = Get-ChildItem -LiteralPath $thirdParty -Recurse -Force -Directory |
+  Where-Object {
+    $_.Name -eq "__pycache__" -or
+    $_.Name -eq "tests" -or
+    $_.Name -eq "test"
+  } |
+  Sort-Object FullName -Descending |
+  Select-Object -ExpandProperty FullName
+
+foreach ($directory in $prunableDirectories) {
+  if (Test-Path -LiteralPath $directory) {
+    Remove-Item -LiteralPath $directory -Recurse -Force
+  }
+}
+
+$prunableFiles = Get-ChildItem -LiteralPath $thirdParty -Recurse -Force -File |
+  Where-Object { $_.Extension -eq ".pyc" -or $_.Extension -eq ".pyo" } |
+  Select-Object -ExpandProperty FullName
+
+foreach ($file in $prunableFiles) {
+  if (Test-Path -LiteralPath $file) {
+    Remove-Item -LiteralPath $file -Force
+  }
+}
+
+$binDir = Join-Path $thirdParty "bin"
+if (Test-Path -LiteralPath $binDir) {
+  Remove-Item -LiteralPath $binDir -Recurse -Force
+}
+
+$apiCaches = Get-ChildItem -LiteralPath $apiDir -Recurse -Force -Directory |
+  Where-Object { $_.Name -eq "__pycache__" } |
+  Sort-Object FullName -Descending |
+  Select-Object -ExpandProperty FullName
+
+foreach ($directory in $apiCaches) {
+  if (Test-Path -LiteralPath $directory) {
+    Remove-Item -LiteralPath $directory -Recurse -Force
+  }
+}
+
 if (Test-Path $zipPath) {
   Remove-Item -LiteralPath $zipPath -Force
 }
