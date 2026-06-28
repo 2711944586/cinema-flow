@@ -138,9 +138,9 @@ flowchart LR
   end
 
   subgraph Backend[Flask REST API 后端]
-    Health[/api/health]
-    MovieApi[/api/movies]
-    DirectorApi[/api/directors]
+    Health["/api/health"]
+    MovieApi["/api/movies"]
+    DirectorApi["/api/directors"]
     Cors[CORS Config]
   end
 
