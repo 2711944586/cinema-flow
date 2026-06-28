@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Movie } from '../models/movie';
+import { MOCK_MOVIES } from '../data/mock-movies';
 
 export interface RecentHistoryEntry {
   movieId: number;
@@ -74,28 +75,68 @@ export class RecentHistoryService {
 
   private loadEntries(): RecentHistoryEntry[] {
     if (typeof localStorage === 'undefined') {
-      return [];
+      return this.buildInitialEntries();
     }
 
     try {
       const rawValue = localStorage.getItem(this.storageKey);
       if (!rawValue) {
-        return [];
+        return this.buildInitialEntries();
       }
 
       const parsedValue = JSON.parse(rawValue);
       if (!Array.isArray(parsedValue)) {
-        return [];
+        return this.buildInitialEntries();
       }
 
-      return parsedValue
+      const storedEntries = parsedValue
         .map(entry => this.normalizeEntry(entry))
         .filter((entry): entry is RecentHistoryEntry => entry !== null)
         .sort((first, second) => second.visitedAt.getTime() - first.visitedAt.getTime())
         .slice(0, this.maxEntries);
+
+      return storedEntries.length > 0 ? storedEntries : this.buildInitialEntries();
     } catch {
-      return [];
+      return this.buildInitialEntries();
     }
+  }
+
+  private buildInitialEntries(): RecentHistoryEntry[] {
+    const now = new Date();
+    const hoursAgo = (hours: number): Date => {
+      const date = new Date(now);
+      date.setHours(now.getHours() - hours, 0, 0, 0);
+      return date;
+    };
+    const recentItems: Array<{ movieId: number; section: 'info' | 'cast'; visitedAt: Date }> = [
+      { movieId: 13, section: 'info', visitedAt: hoursAgo(3) },
+      { movieId: 6, section: 'cast', visitedAt: hoursAgo(8) },
+      { movieId: 12, section: 'info', visitedAt: hoursAgo(18) },
+      { movieId: 7, section: 'info', visitedAt: hoursAgo(30) },
+      { movieId: 10, section: 'cast', visitedAt: hoursAgo(44) },
+      { movieId: 41, section: 'info', visitedAt: hoursAgo(60) }
+    ];
+    const movieMap = new Map(MOCK_MOVIES.map(movie => [movie.id, movie]));
+
+    return recentItems.reduce<RecentHistoryEntry[]>((entries, item) => {
+      const movie = movieMap.get(item.movieId);
+      if (!movie) {
+        return entries;
+      }
+
+      entries.push({
+        movieId: movie.id,
+        title: movie.title,
+        director: movie.director,
+        posterUrl: movie.posterUrl,
+        rating: movie.rating,
+        releaseYear: movie.releaseDate.getFullYear(),
+        section: item.section,
+        visitedAt: item.visitedAt
+      });
+
+      return entries;
+    }, []);
   }
 
   private persistEntries(entries: RecentHistoryEntry[]): void {

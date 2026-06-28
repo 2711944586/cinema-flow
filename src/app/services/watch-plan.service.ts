@@ -209,26 +209,124 @@ export class WatchPlanService {
 
   private loadPlans(): WatchPlanEntry[] {
     if (typeof localStorage === 'undefined') {
-      return [];
+      return this.buildInitialPlans();
     }
 
     try {
       const rawValue = localStorage.getItem(this.storageKey);
       if (!rawValue) {
-        return [];
+        return this.buildInitialPlans();
       }
 
       const parsedValue = JSON.parse(rawValue);
       if (!Array.isArray(parsedValue)) {
-        return [];
+        return this.buildInitialPlans();
       }
 
-      return this.sortEntries(parsedValue
+      const storedPlans = this.sortEntries(parsedValue
         .map(entry => this.normalizeStoredEntry(entry))
         .filter((entry): entry is WatchPlanEntry => entry !== null));
+
+      return storedPlans.length > 0 ? storedPlans : this.buildInitialPlans();
     } catch {
-      return [];
+      return this.buildInitialPlans();
     }
+  }
+
+  private buildInitialPlans(): WatchPlanEntry[] {
+    const now = new Date();
+    const daysFromNow = (days: number, hour = 20): Date => {
+      const date = new Date(now);
+      date.setDate(now.getDate() + days);
+      date.setHours(hour, 0, 0, 0);
+      return date;
+    };
+    const daysAgo = (days: number, hour = 22): Date => {
+      const date = new Date(now);
+      date.setDate(now.getDate() - days);
+      date.setHours(hour, 0, 0, 0);
+      return date;
+    };
+
+    return this.sortEntries([
+      this.normalizeEntry({
+        id: 1,
+        movieId: 6,
+        status: 'scheduled',
+        priority: 'high',
+        plannedFor: daysFromNow(2, 20),
+        contextTag: '周末夜场',
+        note: '承接第一部的世界观，适合留出完整晚上看完并补一遍幕后资料。',
+        createdAt: daysAgo(12, 21),
+        updatedAt: daysAgo(1, 20)
+      }),
+      this.normalizeEntry({
+        id: 2,
+        movieId: 8,
+        status: 'queued',
+        priority: 'high',
+        plannedFor: null,
+        contextTag: '经典补片',
+        note: '和黑帮类型片、家族叙事放在一起看，重点关注人物调度和权力关系。',
+        createdAt: daysAgo(10, 19),
+        updatedAt: daysAgo(3, 22)
+      }),
+      this.normalizeEntry({
+        id: 3,
+        movieId: 21,
+        status: 'queued',
+        priority: 'medium',
+        plannedFor: daysFromNow(6, 19),
+        contextTag: '音乐主题',
+        note: '适合安静环境观看，准备和配乐片单一起整理观后感。',
+        createdAt: daysAgo(9, 18),
+        updatedAt: daysAgo(4, 21)
+      }),
+      this.normalizeEntry({
+        id: 4,
+        movieId: 30,
+        status: 'paused',
+        priority: 'medium',
+        plannedFor: null,
+        contextTag: '家庭观影',
+        note: '片长较长，等有完整下午再安排，适合和家人一起看。',
+        createdAt: daysAgo(8, 20),
+        updatedAt: daysAgo(2, 23)
+      }),
+      this.normalizeEntry({
+        id: 5,
+        movieId: 36,
+        status: 'queued',
+        priority: 'low',
+        plannedFor: daysFromNow(12, 21),
+        contextTag: '作者电影',
+        note: '节奏需要耐心，放到不赶时间的晚上。',
+        createdAt: daysAgo(6, 22),
+        updatedAt: daysAgo(5, 22)
+      }),
+      this.normalizeEntry({
+        id: 6,
+        movieId: 44,
+        status: 'scheduled',
+        priority: 'medium',
+        plannedFor: daysFromNow(9, 19),
+        contextTag: '轻松放映',
+        note: '视效和流行文化彩蛋多，适合放在复习间隙做调剂。',
+        createdAt: daysAgo(5, 20),
+        updatedAt: daysAgo(1, 18)
+      }),
+      this.normalizeEntry({
+        id: 7,
+        movieId: 7,
+        status: 'completed',
+        priority: 'high',
+        plannedFor: daysAgo(14, 20),
+        contextTag: '国产科幻',
+        note: '已经完成，后续可以把工业化叙事和视效调度写进观影记录。',
+        createdAt: daysAgo(20, 18),
+        updatedAt: daysAgo(14, 23)
+      })
+    ]);
   }
 
   private commitEntries(entries: WatchPlanEntry[]): void {

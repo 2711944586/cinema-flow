@@ -29,6 +29,7 @@ export class MovieCompareComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.sub = this.movieService.movies$.subscribe(movies => {
       this.movies = movies;
+      this.ensureDefaultSelection();
     });
   }
 
@@ -99,5 +100,14 @@ export class MovieCompareComponent implements OnInit, OnDestroy {
 
   onImageError(event: Event, movie: Movie): void {
     applyMovieImageFallback(event, movie);
+  }
+
+  private ensureDefaultSelection(): void {
+    if (this.movieA || this.movieB) {
+      return;
+    }
+
+    this.movieA = this.movies.find(movie => movie.id === 1) ?? this.movies[0];
+    this.movieB = this.movies.find(movie => movie.id === 6) ?? this.movies.find(movie => movie.id !== this.movieA?.id);
   }
 }

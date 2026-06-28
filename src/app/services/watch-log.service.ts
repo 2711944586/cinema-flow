@@ -98,26 +98,136 @@ export class WatchLogService {
 
   private loadLogs(): WatchLogEntry[] {
     if (typeof localStorage === 'undefined') {
-      return [];
+      return this.buildInitialLogs();
     }
 
     try {
       const rawValue = localStorage.getItem(this.storageKey);
       if (!rawValue) {
-        return [];
+        return this.buildInitialLogs();
       }
 
       const parsedValue = JSON.parse(rawValue);
       if (!Array.isArray(parsedValue)) {
-        return [];
+        return this.buildInitialLogs();
       }
 
-      return this.sortEntries(parsedValue
+      const storedLogs = this.sortEntries(parsedValue
         .map(entry => this.normalizeStoredEntry(entry))
         .filter((entry): entry is WatchLogEntry => entry !== null));
+
+      return storedLogs.length > 0 ? storedLogs : this.buildInitialLogs();
     } catch {
-      return [];
+      return this.buildInitialLogs();
     }
+  }
+
+  private buildInitialLogs(): WatchLogEntry[] {
+    const now = new Date();
+    const daysAgo = (days: number, hour = 21): Date => {
+      const date = new Date(now);
+      date.setDate(now.getDate() - days);
+      date.setHours(hour, 0, 0, 0);
+      return date;
+    };
+
+    return this.sortEntries([
+      this.normalizeEntry({
+        id: 1,
+        movieId: 13,
+        watchedAt: daysAgo(2, 20),
+        location: '家中客厅',
+        companion: '一个人',
+        moodTags: ['沉浸', '历史', '压迫感'],
+        sessionRating: 8.9,
+        note: '剪辑密度很高，庭审和实验室两条线互相挤压，最后的余波比爆炸本身更有力量。',
+        isRewatch: false,
+        autoMarkedWatched: false,
+        autoAssignedUserRating: false,
+        completedPlanSnapshot: null,
+        createdAt: daysAgo(2, 23)
+      }),
+      this.normalizeEntry({
+        id: 2,
+        movieId: 12,
+        watchedAt: daysAgo(6, 21),
+        location: '周末夜场',
+        companion: '朋友',
+        moodTags: ['惊讶', '黑色幽默', '社会寓言'],
+        sessionRating: 9.0,
+        note: '类型切换非常顺滑，前半段像骗局喜剧，后半段突然变成阶层寓言，空间调度尤其值得复盘。',
+        isRewatch: false,
+        autoMarkedWatched: false,
+        autoAssignedUserRating: false,
+        completedPlanSnapshot: null,
+        createdAt: daysAgo(6, 23)
+      }),
+      this.normalizeEntry({
+        id: 3,
+        movieId: 7,
+        watchedAt: daysAgo(14, 20),
+        location: '资料馆放映厅',
+        companion: '同学',
+        moodTags: ['震撼', '工业感', '热血'],
+        sessionRating: 8.4,
+        note: '宏观危机和具体人物命运之间衔接得更成熟，太空电梯段落的视听完成度很突出。',
+        isRewatch: false,
+        autoMarkedWatched: true,
+        autoAssignedUserRating: true,
+        completedPlanSnapshot: {
+          id: 7,
+          status: 'scheduled',
+          plannedFor: daysAgo(14, 20),
+          updatedAt: daysAgo(15, 19)
+        },
+        createdAt: daysAgo(14, 23)
+      }),
+      this.normalizeEntry({
+        id: 4,
+        movieId: 10,
+        watchedAt: daysAgo(24, 19),
+        location: '宿舍投屏',
+        companion: '室友',
+        moodTags: ['浪漫', '治愈', '夏天'],
+        sessionRating: 8.6,
+        note: '情绪推进很快，音乐进入的时机特别准，适合放在动画和青春片交叉的片单里。',
+        isRewatch: true,
+        autoMarkedWatched: false,
+        autoAssignedUserRating: false,
+        completedPlanSnapshot: null,
+        createdAt: daysAgo(24, 22)
+      }),
+      this.normalizeEntry({
+        id: 5,
+        movieId: 31,
+        watchedAt: daysAgo(36, 21),
+        location: '家中书房',
+        companion: '一个人',
+        moodTags: ['锋利', '荒诞', '情绪浓度'],
+        sessionRating: 8.7,
+        note: '台词像连续的刀口，但真正留下来的是人物身上那种无法排解的痛感。',
+        isRewatch: false,
+        autoMarkedWatched: false,
+        autoAssignedUserRating: false,
+        completedPlanSnapshot: null,
+        createdAt: daysAgo(36, 23)
+      }),
+      this.normalizeEntry({
+        id: 6,
+        movieId: 41,
+        watchedAt: daysAgo(49, 20),
+        location: '晚自习后',
+        companion: '一个人',
+        moodTags: ['紧张', '专注', '纪录片'],
+        sessionRating: 8.5,
+        note: '明知道结果，手心还是会出汗。纪录片的临场感和人物关系铺垫都很扎实。',
+        isRewatch: false,
+        autoMarkedWatched: false,
+        autoAssignedUserRating: false,
+        completedPlanSnapshot: null,
+        createdAt: daysAgo(49, 22)
+      })
+    ]);
   }
 
   private commitEntries(entries: WatchLogEntry[]): void {

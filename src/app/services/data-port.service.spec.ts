@@ -58,6 +58,11 @@ describe('DataPortService', () => {
 
   it('emits reactive summary counts for backup data', async () => {
     const movie = movieService.getMovies()[0];
+    const initialRecentHistoryCount = recentHistoryService.getEntries().length;
+    const initialReviewCount = reviewStoreService.getReviews().length;
+    const initialWatchPlanCount = watchPlanService.getPlans().length;
+    const initialWatchLogCount = watchLogService.getLogs().length;
+    const initialPresetCount = smartPicksService.getPresets().length;
 
     recentHistoryService.recordVisit(movie, 'info');
     reviewStoreService.addReview(movie, { rating: 9, content: '测试影评', author: '单测用户' });
@@ -77,15 +82,18 @@ describe('DataPortService', () => {
 
     const summary = await firstValueFrom(dataPortService.summary$);
 
-    expect(summary.recentHistoryCount).toBe(1);
-    expect(summary.reviewCount).toBeGreaterThan(0);
-    expect(summary.watchPlanCount).toBe(1);
-    expect(summary.watchLogCount).toBe(1);
-    expect(summary.viewingPresetCount).toBeGreaterThan(0);
+    expect(summary.recentHistoryCount).toBe(initialRecentHistoryCount + 1);
+    expect(summary.reviewCount).toBe(initialReviewCount + 1);
+    expect(summary.watchPlanCount).toBe(initialWatchPlanCount + 1);
+    expect(summary.watchLogCount).toBe(initialWatchLogCount + 1);
+    expect(summary.viewingPresetCount).toBe(initialPresetCount + 1);
   });
 
   it('creates and parses backups with plans, logs and presets included', () => {
     const movie = movieService.getMovies()[0];
+    const initialWatchPlanCount = watchPlanService.getPlans().length;
+    const initialWatchLogCount = watchLogService.getLogs().length;
+    const initialPresetCount = smartPicksService.getPresets().length;
 
     watchPlanService.savePlan({ movieId: movie.id, status: 'scheduled' });
     watchLogService.addLog({ movieId: movie.id, watchedAt: new Date('2025-02-01T20:00:00') });
@@ -104,14 +112,14 @@ describe('DataPortService', () => {
     const backup = dataPortService.createBackup();
     const parsed = dataPortService.parseBackup(JSON.stringify(backup));
 
-    expect(backup.meta.watchPlanCount).toBe(1);
-    expect(backup.meta.watchLogCount).toBe(1);
-    expect(backup.meta.viewingPresetCount).toBeGreaterThan(0);
+    expect(backup.meta.watchPlanCount).toBe(initialWatchPlanCount + 1);
+    expect(backup.meta.watchLogCount).toBe(initialWatchLogCount + 1);
+    expect(backup.meta.viewingPresetCount).toBe(initialPresetCount + 1);
     expect(parsed).toEqual(jasmine.objectContaining({ ok: true }));
     if (parsed.ok) {
-      expect(parsed.payload.watchPlans.length).toBe(1);
-      expect(parsed.payload.watchLogs.length).toBe(1);
-      expect(parsed.payload.viewingPresets.length).toBeGreaterThan(0);
+      expect(parsed.payload.watchPlans.length).toBe(initialWatchPlanCount + 1);
+      expect(parsed.payload.watchLogs.length).toBe(initialWatchLogCount + 1);
+      expect(parsed.payload.viewingPresets.length).toBe(initialPresetCount + 1);
     }
   });
 
@@ -144,8 +152,8 @@ describe('DataPortService', () => {
 
     dataPortService.restoreBackup(backup);
 
-    expect(watchPlanService.getPlans().length).toBe(1);
-    expect(watchLogService.getLogs().length).toBe(1);
+    expect(watchPlanService.getPlans().length).toBe(backup.watchPlans.length);
+    expect(watchLogService.getLogs().length).toBe(backup.watchLogs.length);
     expect(smartPicksService.getPresets().length).toBeGreaterThan(0);
   });
 });
