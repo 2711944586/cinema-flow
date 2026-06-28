@@ -6,8 +6,51 @@
 
 ---
 
+## 0. 云端部署与在线访问（重点展示）
+
+CinemaFlow 已完成腾讯云 CloudBase 云端部署，系统不只是本地课程项目，而是已经具备可公开访问、前后端分离运行和 API 健康检查能力的在线应用。评审或演示时可以直接打开公网地址查看完整系统。
+
+### 0.1 在线访问地址
+
+| 项目 | 地址 / 信息 |
+| --- | --- |
+| 前端公网地址 | <https://constantine-d3gjhwmtz0336c36a-1448158108.tcloudbaseapp.com> |
+| 后端 API 根地址 | <https://constantine-d3gjhwmtz0336c36a.service.tcloudbase.com/api> |
+| API 健康检查 | <https://constantine-d3gjhwmtz0336c36a.service.tcloudbase.com/api/health> |
+| 腾讯云环境 ID | `constantine-d3gjhwmtz0336c36a` |
+| 部署区域 | 腾讯云 CloudBase 上海地域 |
+| 部署状态 | 前端静态托管可访问，后端健康检查返回 `200` |
+
+### 0.2 云端部署形态
+
+```mermaid
+flowchart LR
+  User[用户浏览器] --> Hosting[CloudBase 静态托管]
+  Hosting --> Angular[Angular SPA 构建产物]
+  Angular --> Config[runtime-config.js]
+  Config --> ApiBase[CloudBase API Base URL]
+  Angular -->|HTTP JSON| Function[CloudBase HTTP Function]
+  Function --> Flask[Flask REST API]
+  Flask --> Store[电影与导演数据存储]
+```
+
+云端部署采用前后端分离方式：Angular 构建后的静态文件部署到腾讯云 CloudBase 静态托管，浏览器直接加载 SPA 页面；前端通过 `runtime-config.js` 获取云端 API 根地址，再以 HTTP JSON 请求访问 Flask REST API。后端运行在 CloudBase HTTP Function 中，并通过 `/api` 路由对外提供电影、导演和健康检查接口。
+
+### 0.3 云端部署价值
+
+| 维度 | 体现 |
+| --- | --- |
+| 可访问性 | 系统可以通过公网 URL 直接演示，不依赖本地开发环境 |
+| 前后端分离 | 前端静态托管与后端 API 独立部署，通过运行时配置连接 |
+| 可验证性 | `/api/health` 可直接检查后端服务状态 |
+| 可维护性 | 前端更新可单独重新部署，后端函数可独立演进 |
+| 项目完整度 | 覆盖开发、构建、部署、访问、健康检查的完整闭环 |
+
+---
+
 ## 目录
 
+0. 云端部署与在线访问（重点展示）
 1. 系统简介
 2. 系统功能总览
 3. 架构设计说明

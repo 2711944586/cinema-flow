@@ -1,207 +1,29 @@
-erDiagram
-  USERS {
-    integer id PK
-    text username UK
-    text password_hash
-    text display_name
-    text role
-    text avatar_url
-    text created_at
-    text updated_at
-  }
+flowchart LR
+  subgraph Frontend[Angular SPA 前端]
+    Router[Angular Router]
+    Pages[Pages / Components]
+    Services[HttpClient Services]
+    State[RxJS State Facade]
+    Storage[LocalStorage Backup]
+  end
 
-  DIRECTORS {
-    integer id PK
-    text name UK
-    text nationality
-    integer birth_year
-    text bio
-    text portrait_url
-    text active_years
-    text signature_style
-    text awards_json
-    text known_for_json
-    text created_at
-    text updated_at
-  }
+  subgraph Backend[Flask REST API 后端]
+    Health["/api/health"]
+    MovieApi["/api/movies"]
+    DirectorApi["/api/directors"]
+    Cors[CORS Config]
+  end
 
-  MOVIES {
-    integer id PK
-    text title
-    text original_title
-    integer director_id FK
-    text primary_genre
-    real rating
-    integer release_year
-    text release_date
-    text status
-    text poster_url
-    text backdrop_url
-    text trailer_url
-    integer duration
-    text description
-    text language
-    text country
-    real box_office
-    text created_at
-    text updated_at
-  }
+  subgraph Data[数据层]
+    JsonStore[JSON 演示持久层]
+    SQL[(关系型数据库设计)]
+  end
 
-  GENRES {
-    integer id PK
-    text name UK
-    text description
-    integer sort_order
-  }
-
-  MOVIE_GENRES {
-    integer movie_id PK,FK
-    integer genre_id PK,FK
-  }
-
-  PEOPLE {
-    integer id PK
-    text name UK
-    text original_name
-    text nationality
-    integer birth_year
-    text portrait_url
-    text bio
-    text created_at
-    text updated_at
-  }
-
-  MOVIE_PEOPLE {
-    integer id PK
-    integer movie_id FK
-    integer person_id FK
-    text role_type
-    text character_name
-    integer sort_order
-  }
-
-  MEDIA_ASSETS {
-    integer id PK
-    text entity_type
-    integer entity_id
-    text asset_type
-    text url
-    text provider
-    integer width
-    integer height
-    integer is_primary
-    text checked_at
-    text created_at
-  }
-
-  USER_MOVIE_STATES {
-    integer user_id PK,FK
-    integer movie_id PK,FK
-    integer is_watched
-    integer is_favorite
-    real user_rating
-    text user_notes
-    integer watch_count
-    text last_watched_at
-    text created_at
-    text updated_at
-  }
-
-  REVIEWS {
-    integer id PK
-    integer movie_id FK
-    integer user_id FK
-    text author
-    real rating
-    text title
-    text content
-    integer likes
-    text created_at
-    text updated_at
-  }
-
-  WATCH_PLANS {
-    integer id PK
-    integer movie_id FK
-    integer user_id FK
-    text priority
-    text status
-    text planned_date
-    text scene
-    text note
-    text created_at
-    text updated_at
-  }
-
-  WATCH_LOGS {
-    integer id PK
-    integer movie_id FK
-    integer user_id FK
-    text watched_at
-    real session_rating
-    text location
-    text companion
-    text note
-    text created_at
-    text updated_at
-  }
-
-  WATCH_LOG_MOODS {
-    integer watch_log_id PK,FK
-    text mood_tag PK
-  }
-
-  RECENT_HISTORY {
-    integer id PK
-    integer user_id FK
-    integer movie_id FK
-    text viewed_at
-    text source_route
-  }
-
-  SMART_PICK_PRESETS {
-    integer id PK
-    integer user_id FK
-    text name
-    integer max_duration
-    real min_rating
-    text genres_json
-    text language
-    integer include_watched
-    integer prefer_favorites
-    text created_at
-    text updated_at
-  }
-
-  AUDIT_LOGS {
-    integer id PK
-    integer user_id FK
-    text action
-    text entity_type
-    integer entity_id
-    text before_json
-    text after_json
-    text created_at
-  }
-
-  DIRECTORS ||--o{ MOVIES : directs
-  MOVIES ||--o{ MOVIE_GENRES : has
-  GENRES ||--o{ MOVIE_GENRES : classifies
-  MOVIES ||--o{ MOVIE_PEOPLE : includes
-  PEOPLE ||--o{ MOVIE_PEOPLE : performs
-  MOVIES ||--o{ MEDIA_ASSETS : owns
-  DIRECTORS ||--o{ MEDIA_ASSETS : owns
-  PEOPLE ||--o{ MEDIA_ASSETS : owns
-  USERS ||--o{ USER_MOVIE_STATES : marks
-  MOVIES ||--o{ USER_MOVIE_STATES : marked_by
-  USERS ||--o{ REVIEWS : writes
-  MOVIES ||--o{ REVIEWS : receives
-  USERS ||--o{ WATCH_PLANS : plans
-  MOVIES ||--o{ WATCH_PLANS : planned
-  USERS ||--o{ WATCH_LOGS : records
-  MOVIES ||--o{ WATCH_LOGS : watched
-  WATCH_LOGS ||--o{ WATCH_LOG_MOODS : tagged
-  USERS ||--o{ RECENT_HISTORY : browses
-  MOVIES ||--o{ RECENT_HISTORY : viewed
-  USERS ||--o{ SMART_PICK_PRESETS : saves
-  USERS ||--o{ AUDIT_LOGS : operates
+  Browser[浏览器] --> Router
+  Router --> Pages
+  Pages --> Services
+  Pages --> State
+  Services -->|HTTP JSON| Backend
+  Backend --> JsonStore
+  Backend -.按 schema 演进.-> SQL
+  State --> Storage

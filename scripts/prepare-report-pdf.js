@@ -8,6 +8,7 @@ const diagramDir = path.join(outputDir, 'diagrams');
 const outputMarkdownPath = path.join(outputDir, 'CinemaFlow-report-pdf.md');
 
 const diagramTitles = [
+  '云端部署形态',
   '核心业务链路',
   'Flask 单体 B/S 架构',
   '前后端分离架构',
@@ -23,13 +24,14 @@ fs.mkdirSync(diagramDir, { recursive: true });
 let markdown = fs.readFileSync(sourcePath, 'utf8');
 
 markdown = markdown.replace(
-  /^# CinemaFlow 电影库管理系统汇报[\s\S]*?## 1\. 系统简介/,
-  '## 1. 系统简介'
+  /^# CinemaFlow 电影库管理系统汇报[\s\S]*?## 0\. 云端部署与在线访问（重点展示）/,
+  '## 0. 云端部署与在线访问（重点展示）'
 );
 
 markdown = markdown.replace(/^(#{2,6})(\s+)/gm, (_, hashes, gap) => `${hashes.slice(1)}${gap}`);
 markdown = markdown.replace(/^(#{1,5})\s+\d+(?:\.\d+)*\.?\s+/gm, '$1 ');
 markdown = markdown.replace(/\n## 完整 ER 图\s*\n+```mermaid/g, '\n```mermaid');
+markdown = `\\clearpage\n\n${markdown}`;
 
 let diagramIndex = 0;
 markdown = markdown.replace(/```mermaid\s*([\s\S]*?)```/g, (_, code) => {
