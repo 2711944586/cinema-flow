@@ -1,6 +1,7 @@
 .director-list-page {
   display: grid;
   gap: 18px;
+  container-type: inline-size;
 }
 
 .director-hero,
@@ -26,9 +27,11 @@
     url("https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1800&q=80") center/cover;
 
   h1 {
-    margin: 0;
+    margin: 10px 0 0;
     font-family: var(--cf-font-display);
     font-size: clamp(2.3rem, 5vw, 4.8rem);
+    line-height: 0.96;
+    white-space: nowrap;
   }
 
   p {
@@ -40,9 +43,11 @@
 }
 
 .page-kicker {
+  display: block;
   color: var(--cf-gold);
   font-size: 0.78rem;
   font-weight: 700;
+  line-height: 1.2;
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -192,7 +197,6 @@
 
 @media (max-width: 860px) {
   .director-hero {
-    grid-template-columns: 1fr;
     padding: 24px;
   }
 
@@ -202,5 +206,21 @@
 
   .director-toolbar {
     flex-direction: column;
+  }
+}
+
+@container (max-width: 920px) {
+  .director-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@container (max-width: 540px) {
+  .hero-metrics {
+    grid-template-columns: 1fr;
   }
 }
