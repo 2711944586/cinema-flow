@@ -26,14 +26,14 @@ describe('MovieService', () => {
               director: 'Jane Doe',
               actors: 'Actor A, Actor B',
               plot: 'Poster merge target',
-              posterUrl: 'https://example.com/expansion-test.jpg'
+              posterUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Clapperboard_Icon_-_nospace.png/500px-Clapperboard_Icon_-_nospace.png'
             },
             {
-              title: 'Quiet Orbit',
-              year: '2024',
+              title: 'Pan\'s Labyrinth',
+              year: '2006',
               runtime: '95',
-              genres: ['Science Fiction'],
-              director: 'Alex Ray',
+              genres: ['Fantasy'],
+              director: 'Guillermo del Toro',
               actors: 'Actor C, Actor D',
               plot: 'Valid catalog entry',
               posterUrl: ''
@@ -76,23 +76,23 @@ describe('MovieService', () => {
 
   it('merges vetted expanded catalog results and strips generated placeholders before persisting', async () => {
     const movies = await firstValueFrom(
-      movieService.movies$.pipe(filter(items => items.some(movie => movie.title === 'Quiet Orbit')))
+      movieService.movies$.pipe(filter(items => items.some(movie => movie.title === 'Pan\'s Labyrinth')))
     );
 
     expect(movies.length).toBe(46);
 
     const mergedMovie = movies.find(movie => movie.title === 'Expansion Test');
-    const quietOrbitMovie = movies.find(movie => movie.title === 'Quiet Orbit');
+    const panMovie = movies.find(movie => movie.title === 'Pan\'s Labyrinth');
     const futureMovie = movies.find(movie => movie.title === 'Future Mirage');
     const anonymousMovie = movies.find(movie => movie.title === 'Anonymous Drift');
     const persistedMovies = JSON.parse(localStorage.getItem('cinemaflow.movies.v4') ?? '[]') as Array<{ title: string; posterUrl: string; backdropUrl: string }>;
-    const persistedQuietOrbitMovie = persistedMovies.find(movie => movie.title === 'Quiet Orbit');
+    const persistedPanMovie = persistedMovies.find(movie => movie.title === 'Pan\'s Labyrinth');
 
-    expect(mergedMovie?.posterUrl).toBe('https://example.com/expansion-test.jpg');
-    expect(quietOrbitMovie).toBeDefined();
+    expect(mergedMovie?.posterUrl).toBe('https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Clapperboard_Icon_-_nospace.png/500px-Clapperboard_Icon_-_nospace.png');
+    expect(panMovie).toBeDefined();
     expect(futureMovie).toBeUndefined();
     expect(anonymousMovie).toBeUndefined();
-    expect(persistedQuietOrbitMovie?.posterUrl).toContain('https://picsum.photos/seed/');
-    expect(persistedQuietOrbitMovie?.backdropUrl).toContain('https://picsum.photos/seed/');
+    expect(persistedPanMovie?.posterUrl).toContain('upload.wikimedia.org');
+    expect(persistedPanMovie?.backdropUrl).toContain('upload.wikimedia.org');
   });
 });

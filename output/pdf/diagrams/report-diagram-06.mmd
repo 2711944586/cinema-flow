@@ -1,0 +1,88 @@
+erDiagram
+  USERS {
+    integer id PK
+    text username UK
+    text display_name
+    text role
+  }
+
+  MOVIES {
+    integer id PK
+    text title
+    real rating
+    integer release_year
+  }
+
+  USER_MOVIE_STATES {
+    integer user_id PK,FK
+    integer movie_id PK,FK
+    integer is_watched
+    integer is_favorite
+    real user_rating
+    text user_notes
+    integer watch_count
+  }
+
+  REVIEWS {
+    integer id PK
+    integer movie_id FK
+    integer user_id FK
+    text author
+    real rating
+    text content
+    integer likes
+  }
+
+  WATCH_PLANS {
+    integer id PK
+    integer movie_id FK
+    integer user_id FK
+    text priority
+    text status
+    text planned_date
+    text scene
+  }
+
+  WATCH_LOGS {
+    integer id PK
+    integer movie_id FK
+    integer user_id FK
+    text watched_at
+    real session_rating
+    text location
+    text companion
+  }
+
+  WATCH_LOG_MOODS {
+    integer watch_log_id PK,FK
+    text mood_tag PK
+  }
+
+  RECENT_HISTORY {
+    integer id PK
+    integer user_id FK
+    integer movie_id FK
+    text viewed_at
+  }
+
+  SMART_PICK_PRESETS {
+    integer id PK
+    integer user_id FK
+    text name
+    integer max_duration
+    real min_rating
+    text genres_json
+  }
+
+  USERS ||--o{ USER_MOVIE_STATES : marks
+  MOVIES ||--o{ USER_MOVIE_STATES : marked_by
+  USERS ||--o{ REVIEWS : writes
+  MOVIES ||--o{ REVIEWS : receives
+  USERS ||--o{ WATCH_PLANS : plans
+  MOVIES ||--o{ WATCH_PLANS : planned
+  USERS ||--o{ WATCH_LOGS : records
+  MOVIES ||--o{ WATCH_LOGS : watched
+  WATCH_LOGS ||--o{ WATCH_LOG_MOODS : tagged
+  USERS ||--o{ RECENT_HISTORY : browses
+  MOVIES ||--o{ RECENT_HISTORY : viewed
+  USERS ||--o{ SMART_PICK_PRESETS : saves

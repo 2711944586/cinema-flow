@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { combineLatest } from 'rxjs';
 import { map, shareReplay, switchMap } from 'rxjs/operators';
+import { GENERIC_DIRECTOR_PORTRAIT_URL } from '../../config/director-media';
 import { Movie } from '../../models/movie';
 import { DirectorService } from '../../services/director.service';
 import { applyMovieImageFallback } from '../../utils/movie-media';
@@ -63,5 +64,15 @@ export class DirectorDetailPageComponent {
 
   onImageError(event: Event, movie: Movie): void {
     applyMovieImageFallback(event, movie);
+  }
+
+  onPortraitError(event: Event): void {
+    const image = event.target as HTMLImageElement;
+    if (image.dataset['fallbackApplied'] === 'true') {
+      return;
+    }
+
+    image.dataset['fallbackApplied'] = 'true';
+    image.src = GENERIC_DIRECTOR_PORTRAIT_URL;
   }
 }

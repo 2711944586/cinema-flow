@@ -1,4 +1,5 @@
 import { Movie } from '../models/movie';
+import { buildMovieMediaOverrideKey, MOVIE_MEDIA_OVERRIDES } from '../data/movie-media-overrides';
 
 type MovieVisualSeed = Pick<Movie, 'title' | 'director' | 'releaseDate' | 'genres'> &
   Partial<Pick<Movie, 'posterUrl' | 'backdropUrl' | 'language'>>;
@@ -26,6 +27,8 @@ const WIKIMEDIA_BACKDROP_DISPLAY_WIDTH = 1920;
 
 const REMOTE_IMAGE_EXTENSION = /\.(avif|gif|jpe?g|png|webp)$/i;
 const REMOTE_FALLBACK_HOST = 'picsum.photos';
+const GENERIC_POSTER_URL = 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Clapperboard_Icon_-_nospace.png/500px-Clapperboard_Icon_-_nospace.png';
+const GENERIC_BACKDROP_URL = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Bell_%26_Howell_%22Director_Series%22_Model_414_-_414p_8mm_film_camera_-_%22Zapruder_Camera%22_02.jpg/1280px-Bell_%26_Howell_%22Director_Series%22_Model_414_-_414p_8mm_film_camera_-_%22Zapruder_Camera%22_02.jpg';
 const UNSTABLE_IMAGE_HOST_PATTERN = /(?:^|\.)((?:ia\.media-imdb\.com)|(?:images-na\.ssl-images-amazon\.com))$/i;
 
 export function isGeneratedMovieArt(url: string | undefined): boolean {
@@ -220,13 +223,22 @@ export function formatDateInputValue(value: Date | string | undefined): string {
 }
 
 export function buildRemotePosterUrl(seed: MovieVisualSeed): string {
-  const normalizedSeed = encodeURIComponent(`${seed.title || 'untitled'}-${seed.director || 'director'}-poster`);
-  return `https://picsum.photos/seed/${normalizedSeed}/500/750`;
+  return resolveKnownMovieImageUrl(seed, 'poster') ?? GENERIC_POSTER_URL;
 }
 
 export function buildRemoteBackdropUrl(seed: MovieVisualSeed): string {
-  const normalizedSeed = encodeURIComponent(`${seed.title || 'untitled'}-${seed.director || 'director'}-backdrop`);
-  return `https://picsum.photos/seed/${normalizedSeed}/1280/720`;
+  return resolveKnownMovieImageUrl(seed, 'backdrop') ?? GENERIC_BACKDROP_URL;
+}
+
+export function resolveKnownMovieImageUrl(seed: MovieVisualSeed, kind: MovieImageKind = 'poster'): string | null {
+  const releaseYear = coerceMovieDate(seed.releaseDate).getFullYear();
+  const key = buildMovieMediaOverrideKey(seed.title ?? '', releaseYear);
+  const override = MOVIE_MEDIA_OVERRIDES[key];
+  const candidate = kind === 'backdrop'
+    ? override?.backdropUrl ?? override?.posterUrl
+    : override?.posterUrl;
+
+  return optimizeMovieImageUrl(candidate, kind);
 }
 
 export function ensureMovieMedia<T extends MovieVisualSeed>(movie: T): T & {

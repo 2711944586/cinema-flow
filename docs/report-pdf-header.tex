@@ -1,0 +1,96 @@
+\usepackage{xcolor}
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{pdflscape}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{etoolbox}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{fvextra}
+\usepackage{setspace}
+
+\definecolor{cfInk}{HTML}{1D1B18}
+\definecolor{cfText}{HTML}{2E2A24}
+\definecolor{cfMuted}{HTML}{68625A}
+\definecolor{cfGold}{HTML}{B88A35}
+\definecolor{cfLine}{HTML}{E4D8C6}
+\definecolor{cfSoft}{HTML}{FBF7EF}
+\IfFontExistsTF{FangSong}{\setmainfont{FangSong}}{\IfFontExistsTF{STFangsong}{\setmainfont{STFangsong}}{}}
+\IfFontExistsTF{Microsoft YaHei}{\setsansfont{Microsoft YaHei}}{}
+\IfFontExistsTF{Consolas}{\setmonofont{Consolas}[Scale=0.88]}{}
+\IfFontExistsTF{FangSong}{\setCJKmainfont{FangSong}}{\IfFontExistsTF{STFangsong}{\setCJKmainfont{STFangsong}}{}}
+\IfFontExistsTF{Microsoft YaHei}{\setCJKsansfont{Microsoft YaHei}}{}
+\IfFontExistsTF{SimSun}{\setCJKmonofont{SimSun}}{}
+
+\linespread{1.08}
+\setlength{\parskip}{0.38em}
+\setlength{\parindent}{2em}
+\setlength{\emergencystretch}{4em}
+\sloppy
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily CinemaFlow 电影库管理系统汇报}
+\fancyhead[R]{\small\sffamily\leftmark}
+\fancyfoot[C]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\headheight}{15pt}
+
+\titleformat{\section}
+  {\sffamily\bfseries\Large\color{cfInk}}
+  {}
+  {0pt}
+  {}
+  [\vspace{0.25em}{\color{cfGold}\titlerule[0.8pt]}]
+\titleformat{\subsection}
+  {\sffamily\bfseries\large\color{cfInk}}
+  {}
+  {0pt}
+  {}
+\titleformat{\subsubsection}
+  {\sffamily\bfseries\normalsize\color{cfInk}}
+  {}
+  {0pt}
+  {}
+\titlespacing*{\section}{0pt}{1.1em}{0.8em}
+\titlespacing*{\subsection}{0pt}{0.9em}{0.45em}
+\titlespacing*{\subsubsection}{0pt}{0.7em}{0.35em}
+
+\captionsetup{
+  font=small,
+  labelfont={bf,color=cfGold},
+  textfont={color=cfMuted},
+  skip=5pt
+}
+
+\setlist[itemize]{leftmargin=2em,itemsep=0.2em,topsep=0.25em,label={\color{cfGold}\raisebox{0.15ex}{\rule{0.36em}{0.36em}}}}
+\setlist[enumerate]{leftmargin=2em,itemsep=0.2em,topsep=0.25em}
+
+\AtBeginEnvironment{longtable}{\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.22}}
+\AtBeginEnvironment{tabular}{\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.18}}
+\AtBeginEnvironment{Shaded}{\small}
+\fvset{breaklines=true,breakanywhere=true,fontsize=\small}
+
+\renewcommand{\arraystretch}{1.16}
+\setlength{\LTpre}{0.5em}
+\setlength{\LTpost}{0.7em}
+
+\AtBeginDocument{
+  \color{cfText}
+  \hypersetup{
+    colorlinks=true,
+    linkcolor=cfGold,
+    urlcolor=cfGold,
+    citecolor=cfGold,
+    pdftitle={CinemaFlow 电影库管理系统汇报},
+    pdfauthor={CinemaFlow 项目组},
+    pdfcreator={CinemaFlow 项目组}
+  }
+}

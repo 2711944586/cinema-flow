@@ -4,6 +4,8 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Director } from '../models/director';
 import { Movie } from '../models/movie';
+import { API_CONFIG, buildApiUrl } from '../config/api.config';
+import { resolveDirectorPortraitUrl } from '../config/director-media';
 import { buildDirectorId } from '../utils/director-identity';
 import { LoggerService } from './logger.service';
 import { MessageService } from './message.service';
@@ -16,7 +18,8 @@ const httpOptions = {
 @Injectable({ providedIn: 'root' })
 export class DirectorService {
   private readonly http = inject(HttpClient, { optional: true });
-  private readonly apiUrl = '/api/directors';
+  private readonly apiConfig = inject(API_CONFIG);
+  private readonly apiUrl = buildApiUrl(this.apiConfig, '/directors');
 
   constructor(
     private movieService: MovieService,
@@ -174,7 +177,7 @@ export class DirectorService {
   }
 
   private buildPortraitUrl(name: string): string {
-    return `https://picsum.photos/seed/director-${encodeURIComponent(name)}/640/800`;
+    return resolveDirectorPortraitUrl(name);
   }
 
   private inferNationality(name: string): string {

@@ -13,7 +13,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['科幻', '冒险', '剧情'],
     duration: 169,
     description: '在不久的将来，地球面临灭绝危机。一队探险家利用最新发现的虫洞展开穿越星际空间的壮举，去寻找人类的新家园。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E6%98%9F%E9%99%85%E7%A9%BF%E8%B6%8A+%28Interstellar%29+2014+official+trailer',
     isFavorite: true,
     boxOffice: 6.77,
     language: '英语',
@@ -31,7 +31,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['科幻', '悬疑', '动作'],
     duration: 163,
     description: '在2049年，新一代银翼杀手K发现了一个深藏的秘密，这个秘密可能会使残存的社会陷入混乱。他的发现迫使他去寻找已经失踪了30年的前任银翼杀手瑞克·戴克。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E9%93%B6%E7%BF%BC%E6%9D%80%E6%89%8B2049+%28Blade+Runner+2049%29+2017+official+trailer',
     boxOffice: 2.59,
     language: '英语',
     cast: ['瑞恩·高斯林', '哈里森·福特', '安娜·德·阿玛斯']
@@ -48,7 +48,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['科幻', '动作', '悬疑'],
     duration: 148,
     description: '柯布是一名窃贼，他擅长从人们的潜意识中窃取机密。一次任务中，他接到了一个看似不可能的任务——不是窃取，而是在目标脑海中植入想法。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E7%9B%97%E6%A2%A6%E7%A9%BA%E9%97%B4+%28Inception%29+2010+official+trailer',
     isFavorite: true,
     boxOffice: 8.36,
     language: '英语',
@@ -66,7 +66,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['剧情', '犯罪'],
     duration: 142,
     description: '银行家安迪被控谋杀妻子及情夫而被判终身监禁。在肖申克监狱中，他凭借智慧和毅力，最终不仅改变了自己，也改变了周围的狱友。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E8%82%96%E7%94%B3%E5%85%8B%E7%9A%84%E6%95%91%E8%B5%8E+%28The+Shawshank+Redemption%29+1994+official+trailer',
     isFavorite: true,
     boxOffice: 0.58,
     language: '英语',
@@ -84,7 +84,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['动画', '奇幻', '冒险'],
     duration: 125,
     description: '年仅10岁的荻野千寻跟随父母搬家，却意外闯入了一个神秘的世界，为了拯救变成猪的父母，她在这个神明居住的世界里经历了成长。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E5%8D%83%E4%B8%8E%E5%8D%83%E5%AF%BB+%28Spirited+Away%29+2001+official+trailer',
     isFavorite: true,
     boxOffice: 3.47,
     language: '日语',
@@ -102,7 +102,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['科幻', '冒险', '剧情'],
     duration: 166,
     description: '保罗·厄崔迪与契尼和弗雷曼人会合，展开对毁弃他家族的阴谋者的报复。在面临一生挚爱和已知宇宙命运的两难抉择时，他试图阻止只有他能预见的未来。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E6%B2%99%E4%B8%982+%28Dune%3A+Part+Two%29+2024+official+trailer',
     boxOffice: 7.11,
     language: '英语',
     cast: ['提莫西·查拉梅', '赞达亚', '奥斯汀·巴特勒']
@@ -119,7 +119,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['科幻', '灾难', '动作'],
     duration: 173,
     description: '太阳即将步入恒星寿命的最终阶段，人类决定开启流浪地球计划。面对连番险阻，人类社会空前团结，开始了应对危机的艰巨旅程。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E6%B5%81%E6%B5%AA%E5%9C%B0%E7%90%832+%28The+Wandering+Earth+II%29+2023+official+trailer',
     boxOffice: 40.29,
     language: '中文',
     cast: ['吴京', '刘德华', '李雪健']
@@ -136,7 +136,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['犯罪', '剧情'],
     duration: 175,
     description: '在这个史诗级的黑帮家族传承故事中，老教父维托·柯里昂试图将帝国移交给不愿卷入家族业务的幼子迈克尔身上。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E6%95%99%E7%88%B6+%28The+Godfather%29+1972+official+trailer',
     boxOffice: 2.45,
     language: '英语',
     cast: ['马龙·白兰度', '阿尔·帕西诺', '詹姆斯·凯恩']
@@ -153,7 +153,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['动画', '喜剧', '家庭'],
     duration: 108,
     description: '在所有哺乳动物和谐共存的疯狂动物城，兔子警官朱迪为了证明自己，与狡猾的狐狸尼克联手侦破一桩神秘案件。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E7%96%AF%E7%8B%82%E5%8A%A8%E7%89%A9%E5%9F%8E+%28Zootopia%29+2016+official+trailer',
     boxOffice: 10.24,
     language: '英语',
     cast: ['金妮弗·古德温', '杰森·贝特曼']
@@ -170,7 +170,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['动画', '爱情', '奇幻'],
     duration: 106,
     description: '两名相隔遥远且素未谋面的高中生，在梦境中竟然互相交换了身体。这神秘现象的背后，似乎隐藏着某种时空交错的注定。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E4%BD%A0%E7%9A%84%E5%90%8D%E5%AD%97%E3%80%82%28Your+Name.%29+2016+official+trailer',
     isFavorite: true,
     boxOffice: 3.56,
     language: '日语',
@@ -188,7 +188,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['动作', '犯罪', '剧情'],
     duration: 152,
     description: '当名为"小丑"的犯罪主脑出现在哥谭市，蝙蝠侠不仅需要对抗这一巨大的物理威胁，还必须在一场对于道德与混乱的心理战中取得胜利。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E8%9D%99%E8%9D%A0%E4%BE%A0%EF%BC%9A%E9%BB%91%E6%9A%97%E9%AA%91%E5%A3%AB+%28The+Dark+Knight%29+2008+official+trailer',
     boxOffice: 10.04,
     language: '英语',
     cast: ['克里斯蒂安·贝尔', '希斯·莱杰', '阿伦·艾克哈特']
@@ -205,7 +205,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['剧情', '惊悚', '喜剧'],
     duration: 132,
     description: '贫穷的金家四口人利用伪造的学历和身份，一步步进入到富豪朴社长的家中工作。然而，在这栋华丽豪宅的暗处，隐藏着不可告人的秘密。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E5%AF%84%E7%94%9F%E8%99%AB+%28Parasite%29+2019+official+trailer',
     boxOffice: 2.63,
     language: '韩语',
     cast: ['宋康昊', '李善均', '赵汝贞']
@@ -222,7 +222,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['剧情', '传记', '历史'],
     duration: 180,
     description: '讲述美国理论物理学家J·罗伯特·奥本海默在二战期间如何带领曼哈顿计划研发出原子弹，以及这一发明对他人生轨迹的巨大影响。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E5%A5%A5%E6%9C%AC%E6%B5%B7%E9%BB%98+%28Oppenheimer%29+2023+official+trailer',
     boxOffice: 9.52,
     language: '英语',
     cast: ['基里安·墨菲', '小罗伯特·唐尼', '艾米丽·布朗特']
@@ -239,7 +239,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['剧情', '喜剧'],
     duration: 103,
     description: '一个名叫楚门的人的真实生活其实是一档24小时不间断全球直播的真人秀。当他开始怀疑身边一切的真实性时，他决定逃离由电视网络控制的世界。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E6%A5%9A%E9%97%A8%E7%9A%84%E4%B8%96%E7%95%8C+%28The+Truman+Show%29+1998+official+trailer',
     boxOffice: 2.64,
     language: '英语',
     cast: ['金·凯瑞', '劳拉·琳妮', '艾德·哈里斯']
@@ -256,7 +256,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['动画', '动作', '科幻'],
     duration: 117,
     description: '迈尔斯·墨拉莱斯成为新一代蜘蛛侠的同时，多个平行宇宙中的蜘蛛侠因时空机器走错宇宙，聚在了一起，必须合力将世界恢复原样。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E8%9C%98%E8%9B%9B%E4%BE%A0%EF%BC%9A%E5%B9%B3%E8%A1%8C%E5%AE%87%E5%AE%99+%28Spider-Man%3A+Into+the+Spider-Verse%29+2018+official+trailer',
     boxOffice: 3.75,
     language: '英语',
     cast: ['沙梅克·摩尔', '海莉·斯坦菲尔德']
@@ -273,7 +273,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['爱情', '灾难', '剧情'],
     duration: 194,
     description: '在泰坦尼克号这艘号称永不沉没的客轮的首次也是最后一次航行中，穷画家杰克和贵族女露丝坠入爱河，随后却遭遇了冰山撞击的世纪浩劫。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E6%B3%B0%E5%9D%A6%E5%B0%BC%E5%85%8B%E5%8F%B7+%28Titanic%29+1997+official+trailer',
     isFavorite: true,
     boxOffice: 21.87,
     language: '英语',
@@ -291,7 +291,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['剧情', '爱情'],
     duration: 142,
     description: '智商只有75的阿甘，凭借其单纯和善良，在20世纪下半叶经历了各种美国历史重大事件，成为了一个传奇人物。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E9%98%BF%E7%94%98%E6%AD%A3%E4%BC%A0+%28Forrest+Gump%29+1994+official+trailer',
     boxOffice: 6.77,
     language: '英语',
     cast: ['汤姆·汉克斯', '罗宾·怀特', '加里·西尼斯']
@@ -308,7 +308,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['动作', '科幻', '冒险'],
     duration: 181,
     description: '在灭霸的响指消灭了宇宙一半的生命后，幸存的复仇者联盟成员为了扭转局面，展开了最后一次绝地反击的时空穿梭之旅。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E5%A4%8D%E4%BB%87%E8%80%85%E8%81%94%E7%9B%9F4%EF%BC%9A%E7%BB%88%E5%B1%80%E4%B9%8B%E6%88%98+%28Avengers%3A+Endgame%29+2019+official+trailer',
     boxOffice: 27.98,
     language: '英语',
     cast: ['小罗伯特·唐尼', '克里斯·埃文斯', '斯嘉丽·约翰逊']
@@ -325,7 +325,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['动作', '科幻'],
     duration: 136,
     description: '计算机黑客尼奥发现，他所认为的世界仅仅是机器用来奴役人类的一个计算机程序"矩阵"。他加入了反抗组织，试图将人类从虚幻中解救出来。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E9%BB%91%E5%AE%A2%E5%B8%9D%E5%9B%BD+%28The+Matrix%29+1999+official+trailer',
     boxOffice: 4.63,
     language: '英语',
     cast: ['基努·里维斯', '劳伦斯·菲什伯恩', '凯莉·安·莫斯']
@@ -342,7 +342,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['动画', '冒险', '剧情'],
     duration: 88,
     description: '小狮子辛巴在叔叔刀疤的阴谋下失去了父亲木法沙，被迫流亡。在经历了形形色色的成长历程后，辛巴终于担起责任，夺回属于自己的王位。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E7%8B%AE%E5%AD%90%E7%8E%8B+%28The+Lion+King%29+1994+official+trailer',
     boxOffice: 9.87,
     language: '英语',
     cast: ['马修·布罗德里克', '杰瑞米·艾恩斯']
@@ -359,7 +359,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['剧情', '音乐'],
     duration: 165,
     description: '一个被遗弃在蒸汽船上的孤儿，展现出了惊人的钢琴天赋。他一生都在那艘船上度过，用琴键弹奏出无数动人的旋律，却从未踏上过陆地。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E6%B5%B7%E4%B8%8A%E9%92%A2%E7%90%B4%E5%B8%88+%28The+Legend+of+1900%29+1998+official+trailer',
     boxOffice: 0.21,
     language: '英语',
     cast: ['蒂姆·罗斯', '普路特·泰勒·文斯']
@@ -376,7 +376,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['动画', '喜剧', '冒险'],
     duration: 95,
     description: '伴随着小女孩莱莉的搬家，她脑内的五种情绪——快乐、厌恶、恐惧、愤怒和悲伤，在她的控制中心里努力引导她度过适应新环境的困难时期。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E5%A4%B4%E8%84%91%E7%89%B9%E5%B7%A5%E9%98%9F+%28Inside+Out%29+2015+official+trailer',
     boxOffice: 8.57,
     language: '英语',
     cast: ['艾米·波勒', '菲利斯·史密斯']
@@ -393,7 +393,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['传记', '戏剧', '历史'],
     duration: 178,
     description: '当他的秘密新娘因反对英格兰国王而被处决时，苏格兰平民威廉·华莱士开始了一场反抗暴君、争取苏格兰独立的伟大起义。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E5%8B%87%E6%95%A2%E7%9A%84%E5%BF%83+%28Braveheart%29+1995+official+trailer',
     boxOffice: 2.10,
     language: '英语',
     cast: ['梅尔·吉布森', '苏菲·玛索']
@@ -410,7 +410,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['动作', '科幻', '冒险'],
     duration: 162,
     description: '在潘多拉星球，瘫痪的前海军陆战队队员杰克被派去渗透这个名叫纳美人外星种族。随着时间的推移，他开始在人类的命令和纳美人的生灵之间挣扎。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E9%98%BF%E5%87%A1%E8%BE%BE+%28Avatar%29+2009+official+trailer',
     boxOffice: 27.90,
     language: '英语',
     cast: ['萨姆·沃辛顿', '佐伊·索尔达娜', '西格妮·韦弗']  },
@@ -426,7 +426,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['动画', '音乐', '奇幻'],
     duration: 105,
     description: '小男孩米格尔意外进入了亡灵世界，在那里他遇到了祖先们并揭开了家族的秘密。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E5%AF%BB%E6%A2%A6%E7%8E%AF%E6%B8%B8%E8%AE%B0%28Coco%29+2017+official+trailer',
     boxOffice: 8.07,
     language: '英语',
     cast: ['安东尼·冈萨雷斯', '盖尔·加西亚·贝纳尔']
@@ -443,7 +443,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['剧情', '喜剧', '传记'],
     duration: 130,
     description: '一位黑人钢琴家雇佣了一位意大利裔美国保镖，两人一起在1960年代的南方巡演。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E7%BB%BF%E7%9A%AE%E4%B9%A6%28Green+Book%29+2018+official+trailer',
     boxOffice: 3.22,
     language: '英语',
     cast: ['维果·莫腾森', '马赫沙拉·阿里']
@@ -460,7 +460,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['动作', '传记', '剧情'],
     duration: 161,
     description: '前摔跤手训练他的女儿成为世界冠军，挑战印度社会的性别偏见。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E6%91%94%E8%B7%A4%E5%90%A7%EF%BC%81%E7%88%B8%E7%88%B8%28Dangal%29+2016+official+trailer',
     boxOffice: 2.10,
     language: '印地语',
     cast: ['阿米尔·汗', '法缇玛·萨那·纱克']
@@ -477,7 +477,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['犯罪', '剧情'],
     duration: 115,
     description: '一位母亲竖起三块广告牌，质问警方为何未能侦破她女儿的谋杀案。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E4%B8%89%E5%9D%97%E5%B9%BF%E5%91%8A%E7%89%8C%28Three+Billboards+Outside+Ebbing%2C+Missouri%29+2017+official+trailer',
     boxOffice: 1.60,
     language: '英语',
     cast: ['弗兰西斯·麦克多蒙德', '伍迪·哈里森']
@@ -494,7 +494,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['传记', '剧情', '音乐'],
     duration: 134,
     description: '皇后乐队主唱弗雷迪·默丘里的传奇一生，从加入乐队到1985年Live Aid演出。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E6%B3%A2%E8%A5%BF%E7%B1%B3%E4%BA%9A%E7%8B%82%E6%83%B3%E6%9B%B2%28Bohemian+Rhapsody%29+2018+official+trailer',
     boxOffice: 9.03,
     language: '英语',
     cast: ['拉米·马雷克', '露西·宝通']
@@ -511,7 +511,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['剧情'],
     duration: 126,
     description: '黎巴嫩贫民窟的男孩赞恩起诉父母将他带到这个世界，因为他过着悲惨的生活。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E4%BD%95%E4%BB%A5%E4%B8%BA%E5%AE%B6%28Capernaum%29+2018+official+trailer',
     boxOffice: 0.68,
     language: '阿拉伯语',
     cast: ['赞恩·阿尔·拉菲亚', '约丹诺斯·希费罗']
@@ -528,7 +528,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['剧情'],
     duration: 135,
     description: '1970年代墨西哥城，一位土著女佣在动荡的政治环境中为一个中产阶级家庭工作。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E7%BD%97%E9%A9%AC%28Roma%29+2018+official+trailer',
     boxOffice: 0.04,
     language: '西班牙语',
     cast: ['雅利扎·阿巴里西奥', '玛丽娜·德塔维拉']
@@ -545,7 +545,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['剧情', '悬疑', '惊悚'],
     duration: 148,
     description: '一个aspiring作家发现他的童年好友与一个神秘男子交往，后者有着奇怪的爱好。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E7%87%83%E7%83%A7%28Burning%29+2018+official+trailer',
     boxOffice: 0.07,
     language: '韩语',
     cast: ['刘亚仁', '史蒂文·元', '全钟瑞']
@@ -562,7 +562,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['剧情', '犯罪'],
     duration: 121,
     description: '东京的一个贫困家庭靠偷窃为生，直到他们收养了一个被虐待的小女孩。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E5%B0%8F%E5%81%B7%E5%AE%B6%E6%97%8F%28Shoplifters%29+2018+official+trailer',
     boxOffice: 0.07,
     language: '日语',
     cast: ['中川雅也', '安藤樱', '松冈茉优']
@@ -579,7 +579,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['剧情', '爱情', '音乐'],
     duration: 89,
     description: '一对男女在冷战时期的欧洲展开了一段跨越数十年的激情爱情故事。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E5%86%B7%E6%88%98%28Cold+War%29+2018+official+trailer',
     boxOffice: 0.02,
     language: '波兰语',
     cast: ['尤安娜·库利格', '托马斯·科特']
@@ -596,7 +596,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['剧情', '喜剧', '历史'],
     duration: 119,
     description: '18世纪初，两位表亲争夺英国女王的宠爱和宫廷权力。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E5%AE%A0%E5%84%BF%28The+Favourite%29+2018+official+trailer',
     boxOffice: 0.96,
     language: '英语',
     cast: ['奥利维娅·科尔曼', '艾玛·斯通', '蕾切尔·薇兹']
@@ -613,7 +613,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['剧情', '奇幻'],
     duration: 128,
     description: '一个纯真的农民在意大利乡村生活，经历了一系列超现实的事件。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E5%B9%B8%E7%A6%8F%E7%9A%84%E6%8B%89%E6%89%8E%E7%BD%97%28Happy+as+Lazzaro%29+2018+official+trailer',
     boxOffice: 0.01,
     language: '意大利语',
     cast: ['阿德里亚诺·塔尔迪奥洛', '阿涅塞·格拉齐亚尼']
@@ -630,7 +630,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['纪录片', '运动'],
     duration: 100,
     description: '记录亚历克斯·霍诺尔德无保护攀登优胜美地酋长岩的过程。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E5%BE%92%E6%89%8B%E6%94%80%E5%B2%A9%28Free+Solo%29+2018+official+trailer',
     boxOffice: 0.29,
     language: '英语',
     cast: ['亚历克斯·霍诺尔德', '汤米·考德威尔']
@@ -647,7 +647,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['剧情', '悬疑', '惊悚'],
     duration: 102,
     description: '一位父亲通过电脑屏幕寻找失踪的女儿，发现了她隐藏的数字生活。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E7%BD%91%E7%BB%9C%E8%B0%9C%E8%B8%AA%28Searching%29+2018+official+trailer',
     boxOffice: 0.75,
     language: '英语',
     cast: ['约翰·赵', '黛博拉·梅辛']
@@ -664,7 +664,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['恐怖', '科幻', '惊悚'],
     duration: 90,
     description: '一家人在怪物猎杀任何发出声音的世界中努力生存，必须保持绝对安静。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E5%AF%82%E9%9D%99%E4%B9%8B%E5%9C%B0%28A+Quiet+Place%29+2018+official+trailer',
     boxOffice: 3.41,
     language: '英语',
     cast: ['艾米莉·布朗特', '约翰·卡拉辛斯基']
@@ -681,7 +681,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['动作', '科幻', '冒险'],
     duration: 140,
     description: '在反乌托邦的未来，人们沉浸在VR游戏中，一个少年寻找隐藏的彩蛋。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E5%A4%B4%E5%8F%B7%E7%8E%A9%E5%AE%B6%28Ready+Player+One%29+2018+official+trailer',
     boxOffice: 5.83,
     language: '英语',
     cast: ['泰伊·谢里丹', '奥利维亚·库克']
@@ -698,7 +698,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['科幻', '恐怖', '悬疑'],
     duration: 115,
     description: '一支女子探险队进入一个神秘的区域，那里的物理法则已被扭曲。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E6%B9%AE%E7%81%AD%28Annihilation%29+2018+official+trailer',
     boxOffice: 0.43,
     language: '英语',
     cast: ['娜塔莉·波特曼', '詹妮弗·杰森·李']
@@ -715,7 +715,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['恐怖', '悬疑', '惊悚'],
     duration: 127,
     description: '祖母去世后，一个家庭开始遭遇一系列可怕的超自然事件。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E9%81%97%E4%BC%A0%E5%8E%84%E8%BF%90%28Hereditary%29+2018+official+trailer',
     boxOffice: 0.80,
     language: '英语',
     cast: ['托妮·科莱特', '亚历克斯·沃尔夫']
@@ -732,7 +732,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['动作', '科幻', '惊悚'],
     duration: 100,
     description: '一名瘫痪的男子植入了人工智能芯片STEM，获得了超乎寻常的能力。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E5%8D%87%E7%BA%A7%28Upgrade%29+2018+official+trailer',
     boxOffice: 0.02,
     language: '英语',
     cast: ['罗根·马歇尔 - 格林', '梅拉里·贾维尔']
@@ -749,7 +749,7 @@ export const MOCK_MOVIES: Movie[] = [
     genres: ['动作', '科幻', '喜剧'],
     duration: 139,
     description: '一位华裔移民妇女发现自己必须连接平行宇宙才能拯救世界和她的家人。',
-    trailerUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    trailerUrl: 'https://www.youtube.com/results?search_query=%E7%9E%AC%E6%81%AF%E5%85%A8%E5%AE%87%E5%AE%99%28Everything+Everywhere+All+At+Once%29+2022+official+trailer',
     boxOffice: 1.41,
     language: '英语',
     cast: ['杨紫琼', '关继威', '杰米·李·柯蒂斯']  }

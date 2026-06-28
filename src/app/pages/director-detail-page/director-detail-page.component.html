@@ -1,7 +1,7 @@
 <section class="director-detail-page" *ngIf="vm$ | async as vm; else loadingState">
   <ng-container *ngIf="vm.director as director; else notFoundState">
     <div class="director-profile">
-      <img class="profile-photo" [src]="director.portraitUrl" [alt]="director.name">
+      <img class="profile-photo" [src]="director.portraitUrl" [alt]="director.name" (error)="onPortraitError($event)">
 
       <div class="profile-copy">
         <a mat-stroked-button routerLink="/directors" class="back-link">

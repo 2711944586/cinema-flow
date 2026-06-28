@@ -1,0 +1,29 @@
+flowchart LR
+  subgraph Frontend[Angular SPA 前端]
+    Router[Angular Router]
+    Pages[Pages / Components]
+    Services[HttpClient Services]
+    State[RxJS State Facade]
+    Storage[LocalStorage Backup]
+  end
+
+  subgraph Backend[Flask REST API 后端]
+    Health["/api/health"]
+    MovieApi["/api/movies"]
+    DirectorApi["/api/directors"]
+    Cors[CORS Config]
+  end
+
+  subgraph Data[数据层]
+    JsonStore[JSON 演示持久层]
+    SQL[(关系型数据库设计)]
+  end
+
+  Browser[浏览器] --> Router
+  Router --> Pages
+  Pages --> Services
+  Pages --> State
+  Services -->|HTTP JSON| Backend
+  Backend --> JsonStore
+  Backend -.按 schema 演进.-> SQL
+  State --> Storage

@@ -42,7 +42,7 @@
       class="director-card"
       *ngFor="let director of visibleDirectors; trackBy: trackByDirectorId"
       [routerLink]="['/directors', director.id]">
-      <img [src]="director.portraitUrl" [alt]="director.name" loading="lazy" decoding="async">
+      <img [src]="director.portraitUrl" [alt]="director.name" loading="lazy" decoding="async" (error)="onPortraitError($event)">
       <div class="director-card-copy">
         <span>{{ director.nationality }} · {{ director.birthYear }}</span>
         <h2>{{ director.name }}</h2>

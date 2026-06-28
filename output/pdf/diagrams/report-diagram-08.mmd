@@ -1,0 +1,14 @@
+flowchart TB
+  MovieService["MovieService.movies$"] --> MovieStateService
+  RecentHistory["RecentHistoryService.history$"] --> MovieStateService
+  Reviews["ReviewStoreService.reviews$"] --> MovieStateService
+  WatchPlans["WatchPlanService.plans$"] --> MovieStateService
+  WatchLogs["WatchLogService.logs$"] --> MovieStateService
+  SmartPicks["SmartPicksService.presets$"] --> MovieStateService
+  Messages["MessageService.messages$"] --> MovieStateService
+  Logs["LoggerService.logs$"] --> MovieStateService
+
+  MovieStateService --> DashboardVM["dashboardVm$"]
+  MovieStateService --> AboutVM["aboutVm$"]
+  MovieStateService --> MovieListVM["movieListVm$"]
+  MovieStateService --> MovieDetailVM["movieDetailVm$"]

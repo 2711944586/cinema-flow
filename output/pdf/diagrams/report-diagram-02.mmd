@@ -1,0 +1,6 @@
+flowchart LR
+  Browser[浏览器] --> Flask[Flask 单体应用]
+  Flask --> Template[Jinja2 模板]
+  Flask --> Static[静态资源]
+  Flask --> Business[业务逻辑]
+  Business --> DB[(数据库)]

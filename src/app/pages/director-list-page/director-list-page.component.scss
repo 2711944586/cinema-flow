@@ -115,6 +115,7 @@
   color: var(--cf-text-primary);
   text-decoration: none;
   transition: transform 0.2s ease, border-color 0.2s ease;
+  overflow-wrap: anywhere;
 
   &:hover {
     transform: translateY(-3px);
@@ -126,6 +127,9 @@
     height: 220px;
     object-fit: cover;
     filter: saturate(0.88);
+    color: transparent;
+    font-size: 0;
+    background: rgba(255, 255, 255, 0.05);
   }
 }
 
@@ -140,6 +144,7 @@
   h2 {
     margin: 8px 0;
     font-size: 1.3rem;
+    line-height: 1.25;
   }
 
   p {
@@ -157,12 +162,15 @@
   margin-top: 14px;
 
   strong {
+    max-width: 100%;
     padding: 5px 9px;
-    border-radius: 999px;
+    border-radius: 12px;
     background: rgba(231, 185, 93, 0.11);
     color: var(--cf-gold);
     font-size: 0.76rem;
+    line-height: 1.35;
     font-weight: 600;
+    overflow-wrap: anywhere;
   }
 }
 

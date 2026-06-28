@@ -1,0 +1,7 @@
+.angular
+.git
+dist
+node_modules
+output
+docs/screenshots
+*.log

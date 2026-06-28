@@ -14,12 +14,14 @@ import {
   isRemoteFallbackMovieArt,
   optimizeMovieImageUrl
 } from '../utils/movie-media';
+import { API_CONFIG, buildApiUrl } from '../config/api.config';
 import { LoggerService } from './logger.service';
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
   private readonly http = inject(HttpClient, { optional: true });
-  private readonly apiUrl = '/api/movies';
+  private readonly apiConfig = inject(API_CONFIG);
+  private readonly apiUrl = buildApiUrl(this.apiConfig, '/movies');
   private readonly httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   };
@@ -609,7 +611,8 @@ export class MovieService {
       status: movie.status ?? (movie.isWatched ? 'archived' : 'showing'),
       genres: normalizedGenres,
       cast: movie.cast ? [...movie.cast] : [],
-      userNotes: movie.userNotes ?? ''
+      userNotes: movie.userNotes ?? '',
+      trailerUrl: this.normalizeTrailerUrl({ ...movie, releaseDate })
     });
   }
 
@@ -647,6 +650,8 @@ export class MovieService {
     const currentYear = new Date().getFullYear();
     const hasValidRating = Number.isFinite(movie.rating) && movie.rating >= 0 && movie.rating <= 10;
     const hasValidDuration = Number.isFinite(movie.duration) && movie.duration >= 1;
+    const hasRealPoster = this.hasVerifiedPoster(movie.posterUrl);
+    const hasRealBackdrop = this.hasVerifiedBackdrop(movie.backdropUrl);
 
     return title.length > 0
       && director.length > 0
@@ -654,7 +659,9 @@ export class MovieService {
       && releaseYear >= 1888
       && releaseYear <= currentYear
       && hasValidRating
-      && hasValidDuration;
+      && hasValidDuration
+      && hasRealPoster
+      && hasRealBackdrop;
   }
 
   private buildMovieIdentityKey(movie: Pick<Movie, 'title' | 'releaseDate'>): string {
@@ -742,11 +749,29 @@ export class MovieService {
 
   private toApiMovie(movie: Movie): Movie {
     const normalizedMovie = this.normalizeMovie(movie);
+    const trailerUrl = this.normalizeTrailerUrl(normalizedMovie);
     return {
       ...normalizedMovie,
       releaseYear: normalizedMovie.releaseDate.getFullYear(),
-      genre: normalizedMovie.genres[0] ?? normalizedMovie.genre ?? '剧情'
+      genre: normalizedMovie.genres[0] ?? normalizedMovie.genre ?? '剧情',
+      trailerUrl
     };
+  }
+
+  private normalizeTrailerUrl(movie: Pick<Movie, 'title' | 'releaseDate' | 'trailerUrl'>): string {
+    const trimmedUrl = movie.trailerUrl?.trim() ?? '';
+    if (trimmedUrl
+      && !/w3schools\.com\/html\/mov_bbb\.mp4/i.test(trimmedUrl)
+      && !/youtube\.com\/results\?search_query=official\+movie\+trailer/i.test(trimmedUrl)) {
+      return trimmedUrl;
+    }
+
+    return this.buildTrailerSearchUrl(movie);
+  }
+
+  private buildTrailerSearchUrl(movie: Pick<Movie, 'title' | 'releaseDate'>): string {
+    const year = coerceMovieDate(movie.releaseDate).getFullYear();
+    return `https://www.youtube.com/results?search_query=${encodeURIComponent(`${movie.title} ${year} official trailer`)}`;
   }
 
   private describeHttpError(error: unknown): string {

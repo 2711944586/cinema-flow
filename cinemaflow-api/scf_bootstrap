@@ -1,0 +1,11 @@
+#!/bin/bash
+export PYTHONPATH="$PWD/third_party:$PYTHONPATH"
+export PORT="${PORT:-9000}"
+
+if command -v python3.10 >/dev/null 2>&1; then
+  exec python3.10 app.py
+elif command -v python3 >/dev/null 2>&1; then
+  exec python3 app.py
+else
+  exec python app.py
+fi

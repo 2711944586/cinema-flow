@@ -32,7 +32,7 @@ export interface Movie {
   duration: number;
   /** 电影简介（长文本） */
   description: string;
-  /** 预告片 URL (模拟使用) */
+  /** 预告片 URL */
   trailerUrl?: string;
   /** 是否收藏 */
   isFavorite?: boolean;

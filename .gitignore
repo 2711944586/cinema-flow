@@ -38,6 +38,14 @@ __pycache__/
 .sass-cache/
 /connect.lock
 /coverage
+/output/deploy/
+/output/playwright/
+/output/ng-serve-*.log
+/output/pdf/*.aux
+/output/pdf/*.log
+/output/pdf/*.toc
+/output/pdf/CinemaFlow-report-pdf.md
+/cinemaflow-api/third_party/
 /libpeerconnection.log
 testem.log
 /typings

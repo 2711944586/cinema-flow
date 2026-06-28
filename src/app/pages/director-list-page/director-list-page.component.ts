@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { map } from 'rxjs/operators';
+import { GENERIC_DIRECTOR_PORTRAIT_URL } from '../../config/director-media';
 import { DirectorService } from '../../services/director.service';
 
 @Component({
@@ -48,5 +49,15 @@ export class DirectorListPageComponent {
 
   trackByDirectorId(index: number, director: { id: number }): number {
     return director.id;
+  }
+
+  onPortraitError(event: Event): void {
+    const image = event.target as HTMLImageElement;
+    if (image.dataset['fallbackApplied'] === 'true') {
+      return;
+    }
+
+    image.dataset['fallbackApplied'] = 'true';
+    image.src = GENERIC_DIRECTOR_PORTRAIT_URL;
   }
 }

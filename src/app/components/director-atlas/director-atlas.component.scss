@@ -62,6 +62,7 @@
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.05);
+  min-width: 0;
 
   span,
   p {
@@ -71,8 +72,10 @@
   strong {
     display: block;
     margin: 0.4rem 0 0.5rem;
-    font-size: 1.8rem;
+    font-size: clamp(1.45rem, 2.2vw, 1.8rem);
+    line-height: 1.12;
     font-family: var(--cf-font-display);
+    overflow-wrap: break-word;
   }
 
   p {
@@ -91,6 +94,18 @@
 .directory-panel,
 .spotlight-panel {
   padding: 22px;
+  min-width: 0;
+}
+
+.directory-panel {
+  .panel-head {
+    flex-direction: column;
+  }
+
+  .search-field {
+    width: 100%;
+    min-width: 0;
+  }
 }
 
 .panel-head {
@@ -103,7 +118,9 @@
   h2 {
     margin: 0.45rem 0 0;
     font-size: 1.45rem;
+    line-height: 1.22;
     font-family: var(--cf-font-display);
+    overflow-wrap: break-word;
   }
 
   p {
@@ -131,6 +148,7 @@
   text-align: left;
   cursor: pointer;
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  overflow-wrap: break-word;
 
   &:hover,
   &.is-active {
@@ -142,6 +160,7 @@
   p {
     margin: 10px 0 0;
     color: var(--cf-text-secondary);
+    line-height: 1.55;
   }
 }
 
@@ -161,6 +180,9 @@
 
   strong {
     font-size: 1.02rem;
+    line-height: 1.28;
+    min-width: 0;
+    overflow-wrap: break-word;
   }
 
   span {
@@ -211,6 +233,8 @@
     text-decoration: none;
     font-size: 1rem;
     font-weight: 600;
+    line-height: 1.36;
+    overflow-wrap: break-word;
   }
 
   p {

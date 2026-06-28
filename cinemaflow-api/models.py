@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import json
+import os
 from copy import deepcopy
 from pathlib import Path
 
 
-DATA_FILE = Path(__file__).with_name("cinemaflow-data.json")
+DATA_FILE = Path(os.environ.get("CINEMAFLOW_DATA_FILE", Path(__file__).with_name("cinemaflow-data.json")))
 
 movies = [
     {
@@ -77,7 +78,7 @@ directors = [
         "nationality": "英国/美国",
         "birthYear": 1970,
         "bio": "以非线性叙事、时间结构和大银幕视听著称。",
-        "portraitUrl": "https://picsum.photos/seed/director-nolan/640/800",
+        "portraitUrl": "https://upload.wikimedia.org/wikipedia/commons/4/49/ChrisNolanBFI150224_%2810_of_12%29_%2853532289710%29_%28cropped2%29.jpg",
         "activeYears": "1998 - 2026",
         "signatureStyle": "高概念叙事与沉浸式视听",
         "awards": ["奥斯卡最佳导演", "英国电影学院奖"],
@@ -89,7 +90,7 @@ directors = [
         "nationality": "中国台湾/美国",
         "birthYear": 1954,
         "bio": "横跨东西方文化的大师级导演，擅长处理身份、情感与类型表达。",
-        "portraitUrl": "https://picsum.photos/seed/director-lee/640/800",
+        "portraitUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/2016_NAB_Show%27s_The_Future_of_Cinema_Conference%2C_produced_in_partnership_with_SMPTE_%2826717112630%29_%28cropped%29.jpg/960px-2016_NAB_Show%27s_The_Future_of_Cinema_Conference%2C_produced_in_partnership_with_SMPTE_%2826717112630%29_%28cropped%29.jpg",
         "activeYears": "1991 - 2026",
         "signatureStyle": "文化冲突、人物关系与细腻情感",
         "awards": ["奥斯卡最佳导演", "金狮奖", "金熊奖"],
@@ -101,7 +102,7 @@ directors = [
         "nationality": "日本",
         "birthYear": 1941,
         "bio": "吉卜力工作室创始人，动画电影巨匠。",
-        "portraitUrl": "https://picsum.photos/seed/director-miyazaki/640/800",
+        "portraitUrl": "https://upload.wikimedia.org/wikipedia/commons/f/ff/HayaoMiyazakiCCJuly09.jpg",
         "activeYears": "1979 - 2026",
         "signatureStyle": "手工质感、奇幻世界与成长母题",
         "awards": ["奥斯卡最佳动画长片", "金熊奖"],
@@ -113,7 +114,7 @@ directors = [
         "nationality": "中国香港",
         "birthYear": 1958,
         "bio": "以独特视觉美学、音乐使用和时间记忆著称。",
-        "portraitUrl": "https://picsum.photos/seed/director-wong/640/800",
+        "portraitUrl": "https://upload.wikimedia.org/wikipedia/commons/7/76/Wong_Kar-wai_Berlin_cropped.jpg",
         "activeYears": "1988 - 2026",
         "signatureStyle": "都市孤独、时间记忆与情绪调度",
         "awards": ["戛纳最佳导演", "香港电影金像奖"],

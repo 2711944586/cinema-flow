@@ -1,0 +1,53 @@
+erDiagram
+  DIRECTORS {
+    integer id PK
+    text name UK
+    text nationality
+    integer birth_year
+    text portrait_url
+    text signature_style
+  }
+
+  MOVIES {
+    integer id PK
+    text title
+    integer director_id FK
+    text primary_genre
+    real rating
+    integer release_year
+    text poster_url
+    text backdrop_url
+  }
+
+  GENRES {
+    integer id PK
+    text name UK
+    integer sort_order
+  }
+
+  MOVIE_GENRES {
+    integer movie_id PK,FK
+    integer genre_id PK,FK
+  }
+
+  PEOPLE {
+    integer id PK
+    text name UK
+    text nationality
+    text portrait_url
+  }
+
+  MOVIE_PEOPLE {
+    integer id PK
+    integer movie_id FK
+    integer person_id FK
+    text role_type
+    text character_name
+    integer sort_order
+  }
+
+  DIRECTORS ||--o{ MOVIES : directs
+  MOVIES ||--o{ MOVIE_GENRES : has
+  GENRES ||--o{ MOVIE_GENRES : classifies
+  MOVIES ||--o{ MOVIE_PEOPLE : includes
+  PEOPLE ||--o{ MOVIE_PEOPLE : performs

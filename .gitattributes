@@ -1,0 +1,8 @@
+cinemaflow-api/scf_bootstrap text eol=lf
+*.sh text eol=lf
+*.ps1 text eol=crlf
+*.md text
+*.ts text
+*.scss text
+*.html text
+*.py text

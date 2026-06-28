@@ -1,0 +1,52 @@
+erDiagram
+  USERS {
+    integer id PK
+    text username UK
+    text role
+  }
+
+  MOVIES {
+    integer id PK
+    text title
+    text poster_url
+    text backdrop_url
+  }
+
+  DIRECTORS {
+    integer id PK
+    text name UK
+    text portrait_url
+  }
+
+  PEOPLE {
+    integer id PK
+    text name UK
+    text portrait_url
+  }
+
+  MEDIA_ASSETS {
+    integer id PK
+    text entity_type
+    integer entity_id
+    text asset_type
+    text url
+    text provider
+    integer is_primary
+    text checked_at
+  }
+
+  AUDIT_LOGS {
+    integer id PK
+    integer user_id FK
+    text action
+    text entity_type
+    integer entity_id
+    text before_json
+    text after_json
+    text created_at
+  }
+
+  MOVIES ||--o{ MEDIA_ASSETS : owns
+  DIRECTORS ||--o{ MEDIA_ASSETS : owns
+  PEOPLE ||--o{ MEDIA_ASSETS : owns
+  USERS ||--o{ AUDIT_LOGS : operates

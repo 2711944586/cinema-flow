@@ -26,6 +26,9 @@
   height: 100%;
   min-height: 420px;
   object-fit: cover;
+  color: transparent;
+  font-size: 0;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .profile-copy {
@@ -40,7 +43,9 @@
   h1 {
     margin: 12px 0;
     font-family: var(--cf-font-display);
-    font-size: clamp(2.4rem, 5vw, 5rem);
+    font-size: clamp(2.3rem, 4.4vw, 4.35rem);
+    line-height: 1.12;
+    overflow-wrap: anywhere;
   }
 
   p {
@@ -75,10 +80,12 @@
 
   span {
     padding: 7px 11px;
-    border-radius: 999px;
+    border-radius: 12px;
     background: rgba(231, 185, 93, 0.12);
     color: var(--cf-gold);
     font-size: 0.8rem;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
   }
 }
 
@@ -160,6 +167,8 @@
   h3 {
     margin: 7px 0;
     font-size: 1rem;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
   }
 
   p {
@@ -185,6 +194,7 @@
     background: rgba(255, 255, 255, 0.05);
     color: var(--cf-text-primary);
     text-decoration: none;
+    overflow-wrap: anywhere;
   }
 }
 

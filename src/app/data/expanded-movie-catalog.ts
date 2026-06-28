@@ -167,6 +167,12 @@ function mapErikMovie(movie: ErikMoviePayload): RemoteMovieSeed | null {
 
   const mediaOverride = MOVIE_MEDIA_OVERRIDES[buildMovieMediaOverrideKey(title, releaseYear)];
   const posterUrl = mediaOverride?.posterUrl ?? sanitizeImageUrl(movie.posterUrl);
+  const backdropUrl = mediaOverride?.backdropUrl ?? posterUrl;
+
+  if (!posterUrl || !backdropUrl) {
+    return null;
+  }
+
   return {
     title,
     releaseDate: new Date(releaseYear, 0, 1),
@@ -174,7 +180,7 @@ function mapErikMovie(movie: ErikMoviePayload): RemoteMovieSeed | null {
     rating: clampRating(undefined, 7.4),
     isWatched: false,
     posterUrl: posterUrl ?? '',
-    backdropUrl: mediaOverride?.backdropUrl ?? posterUrl ?? '',
+    backdropUrl,
     genres: buildGenres(undefined, movie.genres ?? []).length > 0 ? buildGenres(undefined, movie.genres ?? []) : ['剧情'],
     duration: parseDuration(movie.runtime),
     description: truncateText(
